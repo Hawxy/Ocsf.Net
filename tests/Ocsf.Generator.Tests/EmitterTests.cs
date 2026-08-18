@@ -44,12 +44,14 @@ public class EmitterTests
     }
 
     [Test]
-    public async Task ExtensionObjectReferences_DegradeToJsonElement()
+    public async Task ExtensionObjectReferences_AreTyped()
     {
         var outputs = Emitter.EmitAll(Schema.Value);
         var startupItem = outputs.Single(o => o.RelativePath.EndsWith("Objects/StartupItem.g.cs")).Content;
+        var process = outputs.Single(o => o.RelativePath.EndsWith("Objects/Process.g.cs")).Content;
 
-        await Assert.That(startupItem).Contains("public JsonElement? WinService { get; set; }");
+        await Assert.That(startupItem).Contains("public WinService? WinService { get; set; }");
+        await Assert.That(process).Contains("public List<WinService>? HostedServices { get; set; }");
     }
 
     [Test]
@@ -57,9 +59,62 @@ public class EmitterTests
     {
         var outputs = Emitter.EmitAll(Schema.Value);
 
-        // 190 objects + OcsfEvent partial + 80 event classes + serializer context + event reader
+        // 194 objects + OcsfEvent partial + 87 event classes + serializer context + event reader
         // + 3 validation registry files
-        await Assert.That(outputs.Count).IsEqualTo(276);
+        await Assert.That(outputs.Count).IsEqualTo(287);
+    }
+
+    [Test]
+    public async Task WindowsServiceActivity_HasExpectedShape()
+    {
+        var outputs = Emitter.EmitAll(Schema.Value);
+        var cls = outputs.Single(o => o.RelativePath.EndsWith("Events/SystemActivity/WindowsServiceActivity.g.cs")).Content;
+
+        await Assert.That(cls).Contains("namespace Ocsf.Events.SystemActivity;");
+        await Assert.That(cls).Contains("[OcsfEventClass(201004, 1, \"windows_service_activity\", Extension = \"win\", ExtensionUid = 2)]");
+        await Assert.That(cls).Contains("public const int EventClassUid = 201004;");
+        await Assert.That(cls).Contains("public Objects.WinService? WinService { get; set; }");
+        await Assert.That(cls).Contains("public void SetActivity(WindowsServiceActivityActivityId activityId, string? activityName = null)");
+        await Assert.That(cls).Contains("Part of the <c>win</c> (Windows) extension.");
+    }
+
+    [Test]
+    public async Task ExtensionTypeNames_ArePrefixedWithoutStutter()
+    {
+        var outputs = Emitter.EmitAll(Schema.Value);
+        var paths = outputs.Select(o => o.RelativePath.Replace('\\', '/')).ToList();
+
+        await Assert.That(paths).Contains("src/Ocsf/Generated/Objects/WinRegKey.g.cs");
+        await Assert.That(paths).Contains("src/Ocsf/Generated/Objects/WinRegValue.g.cs");
+        await Assert.That(paths).Contains("src/Ocsf/Generated/Objects/WinService.g.cs");
+        await Assert.That(paths).Contains("src/Ocsf/Generated/Objects/WinResource.g.cs");
+        await Assert.That(paths).Contains("src/Ocsf/Generated/Events/SystemActivity/WinRegistryKeyActivity.g.cs");
+        await Assert.That(paths).Contains("src/Ocsf/Generated/Events/Discovery/WinPrefetchQuery.g.cs");
+        foreach (var (path, content) in outputs)
+        {
+            await Assert.That(content.Contains("WinWinService")).IsFalse().Because($"{path} contains a stuttered name");
+        }
+
+        // reg_key gets the extension prefix; win_service already carries it.
+        var regKey = outputs.Single(o => o.RelativePath.EndsWith("Objects/WinRegKey.g.cs")).Content;
+        await Assert.That(regKey).Contains("[OcsfObject(\"reg_key\", Extension = \"win\", ExtensionUid = 2)]");
+        await Assert.That(regKey).Contains("public class WinRegKey : OcsfObject");
+
+        // The deprecated discovery-query classes keep [Obsolete].
+        var prefetch = outputs.Single(o => o.RelativePath.EndsWith("Events/Discovery/WinPrefetchQuery.g.cs")).Content;
+        await Assert.That(prefetch).Contains("[Obsolete(");
+    }
+
+    [Test]
+    public async Task RegistrySpecs_KeyExtensionObjectsByPrefixedName()
+    {
+        var outputs = Emitter.EmitAll(Schema.Value);
+        var objects = outputs.Single(o => o.RelativePath.EndsWith("OcsfSchemaRegistry.Objects.g.cs")).Content;
+        var classes = outputs.Single(o => o.RelativePath.EndsWith("OcsfSchemaRegistry.Classes.g.cs")).Content;
+
+        await Assert.That(objects).Contains("objects[\"win/win_service\"] = Object_win_win_service();");
+        await Assert.That(objects).Contains("\"win/win_service\"");
+        await Assert.That(classes).Contains("classes[201004] = Class_win_windows_service_activity();");
     }
 
     [Test]

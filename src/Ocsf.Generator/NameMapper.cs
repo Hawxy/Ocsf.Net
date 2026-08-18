@@ -39,6 +39,24 @@ public static class NameMapper
         return sb.ToString();
     }
 
+    /// <summary>
+    /// Builds the CLR type name for a schema entity, prefixing extension-owned names with the
+    /// extension for uniqueness (reg_key in win becomes WinRegKey). Names whose first word
+    /// already starts with the extension word keep their natural name, avoiding stutter:
+    /// win_service stays WinService and windows_service_activity stays WindowsServiceActivity.
+    /// </summary>
+    public static string ExtensionTypeName(string? extension, string name)
+    {
+        if (string.IsNullOrEmpty(extension))
+            return PascalCase(name);
+
+        var firstWordEnd = name.IndexOf('_');
+        var firstWord = firstWordEnd < 0 ? name : name[..firstWordEnd];
+        return firstWord.StartsWith(extension, StringComparison.Ordinal)
+            ? PascalCase(name)
+            : PascalCase(extension) + PascalCase(name);
+    }
+
     /// <summary>Converts a snake_case schema name to a camelCase C# identifier.</summary>
     public static string CamelCase(string snakeName)
     {

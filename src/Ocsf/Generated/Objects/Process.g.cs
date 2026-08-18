@@ -34,6 +34,15 @@ public class Process : OcsfObject
     public List<ProcessEntity>? Ancestry { get; set; }
 
     /// <summary>
+    /// The audit user assigned at login by the audit subsystem.
+    /// Part of the <c>linux/linux_users</c> profile.
+    /// </summary>
+    [JsonPropertyName("auid")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "linux/linux_users")]
+    public int? Auid { get; set; }
+
+    /// <summary>
     /// The full command line used to launch an application, service, process, or job. For example: <c>ssh user@10.0.0.10</c>. If the command line is unavailable or missing, the empty string <c>''</c> is to be used.
     /// Requirement: recommended.
     /// </summary>
@@ -79,12 +88,30 @@ public class Process : OcsfObject
     public string? CreatedTimeDt { get; set; }
 
     /// <summary>
+    /// The effective group under which this process is running.
+    /// Part of the <c>linux/linux_users</c>, <c>macos/macos_users</c> profiles.
+    /// </summary>
+    [JsonPropertyName("egid")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "linux/linux_users,macos/macos_users")]
+    public int? Egid { get; set; }
+
+    /// <summary>
     /// Environment variables associated with the process.
     /// </summary>
     [JsonPropertyName("environment_variables")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public List<EnvironmentVariable>? EnvironmentVariables { get; set; }
+
+    /// <summary>
+    /// The effective user under which this process is running.
+    /// Part of the <c>linux/linux_users</c>, <c>macos/macos_users</c> profiles.
+    /// </summary>
+    [JsonPropertyName("euid")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "linux/linux_users,macos/macos_users")]
+    public int? Euid { get; set; }
 
     /// <summary>
     /// The process file object.
@@ -94,6 +121,15 @@ public class Process : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public File? File { get; set; }
+
+    /// <summary>
+    /// The group under which this process is running.
+    /// Requirement: recommended. Part of the <c>linux/linux_users</c> profile.
+    /// </summary>
+    [JsonPropertyName("group")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "linux/linux_users")]
+    public Group? Group { get; set; }
 
     /// <summary>
     /// The list of autonomous AI agents hosted by this process. Use when a single process hosts multiple agents (e.g., an IDE running several coding agents within the same host process) and the producer cannot attribute a specific activity to a single agent. When attribution is available, populate the singular <c>ai_agent</c> attribute instead.
@@ -106,11 +142,12 @@ public class Process : OcsfObject
 
     /// <summary>
     /// The Windows services that this process is hosting.
+    /// Provided by the <c>win</c> extension.
     /// </summary>
     [JsonPropertyName("hosted_services")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
-    public List<JsonElement>? HostedServices { get; set; }
+    public List<WinService>? HostedServices { get; set; }
 
     /// <summary>
     /// The process integrity level, normalized to the caption of the integrity_id value. In the case of 'Other', it is defined by the event source (Windows only).

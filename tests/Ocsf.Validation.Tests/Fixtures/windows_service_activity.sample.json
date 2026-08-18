@@ -1,0 +1,28 @@
+{
+  "class_uid": 201004,
+  "category_uid": 1,
+  "type_uid": 20100404,
+  "activity_id": 4,
+  "activity_name": "Stop",
+  "time": 1787065769946,
+  "severity_id": 99,
+  "metadata": {
+    "version": "1.9.0",
+    "product": {
+      "vendor_name": "Test Vendor"
+    }
+  },
+  "win_service": {
+    "cmd_line": 42,
+    "service_type_id": 99,
+    "service_start_type_id": 77
+  },
+  "actor": {
+    "process": {
+      "egid": 1000,
+      "euid": "not-a-number"
+    }
+  },
+  "status_id": 1,
+  "unexpected_attr": true
+}

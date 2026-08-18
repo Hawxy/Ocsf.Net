@@ -123,11 +123,12 @@ public class StartupItem : OcsfObject
 
     /// <summary>
     /// The startup item Windows service resource.
+    /// Provided by the <c>win</c> extension.
     /// </summary>
     [JsonPropertyName("win_service")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
-    public JsonElement? WinService { get; set; }
+    public WinService? WinService { get; set; }
 
     /// <summary>
     /// Sets <c>run_state_id</c> and the <c>run_state</c> sibling label.

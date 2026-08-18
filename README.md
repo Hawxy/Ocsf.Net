@@ -6,7 +6,7 @@ Current Schema Version: **1.9.0**
 
 | Package | Description |
 |---|---|
-| `Ocsf` | Generated C# classes for all 80 OCSF event classes and 190 objects, with System.Text.Json serialization and full NativeAOT/trimming support. |
+| `Ocsf` | Generated C# classes for all 87 OCSF event classes and 194 objects (schema extensions included), with System.Text.Json serialization and full NativeAOT/trimming support. |
 | `Ocsf.Validation` | Validates JSON events against the OCSF schema, mirroring the rules and severities of the schema server's `POST /api/v2/validate` endpoint. |
 
 Targets `net8.0` and `net10.0`. Fully AOT Compatible.
@@ -59,7 +59,7 @@ Consumption is lossless and lenient by design:
 - Unknown attributes (vendor extensions, newer schema versions) round-trip through
   `AdditionalProperties` (`[JsonExtensionData]`).
 - Unknown enum codes deserialize without throwing (`(AuthenticationActivityId)47`).
-- All properties are nullable — consumers must tolerate partial events.
+- All properties are nullable, as consumers must tolerate partial events.
 
 ## Validating events
 
@@ -73,24 +73,30 @@ foreach (Finding f in result.Errors)
     Console.WriteLine($"{f.RuleId} at {f.AttributePath}: {f.Message}");
 ```
 
-The rule set mirrors the schema server's validator (verified against live
-`POST /api/v2/validate` responses): required attributes (recursive), unknown attributes with
-profile filtering per `metadata.profiles`, JSON type and range/regex/max-length checks, enum
-membership, the `Other (99)` sibling-label rule, `at_least_one`/`just_one` constraints,
-`type_uid` consistency, `metadata.version` compatibility, observable path references, and
-deprecation warnings. `ValidationOptions` controls recommended-attribute warnings and rule
-suppression.
+The rule set mirrors the OCSF schema server's validator:
+
+- Required attributes (recursive)
+- Unknown attributes, with profile filtering per `metadata.profiles`
+- JSON type and range/regex/max-length checks
+- Enum membership
+- Sibling-label caption checks
+- `at_least_one`/`just_one` constraints
+- `type_uid` consistency
+- `metadata.version` compatibility
+- Observable path references
+- Deprecation warnings
+
+`ValidationOptions` controls recommended-attribute warnings and rule suppression.
 
 ## Analyzers
 
-The `Ocsf` package ships a Roslyn analyzer that flags common producer mistakes while typing
-(see [docs/analyzer-design.md](docs/analyzer-design.md)):
+The `Ocsf` package ships a Roslyn analyzer that flags common producer mistakes while typing:
 
 | ID | Severity | Checks |
 |---|---|---|
 | OCSF001 | Warning | Required attribute not populated on a locally constructed event/object |
 | OCSF002 | Warning | Enum set to `Other (99)` without an explicit sibling label |
-| OCSF003 | Info | `ActivityId` assigned directly, leaving `type_uid` stale — use `SetActivity` |
+| OCSF003 | Info | `ActivityId` assigned directly, leaving `type_uid` stale, use `SetActivity` |
 | OCSF004 | Warning | `at_least_one` / `just_one` constraint visibly violated |
 
 Analysis is intra-method and conservative: instances passed to other methods are assumed to
@@ -99,7 +105,7 @@ be populated elsewhere and are not flagged. Suppress any rule via `.editorconfig
 
 ## Design notes
 
-- **Timestamps** (`timestamp_t`) are epoch milliseconds on the wire; the `OcsfTimestamp`
+- **Timestamps**: (`timestamp_t`) are epoch milliseconds on the wire; the `OcsfTimestamp`
   struct converts implicitly to/from `long` and `DateTimeOffset`.
 - **Enums**: integer-coded schema enums become C# enums per class/object
   (`AuthenticationActivityId`, `UserTypeId`, ...) since OCSF classes extend enum value sets
@@ -110,16 +116,39 @@ be populated elsewhere and are not flagged. Suppress any rule via `.editorconfig
   guidance; pass an explicit label for source-specific values, which the spec requires for
   `Other (99)`. `SetActivity` additionally recomputes `type_uid` and `type_name`
   (`"Class Caption: Activity Caption"`). Every enum also gets a `Caption()` extension.
-- **Producer responsibilities not automated** (kept manual so consumption stays lossless —
-  defaults injected at construction would be re-emitted when round-tripping partial events):
+- **Producer responsibilities not automated**:
   `metadata.version`, `Unknown (0)` defaults for unpopulatable required enums, and populating
-  the `observables` array (schema observable markers are a candidate for a future helper).
-- **Profiles** are pre-merged into classes by the schema export; profile-sourced properties
-  are ordinary optional properties (provenance noted in the XML docs).
-- **Extensions** (`win/`, `linux/`) are not included in v1; attributes referencing extension
-  objects are typed `JsonElement`.
-- **Deprecated** classes and attributes are generated with `[Obsolete]` so consumers can
+  the `observables` array..
+- **Profiles**: are pre-merged into classes by the schema export. Profile-sourced properties
+  are ordinary optional properties. This includes the
+  `linux/linux_users` and `macos/macos_users` extension profiles, which add `Auid`, `Egid`,
+  `Euid`, and `Group` to `Process` when `metadata.profiles` declares one of those profiles.
+- **Deprecated**: classes and attributes are generated with `[Obsolete]` so consumers can
   still read events from older producers.
+
+## Extensions
+
+OCSF platform extensions are generated as first-class types into the same namespaces as core.
+The `win` extension is the only one that defines entities, with type names being prefixed with 
+the extension name unless the schema namealready starts with it:
+
+| Schema key | CLR type | class_uid |
+|---|---|---|
+| `win/reg_key` | `Ocsf.Objects.WinRegKey` | — |
+| `win/reg_value` | `Ocsf.Objects.WinRegValue` | — |
+| `win/win_service` | `Ocsf.Objects.WinService` | — |
+| `win/win_resource` | `Ocsf.Objects.WinResource` | — |
+| `win/registry_key_activity` | `Ocsf.Events.SystemActivity.WinRegistryKeyActivity` | 201001 |
+| `win/registry_value_activity` | `Ocsf.Events.SystemActivity.WinRegistryValueActivity` | 201002 |
+| `win/windows_resource_activity` | `Ocsf.Events.SystemActivity.WindowsResourceActivity` | 201003 |
+| `win/windows_service_activity` | `Ocsf.Events.SystemActivity.WindowsServiceActivity` | 201004 |
+| `win/registry_key_query` | `Ocsf.Events.Discovery.WinRegistryKeyQuery` | 205004 |
+| `win/registry_value_query` | `Ocsf.Events.Discovery.WinRegistryValueQuery` | 205005 |
+| `win/prefetch_query` | `Ocsf.Events.Discovery.WinPrefetchQuery` | 205019 |
+
+Generated extension types are marked with
+`[OcsfEventClass(..., Extension = "win", ExtensionUid = 2)]` (and `[OcsfObject]` likewise)
+for runtime introspection.
 
 ## Building
 
@@ -152,7 +181,8 @@ dotnet run --project src/Ocsf.Generator -- generate
 dotnet run --project src/Ocsf.Generator -- verify
 ```
 
-`fetch` snapshots the compiled schema export into `schema/`; `generate` rewrites the
+`fetch` snapshots the compiled schema export (`/export/v2/schema`, which always includes all
+profiles and extensions) into `schema/`; `generate` rewrites the
 generated trees deterministically (stable ordering, LF endings) so schema bumps produce
 reviewable diffs; `verify` fails if the checked-in code drifts from the snapshot (enforced in CI).
 

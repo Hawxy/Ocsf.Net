@@ -113,6 +113,13 @@ public static class OcsfEventReader
             7004 => element.Deserialize(OcsfJsonContext.Default.NetworkRemediationActivity),
             8001 => element.Deserialize(OcsfJsonContext.Default.DroneFlightsActivity),
             8002 => element.Deserialize(OcsfJsonContext.Default.AirborneBroadcastActivity),
+            201001 => element.Deserialize(OcsfJsonContext.Default.WinRegistryKeyActivity),
+            201002 => element.Deserialize(OcsfJsonContext.Default.WinRegistryValueActivity),
+            201003 => element.Deserialize(OcsfJsonContext.Default.WindowsResourceActivity),
+            201004 => element.Deserialize(OcsfJsonContext.Default.WindowsServiceActivity),
+            205004 => element.Deserialize(OcsfJsonContext.Default.WinRegistryKeyQuery),
+            205005 => element.Deserialize(OcsfJsonContext.Default.WinRegistryValueQuery),
+            205019 => element.Deserialize(OcsfJsonContext.Default.WinPrefetchQuery),
             _ => null,
         };
     }
@@ -200,6 +207,13 @@ public static class OcsfEventReader
         7004 => typeof(Events.Remediation.NetworkRemediationActivity),
         8001 => typeof(Events.UnmannedSystems.DroneFlightsActivity),
         8002 => typeof(Events.UnmannedSystems.AirborneBroadcastActivity),
+        201001 => typeof(Events.SystemActivity.WinRegistryKeyActivity),
+        201002 => typeof(Events.SystemActivity.WinRegistryValueActivity),
+        201003 => typeof(Events.SystemActivity.WindowsResourceActivity),
+        201004 => typeof(Events.SystemActivity.WindowsServiceActivity),
+        205004 => typeof(Events.Discovery.WinRegistryKeyQuery),
+        205005 => typeof(Events.Discovery.WinRegistryValueQuery),
+        205019 => typeof(Events.Discovery.WinPrefetchQuery),
         _ => null,
     };
 }

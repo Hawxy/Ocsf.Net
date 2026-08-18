@@ -20,8 +20,9 @@ public sealed class OcsfRequirementAttribute : Attribute
     /// (classification attributes such as class_uid), so producers need not set it.</summary>
     public bool InitializedByConstructor { get; set; }
 
-    /// <summary>The profile this attribute belongs to, when profile-sourced. Its requirement
-    /// applies only to events that declare the profile in metadata.profiles.</summary>
+    /// <summary>The profiles this attribute belongs to, when profile-sourced, comma-separated
+    /// when it belongs to more than one. Its requirement applies only to events that declare
+    /// one of the profiles in metadata.profiles.</summary>
     public string? Profile { get; set; }
 }
 
@@ -76,8 +77,15 @@ public sealed class OcsfEventClassAttribute : Attribute
     /// <summary>The category_uid, e.g. 3 for Identity &amp; Access Management.</summary>
     public int CategoryUid { get; }
 
-    /// <summary>The schema name of the class, e.g. "authentication".</summary>
+    /// <summary>The schema name of the class, e.g. "authentication". Extension classes use the
+    /// unprefixed name; the schema key is <c>$"{Extension}/{Name}"</c>.</summary>
     public string Name { get; }
+
+    /// <summary>The owning extension name for extension classes, e.g. "win".</summary>
+    public string? Extension { get; set; }
+
+    /// <summary>The owning extension uid, e.g. 2 for win. Zero for core classes.</summary>
+    public int ExtensionUid { get; set; }
 }
 
 /// <summary>Declares the OCSF object name of a generated object class.</summary>
@@ -86,6 +94,13 @@ public sealed class OcsfObjectAttribute : Attribute
 {
     public OcsfObjectAttribute(string name) => Name = name;
 
-    /// <summary>The schema name of the object, e.g. "user".</summary>
+    /// <summary>The schema name of the object, e.g. "user". Extension objects use the
+    /// unprefixed name; the schema key is <c>$"{Extension}/{Name}"</c>.</summary>
     public string Name { get; }
+
+    /// <summary>The owning extension name for extension objects, e.g. "win".</summary>
+    public string? Extension { get; set; }
+
+    /// <summary>The owning extension uid, e.g. 2 for win. Zero for core objects.</summary>
+    public int ExtensionUid { get; set; }
 }

@@ -187,21 +187,21 @@ public class Evidences : OcsfObject
 
     /// <summary>
     /// Describes details about the registry key that triggered the detection.
-    /// Requirement: recommended.
+    /// Requirement: recommended. Provided by the <c>win</c> extension.
     /// </summary>
     [JsonPropertyName("reg_key")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
-    public JsonElement? RegKey { get; set; }
+    public WinRegKey? RegKey { get; set; }
 
     /// <summary>
     /// Describes details about the registry value that triggered the detection.
-    /// Requirement: recommended.
+    /// Requirement: recommended. Provided by the <c>win</c> extension.
     /// </summary>
     [JsonPropertyName("reg_value")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
-    public JsonElement? RegValue { get; set; }
+    public WinRegValue? RegValue { get; set; }
 
     /// <summary>
     /// Describes details about the cloud resources directly related to activity that triggered the detection. For resources impacted by the detection, use <c>Affected Resources</c> at the top-level of the finding.
@@ -294,12 +294,12 @@ public class Evidences : OcsfObject
 
     /// <summary>
     /// Describes details about the Windows service that triggered the detection.
-    /// Requirement: recommended.
+    /// Requirement: recommended. Provided by the <c>win</c> extension.
     /// </summary>
     [JsonPropertyName("win_service")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
-    public JsonElement? WinService { get; set; }
+    public WinService? WinService { get; set; }
 
     /// <summary>
     /// Sets <c>verdict_id</c> and the <c>verdict</c> sibling label.

@@ -10,9 +10,11 @@
         <Copyright>JT 2026</Copyright>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageIcon>logo.png</PackageIcon>
         <PackageTags>ocsf;security;schema;telemetry;cybersecurity;$(PackageTags)</PackageTags>
     </PropertyGroup>
     <ItemGroup>
         <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
+        <None Include="..\logo.png" Pack="true" PackagePath="\" Visible="false"/>
     </ItemGroup>
 </Project>

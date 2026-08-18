@@ -259,7 +259,7 @@ public sealed class OcsfValidator
             // Attributes of profiles the event did not declare in metadata.profiles
             // are outside the effective schema and count as unknown.
             if (!attributesByName.TryGetValue(name, out var spec)
-                || (spec.Profile is not null && !declaredProfiles.Contains(spec.Profile)))
+                || IsUndeclaredProfileAttribute(spec, declaredProfiles))
             {
                 Add(findings, Rules.AttributeUnknown, FindingSeverity.Error,
                     $"The attribute {name} is not defined here in the schema.", attrPath);
@@ -281,7 +281,7 @@ public sealed class OcsfValidator
 
         foreach (var attr in attributes)
         {
-            if (attr.Profile is not null && !declaredProfiles.Contains(attr.Profile))
+            if (IsUndeclaredProfileAttribute(attr, declaredProfiles))
                 continue;
             if (present is not null && present.Contains(attr.Name))
                 continue;
@@ -309,15 +309,29 @@ public sealed class OcsfValidator
 
             if (constraint.Kind == ConstraintKind.AtLeastOne && presentCount == 0)
             {
-                Add(findings, Rules.ConstraintAtLeastOneFailed, FindingSeverity.Error,
+                Add(findings, Rules.ConstraintFailed, FindingSeverity.Error,
                     $"At least one of [{string.Join(", ", constraint.Attributes)}] must be present.", parentPath);
             }
             else if (constraint.Kind == ConstraintKind.JustOne && presentCount != 1)
             {
-                Add(findings, Rules.ConstraintJustOneFailed, FindingSeverity.Error,
+                Add(findings, Rules.ConstraintFailed, FindingSeverity.Error,
                     $"Exactly one of [{string.Join(", ", constraint.Attributes)}] must be present, found {presentCount}.", parentPath);
             }
         }
+    }
+
+    /// <summary>A profile-sourced attribute is in the effective schema only when the event
+    /// declares at least one of its profiles (process.egid belongs to both OS user profiles).</summary>
+    private static bool IsUndeclaredProfileAttribute(AttributeSpec spec, HashSet<string> declaredProfiles)
+    {
+        if (spec.Profiles is not { Count: > 0 } profiles)
+            return false;
+        foreach (var profile in profiles)
+        {
+            if (declaredProfiles.Contains(profile))
+                return false;
+        }
+        return true;
     }
 
     private void ValidateValue(
@@ -448,7 +462,7 @@ public sealed class OcsfValidator
 
         if (!spec.EnumMembers.ContainsKey(value))
         {
-            Add(findings, Rules.EnumValueUnknown, FindingSeverity.Warning,
+            Add(findings, Rules.EnumValueUnknown, FindingSeverity.Error,
                 $"The value {value} is not defined for the enum attribute {spec.Name}.", path);
         }
         else if (spec.DeprecatedEnumValues is { } deprecated && deprecated.Contains(value))
@@ -466,25 +480,18 @@ public sealed class OcsfValidator
         if (value.ValueKind != JsonValueKind.Number || !value.TryGetInt64(out var code))
             return;
 
-        var siblingPresent = parent.TryGetProperty(spec.Sibling, out var sibling)
-            && sibling.ValueKind == JsonValueKind.String;
-
+        // "Other" (99) carries a source-specific label, so any sibling value (or none) is
+        // accepted, matching the server. The OCSF002 analyzer covers the authoring-time
+        // requirement that producers supply a label with 99.
         if (code == 99)
-        {
-            // "Other" requires the source-specific label in the sibling attribute.
-            if (!siblingPresent)
-            {
-                Add(findings, Rules.EnumSiblingMissing, FindingSeverity.Error,
-                    $"The attribute {spec.Name} is 99 (Other) but the sibling attribute {spec.Sibling} is missing.", path);
-            }
             return;
-        }
 
-        if (siblingPresent
+        if (parent.TryGetProperty(spec.Sibling, out var sibling)
+            && sibling.ValueKind == JsonValueKind.String
             && spec.EnumMembers.TryGetValue(code, out var caption)
             && !sibling.ValueEquals(caption))
         {
-            Add(findings, Rules.EnumSiblingMismatch, FindingSeverity.Warning,
+            Add(findings, Rules.EnumSiblingIncorrect, FindingSeverity.Warning,
                 $"The sibling attribute {spec.Sibling} value '{sibling.GetString()}' does not match the enum caption '{caption}'.", path);
         }
     }

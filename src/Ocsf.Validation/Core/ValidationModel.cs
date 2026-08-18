@@ -24,7 +24,7 @@ public sealed record AttributeSpec(
     string? ObjectType,
     bool IsArray,
     OcsfRequirement Requirement,
-    string? Profile,
+    IReadOnlyList<string>? Profiles,
     string? Sibling,
     IReadOnlyDictionary<long, string>? EnumMembers,
     IReadOnlyCollection<long>? DeprecatedEnumValues,
@@ -137,16 +137,16 @@ public static class Rules
     public const string AttributeValueNotInTypeValues = "attribute_value_not_in_type_values";
     public const string AttributeValueRegexMismatch = "attribute_value_regex_not_matched";
     public const string EnumValueUnknown = "attribute_enum_value_unknown";
-    public const string EnumSiblingMissing = "attribute_enum_sibling_missing";
-    public const string EnumSiblingMismatch = "attribute_enum_sibling_mismatch";
+    public const string EnumSiblingIncorrect = "attribute_enum_sibling_incorrect";
     public const string EnumValueDeprecated = "attribute_enum_value_deprecated";
     public const string AttributeDeprecated = "attribute_deprecated";
     public const string ClassDeprecated = "class_deprecated";
     public const string ObjectDeprecated = "object_deprecated";
     public const string ClassUidUnknown = "class_uid_unknown";
     public const string TypeUidMismatch = "type_uid_mismatch";
-    public const string ConstraintAtLeastOneFailed = "constraint_at_least_one_failed";
-    public const string ConstraintJustOneFailed = "constraint_just_one_failed";
+    /// <summary>The server reports every constraint kind under one rule id;
+    /// the finding message names the failed kind.</summary>
+    public const string ConstraintFailed = "constraint_failed";
     public const string ProfileUnknown = "profile_unknown";
     public const string VersionIncompatible = "version_incompatible";
     public const string VersionOlderThanSchema = "version_older_than_schema";

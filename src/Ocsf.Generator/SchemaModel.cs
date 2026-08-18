@@ -3,26 +3,60 @@ using System.Text.Json.Serialization;
 
 namespace Ocsf.Generator;
 
-/// <summary>Root of the compiled schema export produced by schema.ocsf.io/export/schema.</summary>
+/// <summary>Root of the compiled schema export produced by schema.ocsf.io/export/v2/schema.</summary>
 public sealed class ExportSchema
 {
     [JsonPropertyName("version")]
     public required string Version { get; init; }
 
+    /// <summary>All classes, including base_event (uid 0) and extension classes keyed "ext/name".</summary>
     [JsonPropertyName("classes")]
     public required Dictionary<string, SchemaClass> Classes { get; init; }
 
+    /// <summary>All objects, including extension objects keyed "ext/name".</summary>
     [JsonPropertyName("objects")]
     public required Dictionary<string, SchemaObject> Objects { get; init; }
 
+    [JsonPropertyName("dictionary")]
+    public required SchemaDictionary Dictionary { get; init; }
+
+    /// <summary>Schema extensions compiled into the export, keyed by extension name (linux, win, macos).</summary>
+    [JsonPropertyName("extensions")]
+    public Dictionary<string, SchemaExtension>? Extensions { get; init; }
+
+    /// <summary>Scalar type definitions (string_t, timestamp_t, ...).</summary>
+    [JsonIgnore]
+    public Dictionary<string, SchemaType> Types => Dictionary.Types.Attributes;
+
+    [JsonIgnore]
+    public SchemaClass BaseEvent => Classes["base_event"];
+}
+
+public sealed class SchemaDictionary
+{
     [JsonPropertyName("types")]
-    public required Dictionary<string, SchemaType> Types { get; init; }
+    public required SchemaTypeCollection Types { get; init; }
+}
 
-    [JsonPropertyName("base_event")]
-    public required SchemaClass BaseEvent { get; init; }
+public sealed class SchemaTypeCollection
+{
+    [JsonPropertyName("attributes")]
+    public required Dictionary<string, SchemaType> Attributes { get; init; }
+}
 
-    [JsonPropertyName("dictionary_attributes")]
-    public Dictionary<string, SchemaAttribute>? DictionaryAttributes { get; init; }
+public sealed class SchemaExtension
+{
+    [JsonPropertyName("name")]
+    public required string Name { get; init; }
+
+    [JsonPropertyName("uid")]
+    public int Uid { get; init; }
+
+    [JsonPropertyName("caption")]
+    public string? Caption { get; init; }
+
+    [JsonPropertyName("version")]
+    public string? Version { get; init; }
 }
 
 public sealed class SchemaClass
@@ -61,6 +95,13 @@ public sealed class SchemaClass
     [JsonPropertyName("profiles")]
     public List<string>? Profiles { get; init; }
 
+    /// <summary>Owning extension name for extension classes (e.g. "win").</summary>
+    [JsonPropertyName("extension")]
+    public string? Extension { get; init; }
+
+    [JsonPropertyName("extension_id")]
+    public int? ExtensionId { get; init; }
+
     [JsonPropertyName("@deprecated")]
     public SchemaDeprecation? Deprecated { get; init; }
 }
@@ -91,6 +132,13 @@ public sealed class SchemaObject
 
     [JsonPropertyName("profiles")]
     public List<string>? Profiles { get; init; }
+
+    /// <summary>Owning extension name for extension objects (e.g. "win").</summary>
+    [JsonPropertyName("extension")]
+    public string? Extension { get; init; }
+
+    [JsonPropertyName("extension_id")]
+    public int? ExtensionId { get; init; }
 
     [JsonPropertyName("@deprecated")]
     public SchemaDeprecation? Deprecated { get; init; }
@@ -129,9 +177,17 @@ public sealed class SchemaAttribute
     [JsonPropertyName("sibling")]
     public string? Sibling { get; init; }
 
-    /// <summary>Profile that mixed this attribute in, when not part of the base definition.</summary>
-    [JsonPropertyName("profile")]
-    public string? Profile { get; init; }
+    /// <summary>Profiles that mix this attribute in, when not part of the base definition.
+    /// Usually a single profile; process.egid/euid belong to both OS user profiles.</summary>
+    [JsonPropertyName("profiles")]
+    public List<string>? Profiles { get; init; }
+
+    /// <summary>Extension that patched this attribute onto a core entity (e.g. "win").</summary>
+    [JsonPropertyName("extension")]
+    public string? Extension { get; init; }
+
+    [JsonPropertyName("extension_id")]
+    public int? ExtensionId { get; init; }
 
     [JsonPropertyName("is_array")]
     public bool IsArray { get; init; }

@@ -163,4 +163,47 @@ public class SerializationTests
 
         await Assert.That(evt!.StatusId).IsEqualTo(AuthenticationStatusId.Success);
     }
+
+    [Test]
+    public async Task WinExtensionEvent_HasOffsetClassificationDefaults()
+    {
+        var evt = new Events.SystemActivity.WindowsServiceActivity();
+
+        await Assert.That(evt.ClassUid).IsEqualTo(201004);
+        await Assert.That(evt.CategoryUid).IsEqualTo(1);
+        await Assert.That(evt.ClassName).IsEqualTo("Windows Service Activity");
+
+        evt.SetActivity(Events.SystemActivity.WindowsServiceActivityActivityId.Create);
+        await Assert.That(evt.TypeUid).IsEqualTo(20100401L);
+        await Assert.That(evt.TypeName).IsEqualTo("Windows Service Activity: Create");
+    }
+
+    [Test]
+    public async Task EventReader_DispatchesWinExtensionClassUids()
+    {
+        var evt = OcsfEventReader.Deserialize(
+            """{"class_uid":201004,"win_service":{"name":"wuauserv","service_type_id":1}}""");
+
+        var wsa = (Events.SystemActivity.WindowsServiceActivity)evt!;
+        await Assert.That(wsa.WinService!.Name).IsEqualTo("wuauserv");
+        await Assert.That(wsa.WinService.ServiceTypeId).IsEqualTo(Objects.WinServiceServiceTypeId.KernelDriver);
+
+        await Assert.That(OcsfEventReader.GetEventType(201001))
+            .IsEqualTo(typeof(Events.SystemActivity.WinRegistryKeyActivity));
+        await Assert.That(OcsfEventReader.GetEventType(201003))
+            .IsEqualTo(typeof(Events.SystemActivity.WindowsResourceActivity));
+    }
+
+    [Test]
+    public async Task WinExtensionObject_RoundTripsThroughTypedCoreAttribute()
+    {
+        var json = """{"class_uid":1007,"actor":{"process":{"pid":4}},"process":{"pid":8,"hosted_services":[{"name":"svc-a"},{"name":"svc-b"}]}}""";
+
+        var evt = (Events.SystemActivity.ProcessActivity)OcsfEventReader.Deserialize(json)!;
+        await Assert.That(evt.Process!.HostedServices!.Select(s => s.Name!).ToList())
+            .IsEquivalentTo(["svc-a", "svc-b"]);
+
+        var node = JsonNode.Parse(OcsfJson.Serialize(evt))!;
+        await Assert.That(node["process"]!["hosted_services"]![1]!["name"]!.GetValue<string>()).IsEqualTo("svc-b");
+    }
 }

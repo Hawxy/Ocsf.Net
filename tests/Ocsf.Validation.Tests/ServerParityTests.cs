@@ -3,19 +3,22 @@ using System.Text.Json;
 namespace Ocsf.Validation.Tests;
 
 /// <summary>
-/// Compares this validator's findings against a captured response from the schema server's
-/// POST /api/v2/validate endpoint for the same event (Fixtures/authentication.server-validation.json).
+/// Compares this validator's findings against captured responses from the schema server's
+/// POST /api/v2/validate endpoint for the same events (Fixtures/*.server-validation.json).
 /// </summary>
 public class ServerParityTests
 {
+    public static IEnumerable<string> FixtureNames() => ["authentication", "windows_service_activity"];
+
     private static string Fixture(string name) =>
         Path.Combine(AppContext.BaseDirectory, "Fixtures", name);
 
     [Test]
-    public async Task AuthenticationSample_MatchesServerFindingCounts()
+    [MethodDataSource(nameof(FixtureNames))]
+    public async Task Sample_MatchesServerFindingCounts(string fixture)
     {
-        using var sample = JsonDocument.Parse(await File.ReadAllTextAsync(Fixture("authentication.sample.json")));
-        using var server = JsonDocument.Parse(await File.ReadAllTextAsync(Fixture("authentication.server-validation.json")));
+        using var sample = JsonDocument.Parse(await File.ReadAllTextAsync(Fixture($"{fixture}.sample.json")));
+        using var server = JsonDocument.Parse(await File.ReadAllTextAsync(Fixture($"{fixture}.server-validation.json")));
 
         var result = new OcsfValidator().Validate(sample.RootElement);
 
@@ -27,10 +30,11 @@ public class ServerParityTests
     }
 
     [Test]
-    public async Task AuthenticationSample_MatchesServerRuleDistribution()
+    [MethodDataSource(nameof(FixtureNames))]
+    public async Task Sample_MatchesServerRuleDistribution(string fixture)
     {
-        using var sample = JsonDocument.Parse(await File.ReadAllTextAsync(Fixture("authentication.sample.json")));
-        using var server = JsonDocument.Parse(await File.ReadAllTextAsync(Fixture("authentication.server-validation.json")));
+        using var sample = JsonDocument.Parse(await File.ReadAllTextAsync(Fixture($"{fixture}.sample.json")));
+        using var server = JsonDocument.Parse(await File.ReadAllTextAsync(Fixture($"{fixture}.server-validation.json")));
 
         var result = new OcsfValidator().Validate(sample.RootElement);
 

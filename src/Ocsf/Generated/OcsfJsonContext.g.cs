@@ -97,6 +97,13 @@ namespace Ocsf;
 [JsonSerializable(typeof(Events.Findings.VulnerabilityFinding))]
 [JsonSerializable(typeof(Events.Application.WebResourceAccessActivity))]
 [JsonSerializable(typeof(Events.Application.WebResourcesActivity))]
+[JsonSerializable(typeof(Events.Discovery.WinPrefetchQuery))]
+[JsonSerializable(typeof(Events.SystemActivity.WinRegistryKeyActivity))]
+[JsonSerializable(typeof(Events.Discovery.WinRegistryKeyQuery))]
+[JsonSerializable(typeof(Events.SystemActivity.WinRegistryValueActivity))]
+[JsonSerializable(typeof(Events.Discovery.WinRegistryValueQuery))]
+[JsonSerializable(typeof(Events.SystemActivity.WindowsResourceActivity))]
+[JsonSerializable(typeof(Events.SystemActivity.WindowsServiceActivity))]
 [JsonSerializable(typeof(Objects.AccessAnalysisResult))]
 [JsonSerializable(typeof(Objects.Account))]
 [JsonSerializable(typeof(Objects.Actor))]
@@ -287,6 +294,10 @@ namespace Ocsf;
 [JsonSerializable(typeof(Objects.Vulnerability))]
 [JsonSerializable(typeof(Objects.WebResource))]
 [JsonSerializable(typeof(Objects.Whois))]
+[JsonSerializable(typeof(Objects.WinRegKey))]
+[JsonSerializable(typeof(Objects.WinRegValue))]
+[JsonSerializable(typeof(Objects.WinResource))]
+[JsonSerializable(typeof(Objects.WinService))]
 public partial class OcsfJsonContext : JsonSerializerContext
 {
 }

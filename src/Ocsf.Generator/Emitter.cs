@@ -36,10 +36,11 @@ public static class Emitter
     {
         var mapper = new TypeMapper(schema);
         var outputs = new List<(string, string)>();
+        GuardTypeNameCollisions(schema);
 
         foreach (var (name, obj) in schema.Objects.OrderBy(o => o.Key, StringComparer.Ordinal))
         {
-            var pascal = NameMapper.PascalCase(name);
+            var pascal = ObjectTypeName(obj);
             outputs.Add(($"src/Ocsf/Generated/Objects/{pascal}.g.cs", EmitObject(schema, mapper, name, obj)));
         }
 
@@ -47,7 +48,7 @@ public static class Emitter
 
         foreach (var (name, cls) in schema.Classes.OrderBy(c => c.Key, StringComparer.Ordinal))
         {
-            var pascal = NameMapper.PascalCase(name);
+            var pascal = ClassTypeName(cls);
             var category = CategoryNamespace(cls.Category);
             outputs.Add(($"src/Ocsf/Generated/Events/{category}/{pascal}.g.cs", EmitEventClass(schema, mapper, name, cls)));
         }
@@ -61,6 +62,37 @@ public static class Emitter
 
         return outputs;
     }
+
+    /// <summary>CLR type name of an object (extension-prefixed for extension objects).</summary>
+    private static string ObjectTypeName(SchemaObject obj) =>
+        NameMapper.ExtensionTypeName(obj.Extension, obj.Name);
+
+    /// <summary>CLR type name of an event class (extension-prefixed for extension classes).</summary>
+    private static string ClassTypeName(SchemaClass cls) =>
+        NameMapper.ExtensionTypeName(cls.Extension, cls.Name);
+
+    /// <summary>All emitted types share the Ocsf/Ocsf.Objects namespaces and surface as
+    /// same-named properties on OcsfJsonContext.Default, so CLR type names must be unique.</summary>
+    private static void GuardTypeNameCollisions(ExportSchema schema)
+    {
+        var seen = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["OcsfEvent"] = "(reserved)",
+            ["OcsfObject"] = "(reserved)",
+            ["OcsfJsonContext"] = "(reserved)",
+            ["OcsfEventReader"] = "(reserved)",
+        };
+        foreach (var (key, typeName) in schema.Objects.Select(o => (o.Key, ObjectTypeName(o.Value)))
+                     .Concat(schema.Classes.Select(c => (c.Key, ClassTypeName(c.Value)))))
+        {
+            if (!seen.TryAdd(typeName, key))
+                throw new InvalidOperationException(
+                    $"CLR type name '{typeName}' is produced by both '{seen[typeName]}' and '{key}'.");
+        }
+    }
+
+    /// <summary>Registry factory method suffix for an entity key ("win/reg_key" is not a valid identifier).</summary>
+    private static string RegistryMethodSuffix(string key) => key.Replace('/', '_');
 
     private static void WriteRegistryFileHeader(CodeWriter w, ExportSchema schema)
     {
@@ -114,8 +146,7 @@ public static class Emitter
                      .Concat(schema.Objects.Values.SelectMany(o => o.Attributes.Values))
                      .Concat(schema.BaseEvent.Attributes.Values))
         {
-            if (attr.Profile is { Length: > 0 })
-                profiles.Add(attr.Profile);
+            profiles.UnionWith(attr.Profiles ?? []);
         }
 
         w.WriteLine("private static IReadOnlyCollection<string> BuildProfiles() => new HashSet<string>(StringComparer.Ordinal)");
@@ -143,7 +174,7 @@ public static class Emitter
         w.Indent();
         w.WriteLine($"var objects = new Dictionary<string, ObjectSpec>({schema.Objects.Count}, StringComparer.Ordinal);");
         foreach (var name in schema.Objects.Keys.OrderBy(k => k, StringComparer.Ordinal))
-            w.WriteLine($"objects[\"{name}\"] = Object_{name}();");
+            w.WriteLine($"objects[\"{name}\"] = Object_{RegistryMethodSuffix(name)}();");
         w.WriteLine("return objects;");
         w.Dedent();
         w.WriteLine("}");
@@ -151,9 +182,9 @@ public static class Emitter
         foreach (var (name, obj) in schema.Objects.OrderBy(o => o.Key, StringComparer.Ordinal))
         {
             w.WriteLine();
-            w.WriteLine($"private static ObjectSpec Object_{name}() => new(");
+            w.WriteLine($"private static ObjectSpec Object_{RegistryMethodSuffix(name)}() => new(");
             w.Indent();
-            w.WriteLine($"\"{name}\",");
+            w.WriteLine($"\"{obj.Name}\",");
             WriteAttributeSpecs(w, mapper, obj.Attributes);
             WriteConstraintSpecs(w, obj.Constraints);
             w.WriteLine($"{DeprecatedSinceLiteral(obj.Deprecated)});");
@@ -178,7 +209,7 @@ public static class Emitter
         w.Indent();
         w.WriteLine($"var classes = new Dictionary<int, ClassSpec>({schema.Classes.Count});");
         foreach (var (name, cls) in schema.Classes.OrderBy(c => c.Value.Uid))
-            w.WriteLine($"classes[{cls.Uid}] = Class_{name}();");
+            w.WriteLine($"classes[{cls.Uid}] = Class_{RegistryMethodSuffix(name)}();");
         w.WriteLine("return classes;");
         w.Dedent();
         w.WriteLine("}");
@@ -186,9 +217,9 @@ public static class Emitter
         foreach (var (name, cls) in schema.Classes.OrderBy(c => c.Key, StringComparer.Ordinal))
         {
             w.WriteLine();
-            w.WriteLine($"private static ClassSpec Class_{name}() => new(");
+            w.WriteLine($"private static ClassSpec Class_{RegistryMethodSuffix(name)}() => new(");
             w.Indent();
-            w.WriteLine($"\"{name}\", {DocFormatter.CSharpStringLiteral(cls.Caption ?? name)}, {cls.Uid}, {cls.CategoryUid},");
+            w.WriteLine($"\"{cls.Name}\", {DocFormatter.CSharpStringLiteral(cls.Caption ?? cls.Name)}, {cls.Uid}, {cls.CategoryUid},");
             WriteAttributeSpecs(w, mapper, cls.Attributes);
             WriteConstraintSpecs(w, cls.Constraints);
             w.WriteLine($"{DeprecatedSinceLiteral(cls.Deprecated)});");
@@ -212,7 +243,9 @@ public static class Emitter
             var objectTypeLiteral = objectType is null ? "null" : $"\"{objectType}\"";
             var isArray = attr.IsArray ? "true" : "false";
             var requirement = "OcsfRequirement." + MapRequirement(attr.Requirement);
-            var profile = attr.Profile is { Length: > 0 } ? $"\"{attr.Profile}\"" : "null";
+            var profile = attr.Profiles is { Count: > 0 }
+                ? "new[] { " + string.Join(", ", attr.Profiles.Select(p => $"\"{p}\"")) + " }"
+                : "null";
             var sibling = attr.Sibling is { Length: > 0 } ? $"\"{attr.Sibling}\"" : "null";
 
             var enumMembers = "null";
@@ -269,7 +302,7 @@ public static class Emitter
     {
         if (attr.Type == "object_t")
         {
-            return attr.ObjectType is null or "object" || attr.ObjectType.Contains('/')
+            return attr.ObjectType is null or "object"
                 ? ("Json", null)
                 : ("Object", attr.ObjectType);
         }
@@ -295,7 +328,7 @@ public static class Emitter
 
     /// <summary>Fully qualified C# type name of an event class.</summary>
     private static string EventTypeName(SchemaClass cls) =>
-        $"Events.{CategoryNamespace(cls.Category)}.{NameMapper.PascalCase(cls.Name)}";
+        $"Events.{CategoryNamespace(cls.Category)}.{ClassTypeName(cls)}";
 
     private static string EmitJsonContext(ExportSchema schema)
     {
@@ -317,8 +350,8 @@ public static class Emitter
 
         foreach (var (_, cls) in schema.Classes.OrderBy(c => c.Key, StringComparer.Ordinal))
             w.WriteLine($"[JsonSerializable(typeof({EventTypeName(cls)}))]");
-        foreach (var name in schema.Objects.Keys.OrderBy(k => k, StringComparer.Ordinal))
-            w.WriteLine($"[JsonSerializable(typeof(Objects.{NameMapper.PascalCase(name)}))]");
+        foreach (var (_, obj) in schema.Objects.OrderBy(o => o.Key, StringComparer.Ordinal))
+            w.WriteLine($"[JsonSerializable(typeof(Objects.{ObjectTypeName(obj)}))]");
 
         w.WriteLine("public partial class OcsfJsonContext : JsonSerializerContext");
         w.WriteLine("{");
@@ -369,7 +402,7 @@ public static class Emitter
         w.WriteLine("{");
         w.Indent();
         foreach (var cls in byUid)
-            w.WriteLine($"{cls.Uid} => element.Deserialize(OcsfJsonContext.Default.{NameMapper.PascalCase(cls.Name)}),");
+            w.WriteLine($"{cls.Uid} => element.Deserialize(OcsfJsonContext.Default.{ClassTypeName(cls)}),");
         w.WriteLine("_ => null,");
         w.Dedent();
         w.WriteLine("};");
@@ -404,16 +437,17 @@ public static class Emitter
     private static string EmitObject(ExportSchema schema, TypeMapper mapper, string name, SchemaObject obj)
     {
         var w = new CodeWriter();
-        var className = NameMapper.PascalCase(name);
+        var className = ObjectTypeName(obj);
         WriteFileHeader(w, schema);
         w.WriteLine("namespace Ocsf.Objects;");
         w.WriteLine();
 
         var enums = new List<EnumDecl>();
 
-        w.WriteDocSummary(BuildTypeDoc(obj.Caption, obj.Description, $"OCSF object <c>{name}</c>."));
+        w.WriteDocSummary(BuildTypeDoc(obj.Caption, obj.Description, $"OCSF object <c>{name}</c>.")
+            + ExtensionDocNote(schema, obj.Extension));
         WriteObsolete(w, obj.Deprecated);
-        w.WriteLine($"[OcsfObject(\"{name}\")]");
+        w.WriteLine($"[OcsfObject(\"{obj.Name}\"{ExtensionAttributeArgs(schema, obj.Extension)})]");
         WriteConstraintAttributes(w, obj.Constraints);
         w.WriteLine($"public class {className} : OcsfObject");
         w.WriteLine("{");
@@ -460,16 +494,17 @@ public static class Emitter
     private static string EmitEventClass(ExportSchema schema, TypeMapper mapper, string name, SchemaClass cls)
     {
         var w = new CodeWriter();
-        var className = NameMapper.PascalCase(name);
+        var className = ClassTypeName(cls);
         WriteFileHeader(w, schema);
         w.WriteLine($"namespace Ocsf.Events.{CategoryNamespace(cls.Category)};");
         w.WriteLine();
 
         var enums = new List<EnumDecl>();
 
-        w.WriteDocSummary(BuildTypeDoc(cls.Caption, cls.Description, $"OCSF event class <c>{name}</c>."));
+        w.WriteDocSummary(BuildTypeDoc(cls.Caption, cls.Description, $"OCSF event class <c>{name}</c>.")
+            + ExtensionDocNote(schema, cls.Extension));
         WriteObsolete(w, cls.Deprecated);
-        w.WriteLine($"[OcsfEventClass({cls.Uid}, {cls.CategoryUid}, \"{name}\")]");
+        w.WriteLine($"[OcsfEventClass({cls.Uid}, {cls.CategoryUid}, \"{cls.Name}\"{ExtensionAttributeArgs(schema, cls.Extension)})]");
         WriteConstraintAttributes(w, cls.Constraints);
         w.WriteLine($"public class {className} : OcsfEvent");
         w.WriteLine("{");
@@ -545,6 +580,26 @@ public static class Emitter
         return caption is { Length: > 0 } ? $"{DocFormatter.ToXmlDocText(caption)}.\n{text}" : text;
     }
 
+    /// <summary>Doc sentence naming the owning extension, e.g. "Part of the win (Windows) extension."</summary>
+    private static string ExtensionDocNote(ExportSchema schema, string? extension)
+    {
+        if (extension is not { Length: > 0 })
+            return "";
+        var caption = schema.Extensions?.GetValueOrDefault(extension)?.Caption;
+        var display = caption is { Length: > 0 } && caption != extension ? $" ({caption})" : "";
+        return $"\nPart of the <c>{extension}</c>{display} extension.";
+    }
+
+    /// <summary>Named arguments identifying the owning extension on [OcsfObject]/[OcsfEventClass].</summary>
+    private static string ExtensionAttributeArgs(ExportSchema schema, string? extension)
+    {
+        if (extension is not { Length: > 0 })
+            return "";
+        var uid = schema.Extensions?.GetValueOrDefault(extension)?.Uid
+            ?? throw new InvalidOperationException($"Extension '{extension}' is not declared in the export.");
+        return $", Extension = \"{extension}\", ExtensionUid = {uid}";
+    }
+
     internal static void WriteObsolete(CodeWriter w, SchemaDeprecation? deprecation)
     {
         if (deprecation is null)
@@ -596,8 +651,8 @@ public static class Emitter
             var requirementArgs = "OcsfRequirement." + MapRequirement(attr.Requirement);
             if (target == EmitTarget.BaseEvent && CtorInitializedAttrs.Contains(attrName))
                 requirementArgs += ", InitializedByConstructor = true";
-            if (attr.Profile is { Length: > 0 })
-                requirementArgs += $", Profile = \"{attr.Profile}\"";
+            if (attr.Profiles is { Count: > 0 })
+                requirementArgs += $", Profile = \"{string.Join(',', attr.Profiles)}\"";
             w.WriteLine($"[OcsfRequirement({requirementArgs})]");
             var enumDecl = enums.Find(e => e.Name == baseType);
             if (enumDecl?.Sibling is { } declSibling
@@ -653,14 +708,13 @@ public static class Emitter
 
         if (ocsfType == "object_t")
         {
-            // References to objects missing from the export (extension objects like
-            // win/win_service reachable from core attributes) stay untyped.
-            if (attr.ObjectType is null or "object" || attr.ObjectType.Contains('/'))
+            // Generic object references have no schema shape and stay untyped.
+            if (attr.ObjectType is null or "object")
                 return "JsonElement";
-            if (!schema.Objects.ContainsKey(attr.ObjectType))
+            if (!schema.Objects.TryGetValue(attr.ObjectType, out var refObj))
                 throw new InvalidOperationException(
                     $"Attribute '{ownerPascal}.{attrName}' references unknown object '{attr.ObjectType}'.");
-            return objectPrefix + NameMapper.PascalCase(attr.ObjectType);
+            return objectPrefix + ObjectTypeName(refObj);
         }
 
         // Integer-backed enums become C# enums; string-backed enums stay strings.
@@ -822,8 +876,12 @@ public static class Emitter
         var notes = new List<string>();
         if (attr.Requirement is "required" or "recommended")
             notes.Add($"Requirement: {attr.Requirement}.");
-        if (attr.Profile is { Length: > 0 })
-            notes.Add($"Part of the <c>{attr.Profile}</c> profile.");
+        if (attr.Profiles is { Count: > 0 })
+            notes.Add(attr.Profiles.Count == 1
+                ? $"Part of the <c>{attr.Profiles[0]}</c> profile."
+                : $"Part of the {string.Join(", ", attr.Profiles.Select(p => $"<c>{p}</c>"))} profiles.");
+        if (attr.Extension is { Length: > 0 })
+            notes.Add($"Provided by the <c>{attr.Extension}</c> extension.");
         if (attr.Sibling is { Length: > 0 } && attr.Enum is { Count: > 0 })
             notes.Add($"Sibling label attribute: <c>{attr.Sibling}</c>.");
 

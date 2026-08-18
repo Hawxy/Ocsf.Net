@@ -61,5 +61,39 @@ if (invalid.IsValid)
     return 1;
 }
 
+// Extension classes: offset uid dispatch, typed win objects, and validation.
+var winProduced = new Ocsf.Events.SystemActivity.WindowsServiceActivity
+{
+    Time = OcsfTimestamp.Now,
+    SeverityId = Ocsf.Events.SystemActivity.WindowsServiceActivitySeverityId.Informational,
+    Metadata = new Metadata
+    {
+        Version = "1.9.0",
+        Product = new Product { Name = "AotSmoke", VendorName = "ocsf.net" },
+    },
+    Device = new Device { Hostname = "host-1", TypeId = DeviceTypeId.Virtual },
+    Actor = new Actor { Process = new Process { Pid = 4 } },
+    WinService = new WinService { Name = "wuauserv", ServiceTypeId = WinServiceServiceTypeId.OwnProcess },
+};
+winProduced.SetActivity(Ocsf.Events.SystemActivity.WindowsServiceActivityActivityId.Start);
+
+var winJson = OcsfJson.Serialize(winProduced);
+if (OcsfEventReader.Deserialize(winJson) is not Ocsf.Events.SystemActivity.WindowsServiceActivity winConsumed
+    || winConsumed.ClassUid != 201004
+    || winConsumed.WinService?.Name != "wuauserv")
+{
+    Console.Error.WriteLine("FAIL: win extension round-trip");
+    return 1;
+}
+
+var winValidation = new Ocsf.Validation.OcsfValidator().Validate(winProduced);
+if (!winValidation.IsValid)
+{
+    Console.Error.WriteLine("FAIL: win extension event should validate clean:");
+    foreach (var finding in winValidation.Errors)
+        Console.Error.WriteLine($"  {finding.RuleId} {finding.AttributePath}: {finding.Message}");
+    return 1;
+}
+
 Console.WriteLine("AOT smoke passed.");
 return 0;

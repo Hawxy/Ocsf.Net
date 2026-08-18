@@ -126,21 +126,21 @@ public class QueryEvidence : OcsfObject
 
     /// <summary>
     /// The registry key object describes a Windows registry key.
-    /// Requirement: recommended.
+    /// Requirement: recommended. Provided by the <c>win</c> extension.
     /// </summary>
     [JsonPropertyName("reg_key")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
-    public JsonElement? RegKey { get; set; }
+    public WinRegKey? RegKey { get; set; }
 
     /// <summary>
     /// The registry value object describes a Windows registry value.
-    /// Requirement: recommended.
+    /// Requirement: recommended. Provided by the <c>win</c> extension.
     /// </summary>
     [JsonPropertyName("reg_value")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
-    public JsonElement? RegValue { get; set; }
+    public WinRegValue? RegValue { get; set; }
 
     /// <summary>
     /// The service that pertains to the event when query_type_id indicates a Service query.

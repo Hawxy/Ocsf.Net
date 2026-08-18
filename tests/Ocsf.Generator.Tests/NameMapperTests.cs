@@ -35,6 +35,25 @@ public class NameMapperTests
     }
 
     [Test]
+    [Arguments(null, "user", "User")]
+    [Arguments("win", "reg_key", "WinRegKey")]
+    [Arguments("win", "reg_value", "WinRegValue")]
+    [Arguments("win", "win_service", "WinService")]
+    [Arguments("win", "win_resource", "WinResource")]
+    [Arguments("win", "registry_key_activity", "WinRegistryKeyActivity")]
+    [Arguments("win", "registry_value_activity", "WinRegistryValueActivity")]
+    [Arguments("win", "registry_key_query", "WinRegistryKeyQuery")]
+    [Arguments("win", "registry_value_query", "WinRegistryValueQuery")]
+    [Arguments("win", "prefetch_query", "WinPrefetchQuery")]
+    [Arguments("win", "windows_service_activity", "WindowsServiceActivity")]
+    [Arguments("win", "windows_resource_activity", "WindowsResourceActivity")]
+    [Arguments("linux", "kernel_module", "LinuxKernelModule")]
+    public async Task ExtensionTypeName_PrefixesWithoutStutter(string? extension, string name, string expected)
+    {
+        await Assert.That(NameMapper.ExtensionTypeName(extension, name)).IsEqualTo(expected);
+    }
+
+    [Test]
     public async Task Identifier_EscapesKeywords()
     {
         await Assert.That(NameMapper.Identifier("class")).IsEqualTo("@class");

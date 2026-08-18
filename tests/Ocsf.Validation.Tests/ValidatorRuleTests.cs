@@ -159,24 +159,29 @@ public class ValidatorRuleTests
     }
 
     [Test]
-    public async Task UndefinedEnumValue_IsWarning()
+    public async Task UndefinedEnumValue_IsError()
     {
         var result = Validate(MinimalAuthentication().Replace("\"severity_id\": 1", "\"severity_id\": 42"));
 
-        var warning = result.Warnings.Single(f => f.RuleId == Rules.EnumValueUnknown);
-        await Assert.That(warning.AttributePath).IsEqualTo("severity_id");
-        await Assert.That(result.IsValid).IsTrue();
+        var error = result.Errors.Single(f => f.RuleId == Rules.EnumValueUnknown);
+        await Assert.That(error.AttributePath).IsEqualTo("severity_id");
+        await Assert.That(result.IsValid).IsFalse();
     }
 
     [Test]
-    public async Task EnumOther_WithoutSibling_IsError()
+    public async Task EnumOther_WithOrWithoutSibling_IsAccepted()
     {
-        var result = Validate(MinimalAuthentication()
+        // The server accepts Other (99) with any label or none; the OCSF002 analyzer
+        // covers the authoring-time requirement to supply one.
+        var without = Validate(MinimalAuthentication()
             .Replace("\"activity_id\": 1", "\"activity_id\": 99")
             .Replace("300201", "300299"));
+        await Assert.That(without.Findings.Select(f => f.RuleId).ToList()).IsEmpty();
 
-        var missing = result.Errors.Single(f => f.RuleId == Rules.EnumSiblingMissing);
-        await Assert.That(missing.AttributePath).IsEqualTo("activity_id");
+        var withLabel = Validate(MinimalAuthentication(", \"activity_name\": \"custom-logon\"")
+            .Replace("\"activity_id\": 1", "\"activity_id\": 99")
+            .Replace("300201", "300299"));
+        await Assert.That(withLabel.Findings.Select(f => f.RuleId).ToList()).IsEmpty();
     }
 
     [Test]
@@ -198,7 +203,7 @@ public class ValidatorRuleTests
 
         var result = new OcsfValidator().Validate(evt);
 
-        await Assert.That(result.Findings.Select(f => f.RuleId)).DoesNotContain(Rules.EnumSiblingMissing);
+        await Assert.That(result.Findings.Select(f => f.RuleId).ToList()).IsEmpty();
         await Assert.That(result.IsValid).IsTrue();
     }
 
@@ -207,7 +212,7 @@ public class ValidatorRuleTests
     {
         var result = Validate(MinimalAuthentication(", \"activity_name\": \"Wrong Caption\""));
 
-        var mismatch = result.Warnings.Single(f => f.RuleId == Rules.EnumSiblingMismatch);
+        var mismatch = result.Warnings.Single(f => f.RuleId == Rules.EnumSiblingIncorrect);
         await Assert.That(mismatch.AttributePath).IsEqualTo("activity_id");
     }
 
@@ -217,12 +222,12 @@ public class ValidatorRuleTests
         // authentication constrains at_least_one(service, dst_endpoint); the minimal event
         // satisfies it with dst_endpoint, so removing it must fail the constraint.
         var satisfied = Validate(MinimalAuthentication());
-        await Assert.That(satisfied.Errors.Select(f => f.RuleId)).DoesNotContain(Rules.ConstraintAtLeastOneFailed);
+        await Assert.That(satisfied.Errors.Select(f => f.RuleId)).DoesNotContain(Rules.ConstraintFailed);
 
         var violated = Validate(MinimalAuthentication()
             .Replace("\"dst_endpoint\": { \"ip\": \"10.0.0.1\" }", "\"unmapped\": {}"));
 
-        await Assert.That(violated.Errors.Select(f => f.RuleId)).Contains(Rules.ConstraintAtLeastOneFailed);
+        await Assert.That(violated.Errors.Select(f => f.RuleId)).Contains(Rules.ConstraintFailed);
     }
 
     [Test]
@@ -303,6 +308,58 @@ public class ValidatorRuleTests
 
         var verbose = Validate(MinimalAuthentication(), new ValidationOptions { WarnOnMissingRecommended = true });
         await Assert.That(verbose.Warnings.Select(f => f.RuleId)).Contains(Rules.AttributeRecommendedMissing);
+    }
+
+    private static string MinimalWinServiceActivity(string winService, string extra = "") => $$"""
+        {
+            "class_uid": 201004,
+            "category_uid": 1,
+            "activity_id": 1,
+            "type_uid": 20100401,
+            "severity_id": 1,
+            "time": 1618524549901,
+            "metadata": { "version": "1.9.0", "product": { "name": "test", "vendor_name": "test" } },
+            "device": { "type_id": 6, "hostname": "host-1" },
+            "actor": { "process": { "pid": 42 } },
+            "win_service": {{winService}}
+            {{extra}}
+        }
+        """;
+
+    [Test]
+    public async Task WinExtensionClass_IsValidated()
+    {
+        var result = Validate(MinimalWinServiceActivity(
+            """{ "name": "wuauserv", "service_type_id": 2 }"""));
+
+        await Assert.That(result.Findings.Select(f => $"{f.RuleId} {f.AttributePath}").ToList()).IsEmpty();
+    }
+
+    [Test]
+    public async Task WinExtensionObject_SubtreeIsValidated()
+    {
+        var result = Validate(MinimalWinServiceActivity(
+            """{ "cmd_line": 42, "service_type_id": 77 }"""));
+
+        var paths = result.Errors.Select(f => $"{f.RuleId} {f.AttributePath}").ToList();
+        await Assert.That(paths).Contains($"{Rules.AttributeRequiredMissing} win_service.name");
+        await Assert.That(paths).Contains($"{Rules.AttributeWrongType} win_service.cmd_line");
+        await Assert.That(paths).Contains($"{Rules.EnumValueUnknown} win_service.service_type_id");
+    }
+
+    [Test]
+    public async Task OsUserProfileAttribute_IsGatedOnDeclaredProfiles()
+    {
+        var json = MinimalWinServiceActivity("""{ "name": "wuauserv", "service_type_id": 2 }""")
+            .Replace("\"process\": { \"pid\": 42 }", "\"process\": { \"pid\": 42, \"egid\": 1000 }");
+
+        var undeclared = Validate(json);
+        var unknown = undeclared.Errors.Single(f => f.RuleId == Rules.AttributeUnknown);
+        await Assert.That(unknown.AttributePath).IsEqualTo("actor.process.egid");
+
+        // egid belongs to both OS user profiles; declaring either one admits it.
+        var declared = Validate(json.Replace("\"product\"", "\"profiles\": [\"macos/macos_users\"], \"product\""));
+        await Assert.That(declared.Errors.Select(f => f.RuleId)).DoesNotContain(Rules.AttributeUnknown);
     }
 
     [Test]
