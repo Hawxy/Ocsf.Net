@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/samples/">
+    <Project Path="samples/Ocsf.AotSmoke/Ocsf.AotSmoke.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Ocsf.Generator/Ocsf.Generator.csproj" />
+    <Project Path="src/Ocsf.Validation/Ocsf.Validation.csproj" />
+    <Project Path="src/Ocsf/Ocsf.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Ocsf.Generator.Tests/Ocsf.Generator.Tests.csproj" />
+    <Project Path="tests/Ocsf.Tests/Ocsf.Tests.csproj" />
+    <Project Path="tests/Ocsf.Validation.Tests/Ocsf.Validation.Tests.csproj" />
+  </Folder>
+</Solution>

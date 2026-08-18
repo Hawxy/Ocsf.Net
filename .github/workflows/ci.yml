@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Build
+        run: dotnet build -c Release
+
+      - name: Test
+        run: dotnet test -c Release
+
+      - name: Verify generated code is up to date
+        run: dotnet run --project src/Ocsf.Generator -c Release -- verify
+
+      - name: NativeAOT smoke
+        run: |
+          dotnet publish samples/Ocsf.AotSmoke -c Release -o aot-out
+          ./aot-out/Ocsf.AotSmoke
+
+      - name: Pack
+        run: |
+          dotnet pack src/Ocsf -c Release -o artifacts
+          dotnet pack src/Ocsf.Validation -c Release -o artifacts
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: packages
+          path: artifacts/*.nupkg
