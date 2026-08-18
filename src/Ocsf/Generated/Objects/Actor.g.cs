@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Actor object contains details about the user, role, application, service, or process that initiated or performed a specific activity. Note that Actor is not the threat actor of a campaign but may be part of a campaign. When the initiator of the activity is an autonomous AI agent, apply the <c>ai_operation</c> profile and populate <c>ai_operation.ai_agent</c> rather than describing the agent here.
 /// </summary>
 [OcsfObject("actor")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "AppName", "AppUid", "Application", "IamRole", "InvokedBy", "Process", "Session", "User")]
 public class Actor : OcsfObject
 {
     /// <summary>

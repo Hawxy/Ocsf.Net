@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Data Classification object includes information about data classification levels and data category types.
 /// </summary>
 [OcsfObject("data_classification")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "CategoryId", "ConfidentialityId")]
 public class DataClassification : OcsfObject
 {
     /// <summary>
@@ -30,6 +31,7 @@ public class DataClassification : OcsfObject
     [JsonPropertyName("category_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Category")]
     public DataClassificationCategoryId? CategoryId { get; set; }
 
     /// <summary>
@@ -56,6 +58,7 @@ public class DataClassification : OcsfObject
     [JsonPropertyName("confidentiality_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Confidentiality")]
     public DataClassificationConfidentialityId? ConfidentialityId { get; set; }
 
     /// <summary>
@@ -114,6 +117,7 @@ public class DataClassification : OcsfObject
     [JsonPropertyName("status_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Status")]
     public DataClassificationStatusId? StatusId { get; set; }
 
     /// <summary>

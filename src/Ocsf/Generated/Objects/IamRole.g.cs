@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The IAM Role object describes permission characteristics (or privileges) associated with a user or group of users as security principals against one or more resources. In some cases only the name or ID of the role is known hence other attributes are optional. In some systems a user or group of users can have multiple roles, imparting the union of privileges to the principal. In some systems the role can serve as a temporary security principal without its own credentials on behalf of the actual security principal.
 /// </summary>
 [OcsfObject("iam_role")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "Uid")]
 public class IamRole : OcsfObject
 {
     /// <summary>

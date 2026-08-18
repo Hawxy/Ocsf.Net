@@ -30,6 +30,7 @@ public class EncryptionDetails : OcsfObject
     [JsonPropertyName("algorithm_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Algorithm")]
     public EncryptionDetailsAlgorithmId? AlgorithmId { get; set; }
 
     /// <summary>

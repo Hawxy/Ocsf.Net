@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Endpoint object describes a physical or virtual device that connects to and exchanges information with a computer network. Some examples of endpoints are mobile devices, desktop computers, virtual machines, embedded devices, and servers. Internet-of-Things devices—like cameras, lighting, refrigerators, security systems, smart speakers, and thermostats—are also endpoints.
 /// </summary>
 [OcsfObject("endpoint")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Hostname", "InstanceUid", "InterfaceName", "InterfaceUid", "Ip", "Name", "Uid")]
 public class Endpoint : OcsfObject
 {
     /// <summary>
@@ -29,7 +30,7 @@ public class Endpoint : OcsfObject
     /// </summary>
     [JsonPropertyName("container")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "container")]
     public Container? Container { get; set; }
 
     /// <summary>
@@ -132,7 +133,7 @@ public class Endpoint : OcsfObject
     /// </summary>
     [JsonPropertyName("namespace_pid")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "container")]
     public int? NamespacePid { get; set; }
 
     /// <summary>
@@ -183,6 +184,7 @@ public class Endpoint : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Type")]
     public EndpointTypeId? TypeId { get; set; }
 
     /// <summary>

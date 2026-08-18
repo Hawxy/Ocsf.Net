@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// An autonomous AI agent that performs tasks under delegated authority. Distinguished from the OCSF agent object (which describes security sensors such as EDR and DLP tools) and from human principals. An AI agent has a stable logical identity across runs and a restart-sensitive instance identity. The agent owns its model; the ai_model attribute captures which model was backing the agent at the time of action.
 /// </summary>
 [OcsfObject("ai_agent")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "Uid")]
 public class AiAgent : OcsfObject
 {
     /// <summary>
@@ -65,6 +66,7 @@ public class AiAgent : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Type")]
     public AiAgentTypeId? TypeId { get; set; }
 
     /// <summary>

@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The MITRE Mitigation object describes the ATT&amp;CK® or ATLAS™ Mitigation ID and/or name that is associated to an attack.
 /// </summary>
 [OcsfObject("mitigation")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "Uid")]
 public class Mitigation : OcsfObject
 {
     /// <summary>

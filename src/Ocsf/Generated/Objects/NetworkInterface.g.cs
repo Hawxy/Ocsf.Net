@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Network Interface object describes the type and associated attributes of a physical or virtual network interface.
 /// </summary>
 [OcsfObject("network_interface")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Hostname", "Ip", "Mac", "Name", "Uid")]
 public class NetworkInterface : OcsfObject
 {
     /// <summary>
@@ -90,6 +91,7 @@ public class NetworkInterface : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Type")]
     public NetworkInterfaceTypeId? TypeId { get; set; }
 
     /// <summary>

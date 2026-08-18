@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Defensive Technique object describes the leaf defensive technique ID and/or name associated to a countermeasure.
 /// </summary>
 [OcsfObject("d3f_technique")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "Uid")]
 public class D3fTechnique : OcsfObject
 {
     /// <summary>

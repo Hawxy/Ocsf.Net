@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Endpoint Connection object contains information detailing a connection attempt to an endpoint.
 /// </summary>
 [OcsfObject("endpoint_connection")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Code", "NetworkEndpoint")]
 public class EndpointConnection : OcsfObject
 {
     /// <summary>

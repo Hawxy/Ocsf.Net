@@ -13,6 +13,7 @@ namespace Ocsf.Events.UnmannedSystems;
 /// Drone Flights Activity events report the activity of Unmanned Aerial Systems (UAS), their Operators, and mission-planning and authorization metadata as reported by the UAS platforms themselves, by Counter-UAS (CUAS) systems, or other remote monitoring or sensing infrastructure. Based on the Remote ID defined in Standard Specification for Remote ID and Tracking (ASTM Designation: F3411-22a).
 /// </summary>
 [OcsfEventClass(8001, 8, "drone_flights_activity")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "SrcEndpoint", "UnmannedAerialSystem", "UnmannedSystemOperatingArea", "UnmannedSystemOperator")]
 public class DroneFlightsActivity : OcsfEvent
 {
     /// <summary>The <c>class_uid</c> of the <c>drone_flights_activity</c> event class.</summary>
@@ -37,7 +38,8 @@ public class DroneFlightsActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("action_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Action")]
     public DroneFlightsActivityActionId? ActionId { get; set; }
 
     /// <summary>
@@ -47,6 +49,7 @@ public class DroneFlightsActivity : OcsfEvent
     [JsonPropertyName("activity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("ActivityName")]
     public DroneFlightsActivityActivityId? ActivityId { get; set; }
 
     /// <summary>
@@ -64,6 +67,7 @@ public class DroneFlightsActivity : OcsfEvent
     [JsonPropertyName("auth_protocol_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("AuthProtocol")]
     public DroneFlightsActivityAuthProtocolId? AuthProtocolId { get; set; }
 
     /// <summary>
@@ -88,7 +92,8 @@ public class DroneFlightsActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("confidence_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Confidence")]
     public DroneFlightsActivityConfidenceId? ConfidenceId { get; set; }
 
     /// <summary>
@@ -106,7 +111,8 @@ public class DroneFlightsActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("disposition_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Disposition")]
     public DroneFlightsActivityDispositionId? DispositionId { get; set; }
 
     /// <summary>
@@ -141,7 +147,8 @@ public class DroneFlightsActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("risk_level_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
+    [OcsfSibling("RiskLevel")]
     public DroneFlightsActivityRiskLevelId? RiskLevelId { get; set; }
 
     /// <summary>
@@ -152,6 +159,7 @@ public class DroneFlightsActivity : OcsfEvent
     [JsonPropertyName("severity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Severity")]
     public DroneFlightsActivitySeverityId? SeverityId { get; set; }
 
     /// <summary>
@@ -169,6 +177,7 @@ public class DroneFlightsActivity : OcsfEvent
     [JsonPropertyName("status_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Status")]
     public DroneFlightsActivityStatusId? StatusId { get; set; }
 
     /// <summary>

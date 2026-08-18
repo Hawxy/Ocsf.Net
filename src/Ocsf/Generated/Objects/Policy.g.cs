@@ -14,6 +14,7 @@ namespace Ocsf.Objects;
 /// Policy attributes provide traceability to the operational state of the security product at the time that the event was captured, facilitating forensics, troubleshooting, and policy tuning/adjustments.
 /// </summary>
 [OcsfObject("policy")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "Type", "Uid")]
 public class Policy : OcsfObject
 {
     /// <summary>

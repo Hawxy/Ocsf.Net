@@ -39,6 +39,7 @@ public class ThreatActor : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Type")]
     public ThreatActorTypeId? TypeId { get; set; }
 
     /// <summary>

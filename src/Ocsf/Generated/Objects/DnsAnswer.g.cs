@@ -32,6 +32,7 @@ public class DnsAnswer : OcsfObject
     [JsonPropertyName("flag_ids")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Flags")]
     public List<DnsAnswerFlagIds>? FlagIds { get; set; }
 
     /// <summary>

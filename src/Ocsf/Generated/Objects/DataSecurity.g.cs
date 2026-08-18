@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Data Security object describes the characteristics, techniques and content of a Data Loss Prevention (DLP), Data Loss Detection (DLD), Data Classification, or similar tools' finding, alert, or detection mechanism(s).
 /// </summary>
 [OcsfObject("data_security")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "DataLifecycleStateId", "DetectionPattern", "DetectionSystemId", "Policy")]
 public class DataSecurity : OcsfObject
 {
     /// <summary>
@@ -30,6 +31,7 @@ public class DataSecurity : OcsfObject
     [JsonPropertyName("category_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Category")]
     public DataSecurityCategoryId? CategoryId { get; set; }
 
     /// <summary>
@@ -56,6 +58,7 @@ public class DataSecurity : OcsfObject
     [JsonPropertyName("confidentiality_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Confidentiality")]
     public DataSecurityConfidentialityId? ConfidentialityId { get; set; }
 
     /// <summary>
@@ -73,6 +76,7 @@ public class DataSecurity : OcsfObject
     [JsonPropertyName("data_lifecycle_state_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("DataLifecycleState")]
     public DataSecurityDataLifecycleStateId? DataLifecycleStateId { get; set; }
 
     /// <summary>
@@ -99,6 +103,7 @@ public class DataSecurity : OcsfObject
     [JsonPropertyName("detection_system_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("DetectionSystem")]
     public DataSecurityDetectionSystemId? DetectionSystemId { get; set; }
 
     /// <summary>
@@ -166,6 +171,7 @@ public class DataSecurity : OcsfObject
     [JsonPropertyName("status_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Status")]
     public DataSecurityStatusId? StatusId { get; set; }
 
     /// <summary>

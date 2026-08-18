@@ -30,6 +30,7 @@ public class Packet : OcsfObject
     [JsonPropertyName("encoding_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Encoding")]
     public PacketEncodingId? EncodingId { get; set; }
 
     /// <summary>
@@ -55,6 +56,7 @@ public class Packet : OcsfObject
     [JsonPropertyName("format_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Format")]
     public PacketFormatId? FormatId { get; set; }
 
     /// <summary>
@@ -80,6 +82,7 @@ public class Packet : OcsfObject
     [JsonPropertyName("source_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Source")]
     public PacketSourceId? SourceId { get; set; }
 
     /// <summary>

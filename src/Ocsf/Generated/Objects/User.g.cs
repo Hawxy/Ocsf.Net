@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The User object describes the characteristics of a user/person or a security principal.
 /// </summary>
 [OcsfObject("user")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Account", "Name", "Uid")]
 public class User : OcsfObject
 {
     /// <summary>
@@ -145,6 +146,7 @@ public class User : OcsfObject
     [JsonPropertyName("risk_level_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("RiskLevel")]
     public UserRiskLevelId? RiskLevelId { get; set; }
 
     /// <summary>
@@ -170,6 +172,7 @@ public class User : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Type")]
     public UserTypeId? TypeId { get; set; }
 
     /// <summary>

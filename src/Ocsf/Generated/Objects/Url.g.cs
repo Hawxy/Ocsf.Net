@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Uniform Resource Locator (URL) object describes the characteristics of a URL.
 /// </summary>
 [OcsfObject("url")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Path", "UrlString")]
 public class Url : OcsfObject
 {
     /// <summary>
@@ -30,6 +31,7 @@ public class Url : OcsfObject
     [JsonPropertyName("category_ids")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Categories")]
     public List<UrlCategoryIds>? CategoryIds { get; set; }
 
     /// <summary>

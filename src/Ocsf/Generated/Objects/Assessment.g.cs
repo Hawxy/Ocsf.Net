@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Assessment object describes a point-in-time assessment, check, or evaluation of a specific configuration or signal against an asset, entity, person, or otherwise. For example, this can encapsulate <c>os_signals</c> from CrowdStrike Falcon Zero Trust Assessments, or account for <c>Datastore</c> configurations from Cyera, or capture details of Microsoft Intune configuration policies.
 /// </summary>
 [OcsfObject("assessment")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "Uid")]
 public class Assessment : OcsfObject
 {
     /// <summary>

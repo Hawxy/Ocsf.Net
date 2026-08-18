@@ -37,7 +37,8 @@ public class ApiActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("action_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Action")]
     public ApiActivityActionId? ActionId { get; set; }
 
     /// <summary>
@@ -47,6 +48,7 @@ public class ApiActivity : OcsfEvent
     [JsonPropertyName("activity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("ActivityName")]
     public ApiActivityActivityId? ActivityId { get; set; }
 
     /// <summary>
@@ -55,7 +57,7 @@ public class ApiActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("ai_agent")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "ai_operation")]
     public Objects.AiAgent? AiAgent { get; set; }
 
     /// <summary>
@@ -64,7 +66,7 @@ public class ApiActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("ai_model")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "ai_operation")]
     public Objects.AiModel? AiModel { get; set; }
 
     /// <summary>
@@ -73,7 +75,8 @@ public class ApiActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("confidence_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Confidence")]
     public ApiActivityConfidenceId? ConfidenceId { get; set; }
 
     /// <summary>
@@ -82,7 +85,7 @@ public class ApiActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("delegation")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "ai_operation")]
     public Objects.Delegation? Delegation { get; set; }
 
     /// <summary>
@@ -91,7 +94,8 @@ public class ApiActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("disposition_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Disposition")]
     public ApiActivityDispositionId? DispositionId { get; set; }
 
     /// <summary>
@@ -127,7 +131,7 @@ public class ApiActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("message_context")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "ai_operation")]
     public Objects.MessageContext? MessageContext { get; set; }
 
     /// <summary>
@@ -145,7 +149,8 @@ public class ApiActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("risk_level_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
+    [OcsfSibling("RiskLevel")]
     public ApiActivityRiskLevelId? RiskLevelId { get; set; }
 
     /// <summary>
@@ -156,6 +161,7 @@ public class ApiActivity : OcsfEvent
     [JsonPropertyName("severity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Severity")]
     public ApiActivitySeverityId? SeverityId { get; set; }
 
     /// <summary>
@@ -174,6 +180,7 @@ public class ApiActivity : OcsfEvent
     [JsonPropertyName("status_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Status")]
     public ApiActivityStatusId? StatusId { get; set; }
 
     /// <summary>
@@ -182,7 +189,7 @@ public class ApiActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("trace")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "trace")]
     public Objects.Trace? Trace { get; set; }
 
     /// <summary>

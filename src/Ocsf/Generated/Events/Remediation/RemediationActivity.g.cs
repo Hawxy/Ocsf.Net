@@ -37,7 +37,8 @@ public class RemediationActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("action_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Action")]
     public RemediationActivityActionId? ActionId { get; set; }
 
     /// <summary>
@@ -47,6 +48,7 @@ public class RemediationActivity : OcsfEvent
     [JsonPropertyName("activity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("ActivityName")]
     public RemediationActivityActivityId? ActivityId { get; set; }
 
     /// <summary>
@@ -64,7 +66,8 @@ public class RemediationActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("confidence_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Confidence")]
     public RemediationActivityConfidenceId? ConfidenceId { get; set; }
 
     /// <summary>
@@ -82,7 +85,8 @@ public class RemediationActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("disposition_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Disposition")]
     public RemediationActivityDispositionId? DispositionId { get; set; }
 
     /// <summary>
@@ -99,7 +103,8 @@ public class RemediationActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("risk_level_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
+    [OcsfSibling("RiskLevel")]
     public RemediationActivityRiskLevelId? RiskLevelId { get; set; }
 
     /// <summary>
@@ -118,6 +123,7 @@ public class RemediationActivity : OcsfEvent
     [JsonPropertyName("severity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Severity")]
     public RemediationActivitySeverityId? SeverityId { get; set; }
 
     /// <summary>
@@ -127,6 +133,7 @@ public class RemediationActivity : OcsfEvent
     [JsonPropertyName("status_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Status")]
     public RemediationActivityStatusId? StatusId { get; set; }
 
     /// <summary>

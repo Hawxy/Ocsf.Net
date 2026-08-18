@@ -31,6 +31,7 @@ public class KillChainPhase : OcsfObject
     [JsonPropertyName("phase_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Phase")]
     public KillChainPhasePhaseId? PhaseId { get; set; }
 
     /// <summary>

@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// A cryptographic attestation that an event has not been altered since it was produced and was produced by the holder of a verifiable identity, providing integrity, authenticity, and non-repudiation. The attestation is computed over a canonical serialization of the event: the entire event, including the attestation's own <c>authority_uid</c>, <c>chain_uid</c>, and <c>prev_event</c> attributes, and excluding only the attestation's <c>fingerprint</c> and <c>signatures</c>. Because <c>prev_event</c> is inside the serialized content, deleting or altering an event in a chain breaks the fingerprint and signatures of the event that references it. An attestation may carry more than one signature (for example, a co-signature, notary, or witness over the same event). The verifiable identity is a technical credential, such as a key or certificate, and is not an attribution of any person, organization, or state.
 /// </summary>
 [OcsfObject("attestation")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Fingerprint", "Signatures")]
 public class Attestation : OcsfObject
 {
     /// <summary>

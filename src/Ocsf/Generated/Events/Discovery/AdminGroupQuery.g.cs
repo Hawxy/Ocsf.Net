@@ -38,7 +38,8 @@ public class AdminGroupQuery : OcsfEvent
     /// </summary>
     [JsonPropertyName("action_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Action")]
     public AdminGroupQueryActionId? ActionId { get; set; }
 
     /// <summary>
@@ -48,6 +49,7 @@ public class AdminGroupQuery : OcsfEvent
     [JsonPropertyName("activity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("ActivityName")]
     public AdminGroupQueryActivityId? ActivityId { get; set; }
 
     /// <summary>
@@ -56,7 +58,8 @@ public class AdminGroupQuery : OcsfEvent
     /// </summary>
     [JsonPropertyName("confidence_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Confidence")]
     public AdminGroupQueryConfidenceId? ConfidenceId { get; set; }
 
     /// <summary>
@@ -65,7 +68,8 @@ public class AdminGroupQuery : OcsfEvent
     /// </summary>
     [JsonPropertyName("disposition_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Disposition")]
     public AdminGroupQueryDispositionId? DispositionId { get; set; }
 
     /// <summary>
@@ -102,6 +106,7 @@ public class AdminGroupQuery : OcsfEvent
     [JsonPropertyName("query_result_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("QueryResult")]
     public AdminGroupQueryQueryResultId? QueryResultId { get; set; }
 
     /// <summary>
@@ -110,7 +115,8 @@ public class AdminGroupQuery : OcsfEvent
     /// </summary>
     [JsonPropertyName("risk_level_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
+    [OcsfSibling("RiskLevel")]
     public AdminGroupQueryRiskLevelId? RiskLevelId { get; set; }
 
     /// <summary>
@@ -121,6 +127,7 @@ public class AdminGroupQuery : OcsfEvent
     [JsonPropertyName("severity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Severity")]
     public AdminGroupQuerySeverityId? SeverityId { get; set; }
 
     /// <summary>
@@ -130,6 +137,7 @@ public class AdminGroupQuery : OcsfEvent
     [JsonPropertyName("status_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Status")]
     public AdminGroupQueryStatusId? StatusId { get; set; }
 
     /// <summary>

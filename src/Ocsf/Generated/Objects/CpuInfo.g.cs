@@ -38,6 +38,7 @@ public class CpuInfo : OcsfObject
     [JsonPropertyName("cpu_architecture_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("CpuArchitecture")]
     public CpuInfoCpuArchitectureId? CpuArchitectureId { get; set; }
 
     /// <summary>

@@ -128,6 +128,7 @@ public class Package : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Type")]
     public PackageTypeId? TypeId { get; set; }
 
     /// <summary>

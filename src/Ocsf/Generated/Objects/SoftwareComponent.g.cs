@@ -82,6 +82,7 @@ public class SoftwareComponent : OcsfObject
     [JsonPropertyName("relationship_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Relationship")]
     public SoftwareComponentRelationshipId? RelationshipId { get; set; }
 
     /// <summary>
@@ -99,6 +100,7 @@ public class SoftwareComponent : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Type")]
     public SoftwareComponentTypeId? TypeId { get; set; }
 
     /// <summary>

@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Download Info object contains metadata pertaining to a downloaded file.
 /// </summary>
 [OcsfObject("download_info")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "SrcEndpoint", "SrcUrl", "TypeId")]
 public class DownloadInfo : OcsfObject
 {
     /// <summary>
@@ -55,6 +56,7 @@ public class DownloadInfo : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Type")]
     public DownloadInfoTypeId? TypeId { get; set; }
 
     /// <summary>

@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Parameter object provides details regarding a parameter of a a function.
 /// </summary>
 [OcsfObject("parameter")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "PostValue", "PreValue")]
 public class Parameter : OcsfObject
 {
     /// <summary>

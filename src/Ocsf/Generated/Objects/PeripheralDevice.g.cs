@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The peripheral device object describes the properties of external, connectable, and detachable hardware.
 /// </summary>
 [OcsfObject("peripheral_device")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "Uid")]
 public class PeripheralDevice : OcsfObject
 {
     /// <summary>
@@ -65,6 +66,7 @@ public class PeripheralDevice : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Type")]
     public PeripheralDeviceTypeId? TypeId { get; set; }
 
     /// <summary>

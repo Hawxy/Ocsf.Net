@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Process Entity object provides critical fields for referencing a process.
 /// </summary>
 [OcsfObject("process_entity")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "CmdLine", "Cpid", "Name", "Path", "Pid", "Uid")]
 public class ProcessEntity : OcsfObject
 {
     /// <summary>
@@ -48,7 +49,7 @@ public class ProcessEntity : OcsfObject
     /// </summary>
     [JsonPropertyName("created_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? CreatedTimeDt { get; set; }
 
     /// <summary>

@@ -63,6 +63,7 @@ public class Kernel : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Type")]
     public KernelTypeId? TypeId { get; set; }
 
     /// <summary>

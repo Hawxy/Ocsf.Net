@@ -39,6 +39,7 @@ public class AdditionalRestriction : OcsfObject
     [JsonPropertyName("status_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Status")]
     public AdditionalRestrictionStatusId? StatusId { get; set; }
 
     /// <summary>

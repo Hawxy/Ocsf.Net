@@ -38,7 +38,8 @@ public class DataSecurityFinding : OcsfEvent
     /// </summary>
     [JsonPropertyName("action_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Action")]
     public DataSecurityFindingActionId? ActionId { get; set; }
 
     /// <summary>
@@ -48,6 +49,7 @@ public class DataSecurityFinding : OcsfEvent
     [JsonPropertyName("activity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("ActivityName")]
     public DataSecurityFindingActivityId? ActivityId { get; set; }
 
     /// <summary>
@@ -56,7 +58,7 @@ public class DataSecurityFinding : OcsfEvent
     /// </summary>
     [JsonPropertyName("assignee")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "incident")]
     public Objects.User? Assignee { get; set; }
 
     /// <summary>
@@ -65,7 +67,7 @@ public class DataSecurityFinding : OcsfEvent
     /// </summary>
     [JsonPropertyName("assignee_group")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "incident")]
     public Objects.Group? AssigneeGroup { get; set; }
 
     /// <summary>
@@ -84,6 +86,7 @@ public class DataSecurityFinding : OcsfEvent
     [JsonPropertyName("confidence_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Confidence")]
     public DataSecurityFindingConfidenceId? ConfidenceId { get; set; }
 
     /// <summary>
@@ -119,7 +122,8 @@ public class DataSecurityFinding : OcsfEvent
     /// </summary>
     [JsonPropertyName("disposition_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Disposition")]
     public DataSecurityFindingDispositionId? DispositionId { get; set; }
 
     /// <summary>
@@ -164,6 +168,7 @@ public class DataSecurityFinding : OcsfEvent
     [JsonPropertyName("impact_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("Impact")]
     public DataSecurityFindingImpactId? ImpactId { get; set; }
 
     /// <summary>
@@ -180,7 +185,7 @@ public class DataSecurityFinding : OcsfEvent
     /// </summary>
     [JsonPropertyName("is_suspected_breach")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "incident")]
     public bool? IsSuspectedBreach { get; set; }
 
     /// <summary>
@@ -197,7 +202,7 @@ public class DataSecurityFinding : OcsfEvent
     /// </summary>
     [JsonPropertyName("priority")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "incident")]
     public string? Priority { get; set; }
 
     /// <summary>
@@ -206,7 +211,8 @@ public class DataSecurityFinding : OcsfEvent
     /// </summary>
     [JsonPropertyName("priority_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "incident")]
+    [OcsfSibling("Priority")]
     public DataSecurityFindingPriorityId? PriorityId { get; set; }
 
     /// <summary>
@@ -227,6 +233,7 @@ public class DataSecurityFinding : OcsfEvent
     [JsonPropertyName("risk_level_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("RiskLevel")]
     public DataSecurityFindingRiskLevelId? RiskLevelId { get; set; }
 
     /// <summary>
@@ -237,6 +244,7 @@ public class DataSecurityFinding : OcsfEvent
     [JsonPropertyName("severity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Severity")]
     public DataSecurityFindingSeverityId? SeverityId { get; set; }
 
     /// <summary>
@@ -254,7 +262,7 @@ public class DataSecurityFinding : OcsfEvent
     /// </summary>
     [JsonPropertyName("src_url")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "incident")]
     public string? SrcUrl { get; set; }
 
     /// <summary>
@@ -264,6 +272,7 @@ public class DataSecurityFinding : OcsfEvent
     [JsonPropertyName("status_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Status")]
     public DataSecurityFindingStatusId? StatusId { get; set; }
 
     /// <summary>
@@ -282,7 +291,7 @@ public class DataSecurityFinding : OcsfEvent
     [Obsolete("Use tickets instead. Deprecated since 1.5.0.")]
     [JsonPropertyName("ticket")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "incident")]
     public Objects.Ticket? Ticket { get; set; }
 
     /// <summary>
@@ -291,7 +300,7 @@ public class DataSecurityFinding : OcsfEvent
     /// </summary>
     [JsonPropertyName("tickets")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "incident")]
     public List<Objects.Ticket>? Tickets { get; set; }
 
     /// <summary>
@@ -309,7 +318,7 @@ public class DataSecurityFinding : OcsfEvent
     /// </summary>
     [JsonPropertyName("verdict")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "incident")]
     public string? Verdict { get; set; }
 
     /// <summary>
@@ -318,7 +327,8 @@ public class DataSecurityFinding : OcsfEvent
     /// </summary>
     [JsonPropertyName("verdict_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "incident")]
+    [OcsfSibling("Verdict")]
     public DataSecurityFindingVerdictId? VerdictId { get; set; }
 
     /// <summary>

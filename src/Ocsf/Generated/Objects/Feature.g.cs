@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Feature object provides information about the software product feature that generated a specific event. It encompasses details related to the capabilities, components, user interface (UI) design, and performance upgrades associated with the feature.
 /// </summary>
 [OcsfObject("feature")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "Uid")]
 public class Feature : OcsfObject
 {
     /// <summary>

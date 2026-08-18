@@ -28,6 +28,10 @@ public static class Emitter
     /// the class identity, which the generator surfaces as constants instead.</summary>
     internal static readonly HashSet<string> ClassificationAttrs = ["class_uid", "category_uid", "type_uid"];
 
+    /// <summary>Attributes populated by every event class constructor.</summary>
+    internal static readonly HashSet<string> CtorInitializedAttrs =
+        ["class_uid", "category_uid", "type_uid", "class_name", "category_name"];
+
     public static IReadOnlyList<(string RelativePath, string Content)> EmitAll(ExportSchema schema)
     {
         var mapper = new TypeMapper(schema);
@@ -410,6 +414,7 @@ public static class Emitter
         w.WriteDocSummary(BuildTypeDoc(obj.Caption, obj.Description, $"OCSF object <c>{name}</c>."));
         WriteObsolete(w, obj.Deprecated);
         w.WriteLine($"[OcsfObject(\"{name}\")]");
+        WriteConstraintAttributes(w, obj.Constraints);
         w.WriteLine($"public class {className} : OcsfObject");
         w.WriteLine("{");
         w.Indent();
@@ -465,6 +470,7 @@ public static class Emitter
         w.WriteDocSummary(BuildTypeDoc(cls.Caption, cls.Description, $"OCSF event class <c>{name}</c>."));
         WriteObsolete(w, cls.Deprecated);
         w.WriteLine($"[OcsfEventClass({cls.Uid}, {cls.CategoryUid}, \"{name}\")]");
+        WriteConstraintAttributes(w, cls.Constraints);
         w.WriteLine($"public class {className} : OcsfEvent");
         w.WriteLine("{");
         w.Indent();
@@ -503,6 +509,22 @@ public static class Emitter
 
         WriteEnumDecls(w, enums);
         return w.ToString();
+    }
+
+    /// <summary>Emits [OcsfConstraint] attributes for at_least_one/just_one constraints.
+    /// Property names are string literals: nameof would trip CS0618 for deprecated members.</summary>
+    private static void WriteConstraintAttributes(CodeWriter w, Dictionary<string, List<string>>? constraints)
+    {
+        var known = (constraints ?? [])
+            .Where(c => c.Key is "at_least_one" or "just_one" && c.Value.Count > 0)
+            .OrderBy(c => c.Key, StringComparer.Ordinal);
+        foreach (var (kind, attrs) in known)
+        {
+            var kindName = kind == "at_least_one" ? "AtLeastOne" : "JustOne";
+            var names = string.Join(", ", attrs.OrderBy(a => a, StringComparer.Ordinal)
+                .Select(a => $"\"{NameMapper.PascalCase(a)}\""));
+            w.WriteLine($"[OcsfConstraint(OcsfConstraintKind.{kindName}, {names})]");
+        }
     }
 
     internal static void WriteFileHeader(CodeWriter w, ExportSchema schema)
@@ -571,7 +593,19 @@ public static class Emitter
             WriteObsolete(w, attr.Deprecated);
             w.WriteLine($"[JsonPropertyName(\"{attrName}\")]");
             w.WriteLine("[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]");
-            w.WriteLine($"[OcsfRequirement(OcsfRequirement.{MapRequirement(attr.Requirement)})]");
+            var requirementArgs = "OcsfRequirement." + MapRequirement(attr.Requirement);
+            if (target == EmitTarget.BaseEvent && CtorInitializedAttrs.Contains(attrName))
+                requirementArgs += ", InitializedByConstructor = true";
+            if (attr.Profile is { Length: > 0 })
+                requirementArgs += $", Profile = \"{attr.Profile}\"";
+            w.WriteLine($"[OcsfRequirement({requirementArgs})]");
+            var enumDecl = enums.Find(e => e.Name == baseType);
+            if (enumDecl?.Sibling is { } declSibling
+                && (attributes.ContainsKey(declSibling)
+                    || (target == EmitTarget.EventClass && schema.BaseEvent.Attributes.ContainsKey(declSibling))))
+            {
+                w.WriteLine($"[OcsfSibling(\"{NameMapper.PascalCase(declSibling)}\")]");
+            }
             w.WriteLine($"public {fullType} {NameMapper.Identifier(propName)} {{ get; set; }}");
         }
     }

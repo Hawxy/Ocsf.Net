@@ -81,6 +81,22 @@ membership, the `Other (99)` sibling-label rule, `at_least_one`/`just_one` const
 deprecation warnings. `ValidationOptions` controls recommended-attribute warnings and rule
 suppression.
 
+## Analyzers
+
+The `Ocsf` package ships a Roslyn analyzer that flags common producer mistakes while typing
+(see [docs/analyzer-design.md](docs/analyzer-design.md)):
+
+| ID | Severity | Checks |
+|---|---|---|
+| OCSF001 | Warning | Required attribute not populated on a locally constructed event/object |
+| OCSF002 | Warning | Enum set to `Other (99)` without an explicit sibling label |
+| OCSF003 | Info | `ActivityId` assigned directly, leaving `type_uid` stale — use `SetActivity` |
+| OCSF004 | Warning | `at_least_one` / `just_one` constraint visibly violated |
+
+Analysis is intra-method and conservative: instances passed to other methods are assumed to
+be populated elsewhere and are not flagged. Suppress any rule via `.editorconfig`, e.g.
+`dotnet_diagnostic.OCSF001.severity = none`.
+
 ## Design notes
 
 - **Timestamps** (`timestamp_t`) are epoch milliseconds on the wire; the `OcsfTimestamp`

@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The transformation_info object represents the mapping or transformation used.
 /// </summary>
 [OcsfObject("transformation_info")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "Uid")]
 public class TransformationInfo : OcsfObject
 {
     /// <summary>
@@ -55,7 +56,7 @@ public class TransformationInfo : OcsfObject
     /// </summary>
     [JsonPropertyName("time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? TimeDt { get; set; }
 
     /// <summary>

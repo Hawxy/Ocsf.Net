@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Job object provides information about a scheduled job or task, including its name, command line, and state. It encompasses attributes that describe the properties and status of the scheduled job.
 /// </summary>
 [OcsfObject("job")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "TypeId")]
 public class Job : OcsfObject
 {
     /// <summary>
@@ -40,7 +41,7 @@ public class Job : OcsfObject
     /// </summary>
     [JsonPropertyName("created_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? CreatedTimeDt { get; set; }
 
     /// <summary>
@@ -93,7 +94,7 @@ public class Job : OcsfObject
     [Obsolete("Use the job_trigger.last_run_time attribute instead. Deprecated since 1.9.0.")]
     [JsonPropertyName("last_run_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? LastRunTimeDt { get; set; }
 
     /// <summary>
@@ -121,7 +122,7 @@ public class Job : OcsfObject
     [Obsolete("Use the job_trigger.next_run_time attribute instead. Deprecated since 1.9.0.")]
     [JsonPropertyName("next_run_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? NextRunTimeDt { get; set; }
 
     /// <summary>
@@ -139,6 +140,7 @@ public class Job : OcsfObject
     [JsonPropertyName("run_state_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("RunState")]
     public JobRunStateId? RunStateId { get; set; }
 
     /// <summary>
@@ -156,6 +158,7 @@ public class Job : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Type")]
     public JobTypeId? TypeId { get; set; }
 
     /// <summary>

@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Organization object describes characteristics of an organization or company and its division if any. Additionally, it also describes cloud and Software-as-a-Service (SaaS) logical hierarchies such as AWS Organizations, Google Cloud Organizations, Oracle Cloud Tenancies, and similar constructs.
 /// </summary>
 [OcsfObject("organization")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "Uid")]
 public class Organization : OcsfObject
 {
     /// <summary>

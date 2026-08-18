@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Aircraft object represents any aircraft or otherwise airborne asset such as an unmanned system, airplane, balloon, spacecraft, or otherwise. The Aircraft object is intended to normalized data captured or otherwise logged from active radar, passive radar, multi-spectral systems, or the Automatic Dependant Broadcast - Surveillance (ADS-B), and/or Mode S systems.
 /// </summary>
 [OcsfObject("aircraft")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "SerialNumber", "Uid", "UidAlt")]
 public class Aircraft : OcsfObject
 {
     /// <summary>

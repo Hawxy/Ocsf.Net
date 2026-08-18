@@ -140,6 +140,7 @@ public class Compliance : OcsfObject
     [JsonPropertyName("status_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Status")]
     public ComplianceStatusId? StatusId { get; set; }
 
     /// <summary>

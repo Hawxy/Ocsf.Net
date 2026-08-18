@@ -37,7 +37,8 @@ public class ProcessActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("action_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Action")]
     public ProcessActivityActionId? ActionId { get; set; }
 
     /// <summary>
@@ -47,6 +48,7 @@ public class ProcessActivity : OcsfEvent
     [JsonPropertyName("activity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("ActivityName")]
     public ProcessActivityActivityId? ActivityId { get; set; }
 
     /// <summary>
@@ -64,7 +66,7 @@ public class ProcessActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("ai_agent")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "ai_operation")]
     public Objects.AiAgent? AiAgent { get; set; }
 
     /// <summary>
@@ -73,7 +75,7 @@ public class ProcessActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("ai_model")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "ai_operation")]
     public Objects.AiModel? AiModel { get; set; }
 
     /// <summary>
@@ -82,7 +84,8 @@ public class ProcessActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("confidence_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Confidence")]
     public ProcessActivityConfidenceId? ConfidenceId { get; set; }
 
     /// <summary>
@@ -91,7 +94,7 @@ public class ProcessActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("delegation")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "ai_operation")]
     public Objects.Delegation? Delegation { get; set; }
 
     /// <summary>
@@ -100,7 +103,8 @@ public class ProcessActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("disposition_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Disposition")]
     public ProcessActivityDispositionId? DispositionId { get; set; }
 
     /// <summary>
@@ -128,6 +132,7 @@ public class ProcessActivity : OcsfEvent
     [JsonPropertyName("injection_type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("InjectionType")]
     public ProcessActivityInjectionTypeId? InjectionTypeId { get; set; }
 
     /// <summary>
@@ -146,6 +151,7 @@ public class ProcessActivity : OcsfEvent
     [JsonPropertyName("launch_type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("LaunchType")]
     public ProcessActivityLaunchTypeId? LaunchTypeId { get; set; }
 
     /// <summary>
@@ -154,7 +160,7 @@ public class ProcessActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("message_context")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "ai_operation")]
     public Objects.MessageContext? MessageContext { get; set; }
 
     /// <summary>
@@ -190,7 +196,8 @@ public class ProcessActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("risk_level_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
+    [OcsfSibling("RiskLevel")]
     public ProcessActivityRiskLevelId? RiskLevelId { get; set; }
 
     /// <summary>
@@ -201,6 +208,7 @@ public class ProcessActivity : OcsfEvent
     [JsonPropertyName("severity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Severity")]
     public ProcessActivitySeverityId? SeverityId { get; set; }
 
     /// <summary>
@@ -210,6 +218,7 @@ public class ProcessActivity : OcsfEvent
     [JsonPropertyName("status_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Status")]
     public ProcessActivityStatusId? StatusId { get; set; }
 
     /// <summary>

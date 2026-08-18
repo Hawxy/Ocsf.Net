@@ -30,7 +30,7 @@ public class Metadata : OcsfObject
     [Obsolete("Use the attribute data_classifications instead Deprecated since 1.4.0.")]
     [JsonPropertyName("data_classification")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "data_classification")]
     public DataClassification? DataClassification { get; set; }
 
     /// <summary>
@@ -39,7 +39,7 @@ public class Metadata : OcsfObject
     /// </summary>
     [JsonPropertyName("data_classifications")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "data_classification")]
     public List<DataClassification>? DataClassifications { get; set; }
 
     /// <summary>
@@ -154,7 +154,7 @@ public class Metadata : OcsfObject
     /// </summary>
     [JsonPropertyName("logged_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? LoggedTimeDt { get; set; }
 
     /// <summary>
@@ -179,7 +179,7 @@ public class Metadata : OcsfObject
     /// </summary>
     [JsonPropertyName("modified_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? ModifiedTimeDt { get; set; }
 
     /// <summary>
@@ -213,7 +213,7 @@ public class Metadata : OcsfObject
     /// </summary>
     [JsonPropertyName("processed_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? ProcessedTimeDt { get; set; }
 
     /// <summary>
@@ -305,7 +305,7 @@ public class Metadata : OcsfObject
     /// </summary>
     [JsonPropertyName("transmit_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? TransmitTimeDt { get; set; }
 
     /// <summary>

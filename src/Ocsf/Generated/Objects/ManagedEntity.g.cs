@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Managed Entity object describes the type and version of an entity, such as a user, device, or policy. For types in the <c>type_id</c> enum list, an associated attribute should be populated. If the type of entity is not in the <c>type_id</c> list, information can be put into the <c>data</c> attribute, <c>type_id</c> should be 'Other' and the <c>type</c> attribute should label the entity type.
 /// </summary>
 [OcsfObject("managed_entity")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Device", "Group", "Name", "Org", "Policy", "Uid", "User")]
 public class ManagedEntity : OcsfObject
 {
     /// <summary>
@@ -101,6 +102,7 @@ public class ManagedEntity : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Type")]
     public ManagedEntityTypeId? TypeId { get; set; }
 
     /// <summary>

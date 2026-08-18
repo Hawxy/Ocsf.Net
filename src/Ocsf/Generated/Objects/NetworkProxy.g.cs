@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The network proxy endpoint object describes a proxy server, which acts as an intermediary between a client requesting a resource and the server providing that resource.
 /// </summary>
 [OcsfObject("network_proxy")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Domain", "Hostname", "InstanceUid", "InterfaceName", "InterfaceUid", "Ip", "Name", "SvcName", "Uid")]
 public class NetworkProxy : OcsfObject
 {
     /// <summary>
@@ -37,7 +38,7 @@ public class NetworkProxy : OcsfObject
     /// </summary>
     [JsonPropertyName("container")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "container")]
     public Container? Container { get; set; }
 
     /// <summary>
@@ -172,7 +173,7 @@ public class NetworkProxy : OcsfObject
     /// </summary>
     [JsonPropertyName("namespace_pid")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "container")]
     public int? NamespacePid { get; set; }
 
     /// <summary>
@@ -190,6 +191,7 @@ public class NetworkProxy : OcsfObject
     [JsonPropertyName("network_scope_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("NetworkScope")]
     public NetworkProxyNetworkScopeId? NetworkScopeId { get; set; }
 
     /// <summary>
@@ -266,6 +268,7 @@ public class NetworkProxy : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Type")]
     public NetworkProxyTypeId? TypeId { get; set; }
 
     /// <summary>

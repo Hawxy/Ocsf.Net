@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Identity Provider object contains detailed information about a provider responsible for creating, maintaining, and managing identity information while offering authentication services to applications. An Identity Provider (IdP) serves as a trusted authority that verifies the identity of users and issues authentication tokens or assertions to enable secure access to applications or services.
 /// </summary>
 [OcsfObject("idp")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "Uid")]
 public class Idp : OcsfObject
 {
     /// <summary>
@@ -103,6 +104,7 @@ public class Idp : OcsfObject
     [JsonPropertyName("state_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("State")]
     public IdpStateId? StateId { get; set; }
 
     /// <summary>

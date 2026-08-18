@@ -86,7 +86,7 @@ public class NetworkTraffic : OcsfObject
     /// </summary>
     [JsonPropertyName("end_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? EndTimeDt { get; set; }
 
     /// <summary>
@@ -128,7 +128,7 @@ public class NetworkTraffic : OcsfObject
     /// </summary>
     [JsonPropertyName("start_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? StartTimeDt { get; set; }
 
     /// <summary>

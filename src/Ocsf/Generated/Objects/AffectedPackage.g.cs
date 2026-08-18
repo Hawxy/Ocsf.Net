@@ -152,6 +152,7 @@ public class AffectedPackage : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Type")]
     public AffectedPackageTypeId? TypeId { get; set; }
 
     /// <summary>

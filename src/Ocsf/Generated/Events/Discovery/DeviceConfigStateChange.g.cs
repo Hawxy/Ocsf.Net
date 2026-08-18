@@ -37,7 +37,8 @@ public class DeviceConfigStateChange : OcsfEvent
     /// </summary>
     [JsonPropertyName("action_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Action")]
     public DeviceConfigStateChangeActionId? ActionId { get; set; }
 
     /// <summary>
@@ -47,6 +48,7 @@ public class DeviceConfigStateChange : OcsfEvent
     [JsonPropertyName("activity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("ActivityName")]
     public DeviceConfigStateChangeActivityId? ActivityId { get; set; }
 
     /// <summary>
@@ -55,7 +57,8 @@ public class DeviceConfigStateChange : OcsfEvent
     /// </summary>
     [JsonPropertyName("confidence_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Confidence")]
     public DeviceConfigStateChangeConfidenceId? ConfidenceId { get; set; }
 
     /// <summary>
@@ -64,7 +67,8 @@ public class DeviceConfigStateChange : OcsfEvent
     /// </summary>
     [JsonPropertyName("disposition_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Disposition")]
     public DeviceConfigStateChangeDispositionId? DispositionId { get; set; }
 
     /// <summary>
@@ -83,6 +87,7 @@ public class DeviceConfigStateChange : OcsfEvent
     [JsonPropertyName("prev_security_level_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("PrevSecurityLevel")]
     public DeviceConfigStateChangePrevSecurityLevelId? PrevSecurityLevelId { get; set; }
 
     /// <summary>
@@ -100,7 +105,8 @@ public class DeviceConfigStateChange : OcsfEvent
     /// </summary>
     [JsonPropertyName("risk_level_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
+    [OcsfSibling("RiskLevel")]
     public DeviceConfigStateChangeRiskLevelId? RiskLevelId { get; set; }
 
     /// <summary>
@@ -119,6 +125,7 @@ public class DeviceConfigStateChange : OcsfEvent
     [JsonPropertyName("security_level_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("SecurityLevel")]
     public DeviceConfigStateChangeSecurityLevelId? SecurityLevelId { get; set; }
 
     /// <summary>
@@ -138,6 +145,7 @@ public class DeviceConfigStateChange : OcsfEvent
     [JsonPropertyName("severity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Severity")]
     public DeviceConfigStateChangeSeverityId? SeverityId { get; set; }
 
     /// <summary>
@@ -155,6 +163,7 @@ public class DeviceConfigStateChange : OcsfEvent
     [JsonPropertyName("state_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("State")]
     public DeviceConfigStateChangeStateId? StateId { get; set; }
 
     /// <summary>
@@ -164,6 +173,7 @@ public class DeviceConfigStateChange : OcsfEvent
     [JsonPropertyName("status_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Status")]
     public DeviceConfigStateChangeStatusId? StatusId { get; set; }
 
     /// <summary>

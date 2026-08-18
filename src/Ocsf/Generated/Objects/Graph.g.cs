@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// A graph data structure representation with nodes and edges.
 /// </summary>
 [OcsfObject("graph")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "Uid")]
 public class Graph : OcsfObject
 {
     /// <summary>
@@ -72,6 +73,7 @@ public class Graph : OcsfObject
     [JsonPropertyName("query_language_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("QueryLanguage")]
     public GraphQueryLanguageId? QueryLanguageId { get; set; }
 
     /// <summary>

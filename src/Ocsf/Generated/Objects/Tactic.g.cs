@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The MITRE Tactic object describes the ATT&amp;CK® or ATLAS™ Tactic ID and/or name that is associated to an attack.
 /// </summary>
 [OcsfObject("tactic")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "Uid")]
 public class Tactic : OcsfObject
 {
     /// <summary>

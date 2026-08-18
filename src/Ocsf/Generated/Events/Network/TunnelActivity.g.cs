@@ -13,6 +13,7 @@ namespace Ocsf.Events.Network;
 /// Tunnel Activity events report secure tunnel establishment (such as VPN), teardowns, renewals, and other network tunnel specific actions.
 /// </summary>
 [OcsfEventClass(4014, 4, "tunnel_activity")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "ConnectionInfo", "Session", "SrcEndpoint", "Traffic", "TunnelInterface", "TunnelTypeId")]
 public class TunnelActivity : OcsfEvent
 {
     /// <summary>The <c>class_uid</c> of the <c>tunnel_activity</c> event class.</summary>
@@ -37,7 +38,8 @@ public class TunnelActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("action_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Action")]
     public TunnelActivityActionId? ActionId { get; set; }
 
     /// <summary>
@@ -47,6 +49,7 @@ public class TunnelActivity : OcsfEvent
     [JsonPropertyName("activity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("ActivityName")]
     public TunnelActivityActivityId? ActivityId { get; set; }
 
     /// <summary>
@@ -55,7 +58,7 @@ public class TunnelActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("ai_agent")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "ai_operation")]
     public Objects.AiAgent? AiAgent { get; set; }
 
     /// <summary>
@@ -64,7 +67,7 @@ public class TunnelActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("ai_model")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "ai_operation")]
     public Objects.AiModel? AiModel { get; set; }
 
     /// <summary>
@@ -90,7 +93,8 @@ public class TunnelActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("confidence_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Confidence")]
     public TunnelActivityConfidenceId? ConfidenceId { get; set; }
 
     /// <summary>
@@ -115,7 +119,7 @@ public class TunnelActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("delegation")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "ai_operation")]
     public Objects.Delegation? Delegation { get; set; }
 
     /// <summary>
@@ -124,7 +128,8 @@ public class TunnelActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("disposition_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Disposition")]
     public TunnelActivityDispositionId? DispositionId { get; set; }
 
     /// <summary>
@@ -150,7 +155,7 @@ public class TunnelActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("load_balancer")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "load_balancer")]
     public Objects.LoadBalancer? LoadBalancer { get; set; }
 
     /// <summary>
@@ -159,7 +164,7 @@ public class TunnelActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("message_context")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "ai_operation")]
     public Objects.MessageContext? MessageContext { get; set; }
 
     /// <summary>
@@ -185,6 +190,7 @@ public class TunnelActivity : OcsfEvent
     [JsonPropertyName("observation_point_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("ObservationPoint")]
     public TunnelActivityObservationPointId? ObservationPointId { get; set; }
 
     /// <summary>
@@ -219,7 +225,7 @@ public class TunnelActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("proxy_connection_info")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "network_proxy")]
     public Objects.NetworkConnectionInfo? ProxyConnectionInfo { get; set; }
 
     /// <summary>
@@ -228,7 +234,7 @@ public class TunnelActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("proxy_endpoint")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "network_proxy")]
     public Objects.NetworkProxy? ProxyEndpoint { get; set; }
 
     /// <summary>
@@ -237,7 +243,7 @@ public class TunnelActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("proxy_http_request")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "network_proxy")]
     public Objects.HttpRequest? ProxyHttpRequest { get; set; }
 
     /// <summary>
@@ -246,7 +252,7 @@ public class TunnelActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("proxy_http_response")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "network_proxy")]
     public Objects.HttpResponse? ProxyHttpResponse { get; set; }
 
     /// <summary>
@@ -255,7 +261,7 @@ public class TunnelActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("proxy_tls")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "network_proxy")]
     public Objects.Tls? ProxyTls { get; set; }
 
     /// <summary>
@@ -264,7 +270,7 @@ public class TunnelActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("proxy_traffic")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "network_proxy")]
     public Objects.NetworkTraffic? ProxyTraffic { get; set; }
 
     /// <summary>
@@ -273,7 +279,8 @@ public class TunnelActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("risk_level_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
+    [OcsfSibling("RiskLevel")]
     public TunnelActivityRiskLevelId? RiskLevelId { get; set; }
 
     /// <summary>
@@ -293,6 +300,7 @@ public class TunnelActivity : OcsfEvent
     [JsonPropertyName("severity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Severity")]
     public TunnelActivitySeverityId? SeverityId { get; set; }
 
     /// <summary>
@@ -311,6 +319,7 @@ public class TunnelActivity : OcsfEvent
     [JsonPropertyName("status_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Status")]
     public TunnelActivityStatusId? StatusId { get; set; }
 
     /// <summary>
@@ -354,6 +363,7 @@ public class TunnelActivity : OcsfEvent
     [JsonPropertyName("tunnel_type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("TunnelType")]
     public TunnelActivityTunnelTypeId? TunnelTypeId { get; set; }
 
     /// <summary>

@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Network Endpoint object describes characteristics of a network endpoint. These can be a source or destination of a network connection.
 /// </summary>
 [OcsfObject("network_endpoint")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Domain", "Hostname", "InstanceUid", "InterfaceName", "InterfaceUid", "Ip", "Name", "SvcName", "Uid")]
 public class NetworkEndpoint : OcsfObject
 {
     /// <summary>
@@ -37,7 +38,7 @@ public class NetworkEndpoint : OcsfObject
     /// </summary>
     [JsonPropertyName("container")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "container")]
     public Container? Container { get; set; }
 
     /// <summary>
@@ -172,7 +173,7 @@ public class NetworkEndpoint : OcsfObject
     /// </summary>
     [JsonPropertyName("namespace_pid")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "container")]
     public int? NamespacePid { get; set; }
 
     /// <summary>
@@ -190,6 +191,7 @@ public class NetworkEndpoint : OcsfObject
     [JsonPropertyName("network_scope_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("NetworkScope")]
     public NetworkEndpointNetworkScopeId? NetworkScopeId { get; set; }
 
     /// <summary>
@@ -266,6 +268,7 @@ public class NetworkEndpoint : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Type")]
     public NetworkEndpointTypeId? TypeId { get; set; }
 
     /// <summary>

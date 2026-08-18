@@ -31,6 +31,7 @@ public class VendorAttributes : OcsfObject
     [JsonPropertyName("severity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("Severity")]
     public VendorAttributesSeverityId? SeverityId { get; set; }
 
     /// <summary>

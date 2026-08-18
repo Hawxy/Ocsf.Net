@@ -72,6 +72,7 @@ public class DeviceHwInfo : OcsfObject
     [JsonPropertyName("cpu_architecture_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("CpuArchitecture")]
     public DeviceHwInfoCpuArchitectureId? CpuArchitectureId { get; set; }
 
     /// <summary>

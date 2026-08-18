@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Firewall Rule object represents a specific rule within a firewall policy or event. It contains information about a rule's configuration, properties, and associated actions that define how network traffic is handled by the firewall.
 /// </summary>
 [OcsfObject("firewall_rule")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "Uid")]
 public class FirewallRule : OcsfObject
 {
     /// <summary>

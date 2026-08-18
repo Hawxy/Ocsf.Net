@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Process object describes a running instance of a launched program.
 /// </summary>
 [OcsfObject("process")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Cpid", "Pid", "Uid")]
 public class Process : OcsfObject
 {
     /// <summary>
@@ -21,7 +22,7 @@ public class Process : OcsfObject
     /// </summary>
     [JsonPropertyName("ai_agent")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "ai_operation")]
     public AiAgent? AiAgent { get; set; }
 
     /// <summary>
@@ -47,7 +48,7 @@ public class Process : OcsfObject
     /// </summary>
     [JsonPropertyName("container")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "container")]
     public Container? Container { get; set; }
 
     /// <summary>
@@ -74,7 +75,7 @@ public class Process : OcsfObject
     /// </summary>
     [JsonPropertyName("created_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? CreatedTimeDt { get; set; }
 
     /// <summary>
@@ -100,7 +101,7 @@ public class Process : OcsfObject
     /// </summary>
     [JsonPropertyName("hosted_ai_agent_list")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "ai_operation")]
     public List<AiAgent>? HostedAiAgentList { get; set; }
 
     /// <summary>
@@ -126,6 +127,7 @@ public class Process : OcsfObject
     [JsonPropertyName("integrity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("Integrity")]
     public ProcessIntegrityId? IntegrityId { get; set; }
 
     /// <summary>
@@ -160,7 +162,7 @@ public class Process : OcsfObject
     /// </summary>
     [JsonPropertyName("namespace_pid")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "container")]
     public int? NamespacePid { get; set; }
 
     /// <summary>
@@ -227,7 +229,7 @@ public class Process : OcsfObject
     /// </summary>
     [JsonPropertyName("terminated_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? TerminatedTimeDt { get; set; }
 
     /// <summary>

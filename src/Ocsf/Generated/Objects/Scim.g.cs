@@ -30,6 +30,7 @@ public class Scim : OcsfObject
     [JsonPropertyName("auth_protocol_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("AuthProtocol")]
     public ScimAuthProtocolId? AuthProtocolId { get; set; }
 
     /// <summary>
@@ -46,7 +47,7 @@ public class Scim : OcsfObject
     /// </summary>
     [JsonPropertyName("created_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? CreatedTimeDt { get; set; }
 
     /// <summary>
@@ -87,7 +88,7 @@ public class Scim : OcsfObject
     /// </summary>
     [JsonPropertyName("last_run_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? LastRunTimeDt { get; set; }
 
     /// <summary>
@@ -104,7 +105,7 @@ public class Scim : OcsfObject
     /// </summary>
     [JsonPropertyName("modified_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? ModifiedTimeDt { get; set; }
 
     /// <summary>
@@ -165,6 +166,7 @@ public class Scim : OcsfObject
     [JsonPropertyName("state_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("State")]
     public ScimStateId? StateId { get; set; }
 
     /// <summary>

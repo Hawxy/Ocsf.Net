@@ -37,7 +37,8 @@ public class SoftwareInfo : OcsfEvent
     /// </summary>
     [JsonPropertyName("action_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Action")]
     public SoftwareInfoActionId? ActionId { get; set; }
 
     /// <summary>
@@ -47,6 +48,7 @@ public class SoftwareInfo : OcsfEvent
     [JsonPropertyName("activity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("ActivityName")]
     public SoftwareInfoActivityId? ActivityId { get; set; }
 
     /// <summary>
@@ -55,7 +57,8 @@ public class SoftwareInfo : OcsfEvent
     /// </summary>
     [JsonPropertyName("confidence_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Confidence")]
     public SoftwareInfoConfidenceId? ConfidenceId { get; set; }
 
     /// <summary>
@@ -64,7 +67,8 @@ public class SoftwareInfo : OcsfEvent
     /// </summary>
     [JsonPropertyName("disposition_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Disposition")]
     public SoftwareInfoDispositionId? DispositionId { get; set; }
 
     /// <summary>
@@ -91,7 +95,8 @@ public class SoftwareInfo : OcsfEvent
     /// </summary>
     [JsonPropertyName("risk_level_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
+    [OcsfSibling("RiskLevel")]
     public SoftwareInfoRiskLevelId? RiskLevelId { get; set; }
 
     /// <summary>
@@ -111,6 +116,7 @@ public class SoftwareInfo : OcsfEvent
     [JsonPropertyName("severity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Severity")]
     public SoftwareInfoSeverityId? SeverityId { get; set; }
 
     /// <summary>
@@ -120,6 +126,7 @@ public class SoftwareInfo : OcsfEvent
     [JsonPropertyName("status_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Status")]
     public SoftwareInfoStatusId? StatusId { get; set; }
 
     /// <summary>

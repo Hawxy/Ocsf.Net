@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Analytic object contains details about the analytic technique used to analyze and derive insights from the data or information that led to the creation of a finding or conclusion.
 /// </summary>
 [OcsfObject("analytic")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "Uid")]
 public class Analytic : OcsfObject
 {
     /// <summary>
@@ -80,6 +81,7 @@ public class Analytic : OcsfObject
     [JsonPropertyName("state_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("State")]
     public AnalyticStateId? StateId { get; set; }
 
     /// <summary>
@@ -97,6 +99,7 @@ public class Analytic : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Type")]
     public AnalyticTypeId? TypeId { get; set; }
 
     /// <summary>

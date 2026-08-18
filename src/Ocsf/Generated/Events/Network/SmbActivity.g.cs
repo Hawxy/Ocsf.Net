@@ -13,6 +13,7 @@ namespace Ocsf.Events.Network;
 /// Server Message Block (SMB) Protocol Activity events report client/server connections sharing resources within the network.
 /// </summary>
 [OcsfEventClass(4006, 4, "smb_activity")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "DstEndpoint", "SrcEndpoint")]
 public class SmbActivity : OcsfEvent
 {
     /// <summary>The <c>class_uid</c> of the <c>smb_activity</c> event class.</summary>
@@ -37,7 +38,8 @@ public class SmbActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("action_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Action")]
     public SmbActivityActionId? ActionId { get; set; }
 
     /// <summary>
@@ -47,6 +49,7 @@ public class SmbActivity : OcsfEvent
     [JsonPropertyName("activity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("ActivityName")]
     public SmbActivityActivityId? ActivityId { get; set; }
 
     /// <summary>
@@ -55,7 +58,7 @@ public class SmbActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("ai_agent")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "ai_operation")]
     public Objects.AiAgent? AiAgent { get; set; }
 
     /// <summary>
@@ -64,7 +67,7 @@ public class SmbActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("ai_model")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "ai_operation")]
     public Objects.AiModel? AiModel { get; set; }
 
     /// <summary>
@@ -108,7 +111,8 @@ public class SmbActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("confidence_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Confidence")]
     public SmbActivityConfidenceId? ConfidenceId { get; set; }
 
     /// <summary>
@@ -142,7 +146,7 @@ public class SmbActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("delegation")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "ai_operation")]
     public Objects.Delegation? Delegation { get; set; }
 
     /// <summary>
@@ -160,7 +164,8 @@ public class SmbActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("disposition_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Disposition")]
     public SmbActivityDispositionId? DispositionId { get; set; }
 
     /// <summary>
@@ -195,7 +200,7 @@ public class SmbActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("load_balancer")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "load_balancer")]
     public Objects.LoadBalancer? LoadBalancer { get; set; }
 
     /// <summary>
@@ -204,7 +209,7 @@ public class SmbActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("message_context")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "ai_operation")]
     public Objects.MessageContext? MessageContext { get; set; }
 
     /// <summary>
@@ -230,6 +235,7 @@ public class SmbActivity : OcsfEvent
     [JsonPropertyName("observation_point_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("ObservationPoint")]
     public SmbActivityObservationPointId? ObservationPointId { get; set; }
 
     /// <summary>
@@ -265,7 +271,7 @@ public class SmbActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("proxy_connection_info")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "network_proxy")]
     public Objects.NetworkConnectionInfo? ProxyConnectionInfo { get; set; }
 
     /// <summary>
@@ -274,7 +280,7 @@ public class SmbActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("proxy_endpoint")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "network_proxy")]
     public Objects.NetworkProxy? ProxyEndpoint { get; set; }
 
     /// <summary>
@@ -283,7 +289,7 @@ public class SmbActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("proxy_http_request")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "network_proxy")]
     public Objects.HttpRequest? ProxyHttpRequest { get; set; }
 
     /// <summary>
@@ -292,7 +298,7 @@ public class SmbActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("proxy_http_response")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "network_proxy")]
     public Objects.HttpResponse? ProxyHttpResponse { get; set; }
 
     /// <summary>
@@ -301,7 +307,7 @@ public class SmbActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("proxy_tls")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "network_proxy")]
     public Objects.Tls? ProxyTls { get; set; }
 
     /// <summary>
@@ -310,7 +316,7 @@ public class SmbActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("proxy_traffic")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "network_proxy")]
     public Objects.NetworkTraffic? ProxyTraffic { get; set; }
 
     /// <summary>
@@ -328,7 +334,8 @@ public class SmbActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("risk_level_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
+    [OcsfSibling("RiskLevel")]
     public SmbActivityRiskLevelId? RiskLevelId { get; set; }
 
     /// <summary>
@@ -339,6 +346,7 @@ public class SmbActivity : OcsfEvent
     [JsonPropertyName("severity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Severity")]
     public SmbActivitySeverityId? SeverityId { get; set; }
 
     /// <summary>
@@ -366,6 +374,7 @@ public class SmbActivity : OcsfEvent
     [JsonPropertyName("share_type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("ShareType")]
     public SmbActivityShareTypeId? ShareTypeId { get; set; }
 
     /// <summary>
@@ -384,6 +393,7 @@ public class SmbActivity : OcsfEvent
     [JsonPropertyName("status_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Status")]
     public SmbActivityStatusId? StatusId { get; set; }
 
     /// <summary>

@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Ticket object represents ticket in the customer's IT Service Management (ITSM) systems like ServiceNow, Jira, etc.
 /// </summary>
 [OcsfObject("ticket")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "SrcUrl", "Uid")]
 public class Ticket : OcsfObject
 {
     /// <summary>
@@ -47,6 +48,7 @@ public class Ticket : OcsfObject
     [JsonPropertyName("status_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("Status")]
     public TicketStatusId? StatusId { get; set; }
 
     /// <summary>
@@ -72,6 +74,7 @@ public class Ticket : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("Type")]
     public TicketTypeId? TypeId { get; set; }
 
     /// <summary>

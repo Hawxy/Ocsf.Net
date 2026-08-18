@@ -30,6 +30,7 @@ public class DigitalSignature : OcsfObject
     [JsonPropertyName("algorithm_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Algorithm")]
     public DigitalSignatureAlgorithmId? AlgorithmId { get; set; }
 
     /// <summary>
@@ -55,7 +56,7 @@ public class DigitalSignature : OcsfObject
     /// </summary>
     [JsonPropertyName("created_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? CreatedTimeDt { get; set; }
 
     /// <summary>
@@ -89,6 +90,7 @@ public class DigitalSignature : OcsfObject
     [JsonPropertyName("serialization_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Serialization")]
     public DigitalSignatureSerializationId? SerializationId { get; set; }
 
     /// <summary>
@@ -106,6 +108,7 @@ public class DigitalSignature : OcsfObject
     [JsonPropertyName("state_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("State")]
     public DigitalSignatureStateId? StateId { get; set; }
 
     /// <summary>

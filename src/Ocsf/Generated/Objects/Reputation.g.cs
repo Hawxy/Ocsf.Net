@@ -48,6 +48,7 @@ public class Reputation : OcsfObject
     [JsonPropertyName("score_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Score")]
     public ReputationScoreId? ScoreId { get; set; }
 
     /// <summary>

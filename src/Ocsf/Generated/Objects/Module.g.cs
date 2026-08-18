@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Module object describes the attributes of a module.
 /// </summary>
 [OcsfObject("module")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "FunctionName", "LoadTypeId")]
 public class Module : OcsfObject
 {
     /// <summary>
@@ -65,6 +66,7 @@ public class Module : OcsfObject
     [JsonPropertyName("load_type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("LoadType")]
     public ModuleLoadTypeId? LoadTypeId { get; set; }
 
     /// <summary>

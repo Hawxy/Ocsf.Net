@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The KB Article object contains metadata that describes the patch or update.
 /// </summary>
 [OcsfObject("kb_article")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "SrcUrl", "Uid")]
 public class KbArticle : OcsfObject
 {
     /// <summary>
@@ -53,7 +54,7 @@ public class KbArticle : OcsfObject
     /// </summary>
     [JsonPropertyName("created_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? CreatedTimeDt { get; set; }
 
     /// <summary>
@@ -72,6 +73,7 @@ public class KbArticle : OcsfObject
     [JsonPropertyName("install_state_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("InstallState")]
     public KbArticleInstallStateId? InstallStateId { get; set; }
 
     /// <summary>

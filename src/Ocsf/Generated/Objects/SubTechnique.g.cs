@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The MITRE Sub-technique object describes the ATT&amp;CK® or ATLAS™ Sub-technique ID and/or name associated to an attack.
 /// </summary>
 [OcsfObject("sub_technique")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "Uid")]
 public class SubTechnique : OcsfObject
 {
     /// <summary>

@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The TSIG (Transaction Signature) object represents a TSIG resource record as defined in RFC 2845. TSIG uses a shared secret key and one-way hash function to authenticate DNS messages. Per RFC 2845, at most one TSIG record is permitted per DNS message.
 /// </summary>
 [OcsfObject("tsig")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Algorithm", "ErrorId", "KeyName")]
 public class Tsig : OcsfObject
 {
     /// <summary>
@@ -39,6 +40,7 @@ public class Tsig : OcsfObject
     [JsonPropertyName("error_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Error")]
     public TsigErrorId? ErrorId { get; set; }
 
     /// <summary>

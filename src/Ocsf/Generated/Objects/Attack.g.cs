@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Attack object describes the tactic, technique, sub-technique &amp; mitigation associated to an attack.
 /// </summary>
 [OcsfObject("attack")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "SubTechnique", "Tactic", "Technique")]
 public class Attack : OcsfObject
 {
     /// <summary>

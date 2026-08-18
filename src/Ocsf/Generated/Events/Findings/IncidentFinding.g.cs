@@ -14,6 +14,7 @@ namespace Ocsf.Events.Findings;
 /// Note: <c>Incident Finding</c> implicitly includes the <c>incident</c> profile and it should be added to the <c>metadata.profiles[]</c> array.
 /// </summary>
 [OcsfEventClass(2005, 2, "incident_finding")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Assignee", "AssigneeGroup")]
 public class IncidentFinding : OcsfEvent
 {
     /// <summary>The <c>class_uid</c> of the <c>incident_finding</c> event class.</summary>
@@ -38,7 +39,8 @@ public class IncidentFinding : OcsfEvent
     /// </summary>
     [JsonPropertyName("action_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Action")]
     public IncidentFindingActionId? ActionId { get; set; }
 
     /// <summary>
@@ -48,6 +50,7 @@ public class IncidentFinding : OcsfEvent
     [JsonPropertyName("activity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("ActivityName")]
     public IncidentFindingActivityId? ActivityId { get; set; }
 
     /// <summary>
@@ -82,6 +85,7 @@ public class IncidentFinding : OcsfEvent
     [JsonPropertyName("confidence_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Confidence")]
     public IncidentFindingConfidenceId? ConfidenceId { get; set; }
 
     /// <summary>
@@ -99,7 +103,8 @@ public class IncidentFinding : OcsfEvent
     /// </summary>
     [JsonPropertyName("disposition_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Disposition")]
     public IncidentFindingDispositionId? DispositionId { get; set; }
 
     /// <summary>
@@ -127,6 +132,7 @@ public class IncidentFinding : OcsfEvent
     [JsonPropertyName("impact_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Impact")]
     public IncidentFindingImpactId? ImpactId { get; set; }
 
     /// <summary>
@@ -169,6 +175,7 @@ public class IncidentFinding : OcsfEvent
     [JsonPropertyName("priority_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Priority")]
     public IncidentFindingPriorityId? PriorityId { get; set; }
 
     /// <summary>
@@ -177,7 +184,8 @@ public class IncidentFinding : OcsfEvent
     /// </summary>
     [JsonPropertyName("risk_level_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
+    [OcsfSibling("RiskLevel")]
     public IncidentFindingRiskLevelId? RiskLevelId { get; set; }
 
     /// <summary>
@@ -188,6 +196,7 @@ public class IncidentFinding : OcsfEvent
     [JsonPropertyName("severity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Severity")]
     public IncidentFindingSeverityId? SeverityId { get; set; }
 
     /// <summary>
@@ -206,6 +215,7 @@ public class IncidentFinding : OcsfEvent
     [JsonPropertyName("status_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Status")]
     public IncidentFindingStatusId? StatusId { get; set; }
 
     /// <summary>
@@ -250,6 +260,7 @@ public class IncidentFinding : OcsfEvent
     [JsonPropertyName("verdict_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Verdict")]
     public IncidentFindingVerdictId? VerdictId { get; set; }
 
     /// <summary>

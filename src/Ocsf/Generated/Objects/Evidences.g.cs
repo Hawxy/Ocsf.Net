@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// A collection of evidence artifacts associated to the activity/activities that triggered a security detection.
 /// </summary>
 [OcsfObject("evidences")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Actor", "Api", "ConnectionInfo", "Data", "Database", "Databucket", "Device", "DstEndpoint", "Email", "File", "Job", "Process", "Query", "RegKey", "RegValue", "Script", "SrcEndpoint", "Url", "User", "WinService")]
 public class Evidences : OcsfObject
 {
     /// <summary>
@@ -288,6 +289,7 @@ public class Evidences : OcsfObject
     [JsonPropertyName("verdict_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("Verdict")]
     public EvidencesVerdictId? VerdictId { get; set; }
 
     /// <summary>

@@ -112,6 +112,7 @@ public class Os : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Type")]
     public OsTypeId? TypeId { get; set; }
 
     /// <summary>

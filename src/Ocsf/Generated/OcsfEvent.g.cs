@@ -21,7 +21,7 @@ public abstract partial class OcsfEvent
     /// </summary>
     [JsonPropertyName("action")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
     public string? Action { get; set; }
 
     /// <summary>
@@ -38,7 +38,7 @@ public abstract partial class OcsfEvent
     /// </summary>
     [JsonPropertyName("actor")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "host")]
     public Objects.Actor? Actor { get; set; }
 
     /// <summary>
@@ -47,7 +47,7 @@ public abstract partial class OcsfEvent
     /// </summary>
     [JsonPropertyName("api")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "cloud")]
     public Objects.Api? Api { get; set; }
 
     /// <summary>
@@ -56,7 +56,7 @@ public abstract partial class OcsfEvent
     /// </summary>
     [JsonPropertyName("attacks")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
     public List<Objects.Attack>? Attacks { get; set; }
 
     /// <summary>
@@ -65,7 +65,7 @@ public abstract partial class OcsfEvent
     /// </summary>
     [JsonPropertyName("attestation_list")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "record_integrity")]
     public List<Objects.Attestation>? AttestationList { get; set; }
 
     /// <summary>
@@ -74,7 +74,7 @@ public abstract partial class OcsfEvent
     /// </summary>
     [JsonPropertyName("authorizations")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
     public List<Objects.Authorization>? Authorizations { get; set; }
 
     /// <summary>
@@ -82,7 +82,7 @@ public abstract partial class OcsfEvent
     /// </summary>
     [JsonPropertyName("category_name")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, InitializedByConstructor = true)]
     public string? CategoryName { get; set; }
 
     /// <summary>
@@ -91,7 +91,7 @@ public abstract partial class OcsfEvent
     /// </summary>
     [JsonPropertyName("category_uid")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfRequirement(OcsfRequirement.Required, InitializedByConstructor = true)]
     public int? CategoryUid { get; set; }
 
     /// <summary>
@@ -99,7 +99,7 @@ public abstract partial class OcsfEvent
     /// </summary>
     [JsonPropertyName("class_name")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, InitializedByConstructor = true)]
     public string? ClassName { get; set; }
 
     /// <summary>
@@ -108,7 +108,7 @@ public abstract partial class OcsfEvent
     /// </summary>
     [JsonPropertyName("class_uid")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfRequirement(OcsfRequirement.Required, InitializedByConstructor = true)]
     public int? ClassUid { get; set; }
 
     /// <summary>
@@ -117,7 +117,7 @@ public abstract partial class OcsfEvent
     /// </summary>
     [JsonPropertyName("cloud")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfRequirement(OcsfRequirement.Required, Profile = "cloud")]
     public Objects.Cloud? Cloud { get; set; }
 
     /// <summary>
@@ -126,7 +126,7 @@ public abstract partial class OcsfEvent
     /// </summary>
     [JsonPropertyName("confidence")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
     public string? Confidence { get; set; }
 
     /// <summary>
@@ -135,7 +135,7 @@ public abstract partial class OcsfEvent
     /// </summary>
     [JsonPropertyName("confidence_score")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
     public int? ConfidenceScore { get; set; }
 
     /// <summary>
@@ -152,7 +152,7 @@ public abstract partial class OcsfEvent
     /// </summary>
     [JsonPropertyName("device")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "host")]
     public Objects.Device? Device { get; set; }
 
     /// <summary>
@@ -161,7 +161,7 @@ public abstract partial class OcsfEvent
     /// </summary>
     [JsonPropertyName("disposition")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
     public string? Disposition { get; set; }
 
     /// <summary>
@@ -186,7 +186,7 @@ public abstract partial class OcsfEvent
     /// </summary>
     [JsonPropertyName("end_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? EndTimeDt { get; set; }
 
     /// <summary>
@@ -204,7 +204,7 @@ public abstract partial class OcsfEvent
     /// </summary>
     [JsonPropertyName("firewall_rule")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
     public Objects.FirewallRule? FirewallRule { get; set; }
 
     /// <summary>
@@ -213,7 +213,7 @@ public abstract partial class OcsfEvent
     /// </summary>
     [JsonPropertyName("is_alert")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
     public bool? IsAlert { get; set; }
 
     /// <summary>
@@ -222,7 +222,7 @@ public abstract partial class OcsfEvent
     /// </summary>
     [JsonPropertyName("malware")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
     public List<Objects.Malware>? Malware { get; set; }
 
     /// <summary>
@@ -231,7 +231,7 @@ public abstract partial class OcsfEvent
     /// </summary>
     [JsonPropertyName("malware_scan_info")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
     public Objects.MalwareScanInfo? MalwareScanInfo { get; set; }
 
     /// <summary>
@@ -267,7 +267,7 @@ public abstract partial class OcsfEvent
     /// </summary>
     [JsonPropertyName("osint")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfRequirement(OcsfRequirement.Required, Profile = "osint")]
     public List<Objects.Osint>? Osint { get; set; }
 
     /// <summary>
@@ -276,7 +276,7 @@ public abstract partial class OcsfEvent
     /// </summary>
     [JsonPropertyName("policy")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
     public Objects.Policy? Policy { get; set; }
 
     /// <summary>
@@ -309,7 +309,7 @@ public abstract partial class OcsfEvent
     /// </summary>
     [JsonPropertyName("risk_details")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
     public string? RiskDetails { get; set; }
 
     /// <summary>
@@ -318,7 +318,7 @@ public abstract partial class OcsfEvent
     /// </summary>
     [JsonPropertyName("risk_level")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
     public string? RiskLevel { get; set; }
 
     /// <summary>
@@ -327,7 +327,7 @@ public abstract partial class OcsfEvent
     /// </summary>
     [JsonPropertyName("risk_score")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
     public int? RiskScore { get; set; }
 
     /// <summary>
@@ -352,7 +352,7 @@ public abstract partial class OcsfEvent
     /// </summary>
     [JsonPropertyName("start_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? StartTimeDt { get; set; }
 
     /// <summary>
@@ -397,7 +397,7 @@ public abstract partial class OcsfEvent
     /// </summary>
     [JsonPropertyName("time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? TimeDt { get; set; }
 
     /// <summary>
@@ -423,7 +423,7 @@ public abstract partial class OcsfEvent
     /// </summary>
     [JsonPropertyName("type_uid")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfRequirement(OcsfRequirement.Required, InitializedByConstructor = true)]
     public long? TypeUid { get; set; }
 
     /// <summary>

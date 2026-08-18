@@ -29,7 +29,7 @@ public class File : OcsfObject
     /// </summary>
     [JsonPropertyName("accessed_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? AccessedTimeDt { get; set; }
 
     /// <summary>
@@ -71,6 +71,7 @@ public class File : OcsfObject
     [JsonPropertyName("confidentiality_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("Confidentiality")]
     public FileConfidentialityId? ConfidentialityId { get; set; }
 
     /// <summary>
@@ -87,7 +88,7 @@ public class File : OcsfObject
     /// </summary>
     [JsonPropertyName("created_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? CreatedTimeDt { get; set; }
 
     /// <summary>
@@ -105,7 +106,7 @@ public class File : OcsfObject
     [Obsolete("Use the attribute data_classifications instead Deprecated since 1.4.0.")]
     [JsonPropertyName("data_classification")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "data_classification")]
     public DataClassification? DataClassification { get; set; }
 
     /// <summary>
@@ -114,7 +115,7 @@ public class File : OcsfObject
     /// </summary>
     [JsonPropertyName("data_classifications")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "data_classification")]
     public List<DataClassification>? DataClassifications { get; set; }
 
     /// <summary>
@@ -148,6 +149,7 @@ public class File : OcsfObject
     [JsonPropertyName("drive_type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("DriveType")]
     public FileDriveTypeId? DriveTypeId { get; set; }
 
     /// <summary>
@@ -214,7 +216,7 @@ public class File : OcsfObject
     /// </summary>
     [JsonPropertyName("is_public")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "cloud")]
     public bool? IsPublic { get; set; }
 
     /// <summary>
@@ -255,7 +257,7 @@ public class File : OcsfObject
     /// </summary>
     [JsonPropertyName("modified_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? ModifiedTimeDt { get; set; }
 
     /// <summary>
@@ -347,7 +349,7 @@ public class File : OcsfObject
     /// </summary>
     [JsonPropertyName("storage_class")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "cloud")]
     public string? StorageClass { get; set; }
 
     /// <summary>
@@ -373,6 +375,7 @@ public class File : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Type")]
     public FileTypeId? TypeId { get; set; }
 
     /// <summary>

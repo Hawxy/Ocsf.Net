@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The database object is used for databases which are typically datastore services that contain an organized collection of structured and unstructured data or a types of data.
 /// </summary>
 [OcsfObject("database")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "Uid")]
 public class Database : OcsfObject
 {
     /// <summary>
@@ -29,7 +30,7 @@ public class Database : OcsfObject
     /// </summary>
     [JsonPropertyName("created_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? CreatedTimeDt { get; set; }
 
     /// <summary>
@@ -39,7 +40,7 @@ public class Database : OcsfObject
     [Obsolete("Use the attribute data_classifications instead Deprecated since 1.4.0.")]
     [JsonPropertyName("data_classification")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "data_classification")]
     public DataClassification? DataClassification { get; set; }
 
     /// <summary>
@@ -48,7 +49,7 @@ public class Database : OcsfObject
     /// </summary>
     [JsonPropertyName("data_classifications")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "data_classification")]
     public List<DataClassification>? DataClassifications { get; set; }
 
     /// <summary>
@@ -89,7 +90,7 @@ public class Database : OcsfObject
     /// </summary>
     [JsonPropertyName("modified_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? ModifiedTimeDt { get; set; }
 
     /// <summary>
@@ -125,6 +126,7 @@ public class Database : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Type")]
     public DatabaseTypeId? TypeId { get; set; }
 
     /// <summary>

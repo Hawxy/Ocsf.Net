@@ -38,7 +38,8 @@ public class UserAccess : OcsfEvent
     /// </summary>
     [JsonPropertyName("action_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Action")]
     public UserAccessActionId? ActionId { get; set; }
 
     /// <summary>
@@ -48,6 +49,7 @@ public class UserAccess : OcsfEvent
     [JsonPropertyName("activity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("ActivityName")]
     public UserAccessActivityId? ActivityId { get; set; }
 
     /// <summary>
@@ -56,7 +58,7 @@ public class UserAccess : OcsfEvent
     /// </summary>
     [JsonPropertyName("ai_agent")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "ai_operation")]
     public Objects.AiAgent? AiAgent { get; set; }
 
     /// <summary>
@@ -65,7 +67,7 @@ public class UserAccess : OcsfEvent
     /// </summary>
     [JsonPropertyName("ai_model")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "ai_operation")]
     public Objects.AiModel? AiModel { get; set; }
 
     /// <summary>
@@ -74,7 +76,8 @@ public class UserAccess : OcsfEvent
     /// </summary>
     [JsonPropertyName("confidence_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Confidence")]
     public UserAccessConfidenceId? ConfidenceId { get; set; }
 
     /// <summary>
@@ -83,7 +86,7 @@ public class UserAccess : OcsfEvent
     /// </summary>
     [JsonPropertyName("delegation")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "ai_operation")]
     public Objects.Delegation? Delegation { get; set; }
 
     /// <summary>
@@ -92,7 +95,8 @@ public class UserAccess : OcsfEvent
     /// </summary>
     [JsonPropertyName("disposition_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Disposition")]
     public UserAccessDispositionId? DispositionId { get; set; }
 
     /// <summary>
@@ -126,7 +130,7 @@ public class UserAccess : OcsfEvent
     /// </summary>
     [JsonPropertyName("message_context")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "ai_operation")]
     public Objects.MessageContext? MessageContext { get; set; }
 
     /// <summary>
@@ -163,7 +167,8 @@ public class UserAccess : OcsfEvent
     /// </summary>
     [JsonPropertyName("risk_level_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
+    [OcsfSibling("RiskLevel")]
     public UserAccessRiskLevelId? RiskLevelId { get; set; }
 
     /// <summary>
@@ -174,6 +179,7 @@ public class UserAccess : OcsfEvent
     [JsonPropertyName("severity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Severity")]
     public UserAccessSeverityId? SeverityId { get; set; }
 
     /// <summary>
@@ -192,6 +198,7 @@ public class UserAccess : OcsfEvent
     [JsonPropertyName("status_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Status")]
     public UserAccessStatusId? StatusId { get; set; }
 
     /// <summary>

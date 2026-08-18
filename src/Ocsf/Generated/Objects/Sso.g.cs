@@ -30,6 +30,7 @@ public class Sso : OcsfObject
     [JsonPropertyName("auth_protocol_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("AuthProtocol")]
     public SsoAuthProtocolId? AuthProtocolId { get; set; }
 
     /// <summary>
@@ -55,7 +56,7 @@ public class Sso : OcsfObject
     /// </summary>
     [JsonPropertyName("created_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? CreatedTimeDt { get; set; }
 
     /// <summary>
@@ -112,7 +113,7 @@ public class Sso : OcsfObject
     /// </summary>
     [JsonPropertyName("modified_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? ModifiedTimeDt { get; set; }
 
     /// <summary>

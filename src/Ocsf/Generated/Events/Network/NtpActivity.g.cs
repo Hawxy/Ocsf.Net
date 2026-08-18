@@ -13,6 +13,7 @@ namespace Ocsf.Events.Network;
 /// The Network Time Protocol (NTP) Activity events report instances of remote clients synchronizing their clocks with an NTP server, as observed on the network.
 /// </summary>
 [OcsfEventClass(4013, 4, "ntp_activity")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "DstEndpoint", "SrcEndpoint")]
 public class NtpActivity : OcsfEvent
 {
     /// <summary>The <c>class_uid</c> of the <c>ntp_activity</c> event class.</summary>
@@ -37,7 +38,8 @@ public class NtpActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("action_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Action")]
     public NtpActivityActionId? ActionId { get; set; }
 
     /// <summary>
@@ -47,6 +49,7 @@ public class NtpActivity : OcsfEvent
     [JsonPropertyName("activity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("ActivityName")]
     public NtpActivityActivityId? ActivityId { get; set; }
 
     /// <summary>
@@ -55,7 +58,7 @@ public class NtpActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("ai_agent")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "ai_operation")]
     public Objects.AiAgent? AiAgent { get; set; }
 
     /// <summary>
@@ -64,7 +67,7 @@ public class NtpActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("ai_model")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "ai_operation")]
     public Objects.AiModel? AiModel { get; set; }
 
     /// <summary>
@@ -90,7 +93,8 @@ public class NtpActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("confidence_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Confidence")]
     public NtpActivityConfidenceId? ConfidenceId { get; set; }
 
     /// <summary>
@@ -125,7 +129,7 @@ public class NtpActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("delegation")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "ai_operation")]
     public Objects.Delegation? Delegation { get; set; }
 
     /// <summary>
@@ -143,7 +147,8 @@ public class NtpActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("disposition_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Disposition")]
     public NtpActivityDispositionId? DispositionId { get; set; }
 
     /// <summary>
@@ -169,7 +174,7 @@ public class NtpActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("load_balancer")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "load_balancer")]
     public Objects.LoadBalancer? LoadBalancer { get; set; }
 
     /// <summary>
@@ -178,7 +183,7 @@ public class NtpActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("message_context")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "ai_operation")]
     public Objects.MessageContext? MessageContext { get; set; }
 
     /// <summary>
@@ -204,6 +209,7 @@ public class NtpActivity : OcsfEvent
     [JsonPropertyName("observation_point_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("ObservationPoint")]
     public NtpActivityObservationPointId? ObservationPointId { get; set; }
 
     /// <summary>
@@ -239,7 +245,7 @@ public class NtpActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("proxy_connection_info")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "network_proxy")]
     public Objects.NetworkConnectionInfo? ProxyConnectionInfo { get; set; }
 
     /// <summary>
@@ -248,7 +254,7 @@ public class NtpActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("proxy_endpoint")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "network_proxy")]
     public Objects.NetworkProxy? ProxyEndpoint { get; set; }
 
     /// <summary>
@@ -257,7 +263,7 @@ public class NtpActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("proxy_http_request")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "network_proxy")]
     public Objects.HttpRequest? ProxyHttpRequest { get; set; }
 
     /// <summary>
@@ -266,7 +272,7 @@ public class NtpActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("proxy_http_response")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "network_proxy")]
     public Objects.HttpResponse? ProxyHttpResponse { get; set; }
 
     /// <summary>
@@ -275,7 +281,7 @@ public class NtpActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("proxy_tls")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "network_proxy")]
     public Objects.Tls? ProxyTls { get; set; }
 
     /// <summary>
@@ -284,7 +290,7 @@ public class NtpActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("proxy_traffic")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "network_proxy")]
     public Objects.NetworkTraffic? ProxyTraffic { get; set; }
 
     /// <summary>
@@ -293,7 +299,8 @@ public class NtpActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("risk_level_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
+    [OcsfSibling("RiskLevel")]
     public NtpActivityRiskLevelId? RiskLevelId { get; set; }
 
     /// <summary>
@@ -304,6 +311,7 @@ public class NtpActivity : OcsfEvent
     [JsonPropertyName("severity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Severity")]
     public NtpActivitySeverityId? SeverityId { get; set; }
 
     /// <summary>
@@ -322,6 +330,7 @@ public class NtpActivity : OcsfEvent
     [JsonPropertyName("status_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Status")]
     public NtpActivityStatusId? StatusId { get; set; }
 
     /// <summary>
@@ -340,6 +349,7 @@ public class NtpActivity : OcsfEvent
     [JsonPropertyName("stratum_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Stratum")]
     public NtpActivityStratumId? StratumId { get; set; }
 
     /// <summary>

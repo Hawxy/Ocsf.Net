@@ -13,6 +13,7 @@ namespace Ocsf.Events.Discovery;
 /// Cloud Resources Inventory Info events report cloud asset inventory data. This data can be either logged or proactively collected. For example, use this event class when creating an inventory of cloud resource information from a Configuration Management Database (CMDB), Cyber Asset Attack Surface Management (CAASM), direct public cloud service provider APIs, Software-as-a-Service (SaaS) APIs, or otherwise.
 /// </summary>
 [OcsfEventClass(5023, 5, "cloud_resources_inventory_info")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Cloud", "Container", "Database", "Databucket", "Idp", "Resources", "Table")]
 public class CloudResourcesInventoryInfo : OcsfEvent
 {
     /// <summary>The <c>class_uid</c> of the <c>cloud_resources_inventory_info</c> event class.</summary>
@@ -37,7 +38,8 @@ public class CloudResourcesInventoryInfo : OcsfEvent
     /// </summary>
     [JsonPropertyName("action_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Action")]
     public CloudResourcesInventoryInfoActionId? ActionId { get; set; }
 
     /// <summary>
@@ -47,6 +49,7 @@ public class CloudResourcesInventoryInfo : OcsfEvent
     [JsonPropertyName("activity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("ActivityName")]
     public CloudResourcesInventoryInfoActivityId? ActivityId { get; set; }
 
     /// <summary>
@@ -55,7 +58,8 @@ public class CloudResourcesInventoryInfo : OcsfEvent
     /// </summary>
     [JsonPropertyName("confidence_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Confidence")]
     public CloudResourcesInventoryInfoConfidenceId? ConfidenceId { get; set; }
 
     /// <summary>
@@ -91,7 +95,8 @@ public class CloudResourcesInventoryInfo : OcsfEvent
     /// </summary>
     [JsonPropertyName("disposition_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Disposition")]
     public CloudResourcesInventoryInfoDispositionId? DispositionId { get; set; }
 
     /// <summary>
@@ -127,7 +132,8 @@ public class CloudResourcesInventoryInfo : OcsfEvent
     /// </summary>
     [JsonPropertyName("risk_level_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
+    [OcsfSibling("RiskLevel")]
     public CloudResourcesInventoryInfoRiskLevelId? RiskLevelId { get; set; }
 
     /// <summary>
@@ -138,6 +144,7 @@ public class CloudResourcesInventoryInfo : OcsfEvent
     [JsonPropertyName("severity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Severity")]
     public CloudResourcesInventoryInfoSeverityId? SeverityId { get; set; }
 
     /// <summary>
@@ -147,6 +154,7 @@ public class CloudResourcesInventoryInfo : OcsfEvent
     [JsonPropertyName("status_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Status")]
     public CloudResourcesInventoryInfoStatusId? StatusId { get; set; }
 
     /// <summary>

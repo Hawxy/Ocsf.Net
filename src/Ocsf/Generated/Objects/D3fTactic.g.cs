@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Defensive Tactic object describes the tactic ID and/or name that is associated to an attack.
 /// </summary>
 [OcsfObject("d3f_tactic")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "Uid")]
 public class D3fTactic : OcsfObject
 {
     /// <summary>

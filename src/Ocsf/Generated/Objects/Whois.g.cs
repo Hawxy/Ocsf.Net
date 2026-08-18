@@ -38,7 +38,7 @@ public class Whois : OcsfObject
     /// </summary>
     [JsonPropertyName("created_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? CreatedTimeDt { get; set; }
 
     /// <summary>
@@ -56,6 +56,7 @@ public class Whois : OcsfObject
     [JsonPropertyName("dnssec_status_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("DnssecStatus")]
     public WhoisDnssecStatusId? DnssecStatusId { get; set; }
 
     /// <summary>
@@ -115,7 +116,7 @@ public class Whois : OcsfObject
     /// </summary>
     [JsonPropertyName("last_seen_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? LastSeenTimeDt { get; set; }
 
     /// <summary>

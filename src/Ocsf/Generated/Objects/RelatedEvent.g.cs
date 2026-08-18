@@ -47,7 +47,7 @@ public class RelatedEvent : OcsfObject
     /// </summary>
     [JsonPropertyName("created_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? CreatedTimeDt { get; set; }
 
     /// <summary>
@@ -74,7 +74,7 @@ public class RelatedEvent : OcsfObject
     /// </summary>
     [JsonPropertyName("first_seen_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? FirstSeenTimeDt { get; set; }
 
     /// <summary>
@@ -101,7 +101,7 @@ public class RelatedEvent : OcsfObject
     /// </summary>
     [JsonPropertyName("last_seen_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? LastSeenTimeDt { get; set; }
 
     /// <summary>
@@ -118,7 +118,7 @@ public class RelatedEvent : OcsfObject
     /// </summary>
     [JsonPropertyName("modified_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? ModifiedTimeDt { get; set; }
 
     /// <summary>
@@ -162,6 +162,7 @@ public class RelatedEvent : OcsfObject
     [JsonPropertyName("severity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Severity")]
     public RelatedEventSeverityId? SeverityId { get; set; }
 
     /// <summary>

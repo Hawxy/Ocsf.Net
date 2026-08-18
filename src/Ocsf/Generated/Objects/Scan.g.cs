@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Scan object describes characteristics of a proactive scan.
 /// </summary>
 [OcsfObject("scan")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "Uid")]
 public class Scan : OcsfObject
 {
     /// <summary>
@@ -39,6 +40,7 @@ public class Scan : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Type")]
     public ScanTypeId? TypeId { get; set; }
 
     /// <summary>

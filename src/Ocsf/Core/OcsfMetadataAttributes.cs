@@ -15,6 +15,48 @@ public sealed class OcsfRequirementAttribute : Attribute
     public OcsfRequirementAttribute(OcsfRequirement requirement) => Requirement = requirement;
 
     public OcsfRequirement Requirement { get; }
+
+    /// <summary>True when the event class constructor populates this attribute
+    /// (classification attributes such as class_uid), so producers need not set it.</summary>
+    public bool InitializedByConstructor { get; set; }
+
+    /// <summary>The profile this attribute belongs to, when profile-sourced. Its requirement
+    /// applies only to events that declare the profile in metadata.profiles.</summary>
+    public string? Profile { get; set; }
+}
+
+/// <summary>Names the sibling label property of an enum-coded attribute
+/// (e.g. StatusId's sibling is Status).</summary>
+[AttributeUsage(AttributeTargets.Property)]
+public sealed class OcsfSiblingAttribute : Attribute
+{
+    public OcsfSiblingAttribute(string propertyName) => PropertyName = propertyName;
+
+    /// <summary>The C# name of the sibling label property.</summary>
+    public string PropertyName { get; }
+}
+
+/// <summary>Kinds of OCSF class and object constraints.</summary>
+public enum OcsfConstraintKind
+{
+    AtLeastOne = 0,
+    JustOne = 1,
+}
+
+/// <summary>Declares an OCSF constraint over a set of properties of the class.</summary>
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+public sealed class OcsfConstraintAttribute : Attribute
+{
+    public OcsfConstraintAttribute(OcsfConstraintKind kind, params string[] propertyNames)
+    {
+        Kind = kind;
+        PropertyNames = propertyNames;
+    }
+
+    public OcsfConstraintKind Kind { get; }
+
+    /// <summary>The C# names of the constrained properties.</summary>
+    public string[] PropertyNames { get; }
 }
 
 /// <summary>Declares the OCSF classification of a generated event class.</summary>

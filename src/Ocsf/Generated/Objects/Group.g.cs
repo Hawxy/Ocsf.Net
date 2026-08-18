@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Group object represents a collection or association of entities, such as users, policies, or devices. It serves as a logical grouping mechanism to organize and manage entities with similar characteristics or permissions within a system or organization, including but not limited to purposes of access control.
 /// </summary>
 [OcsfObject("group")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "Uid")]
 public class Group : OcsfObject
 {
     /// <summary>

@@ -39,6 +39,7 @@ public class TlsExtension : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Type")]
     public TlsExtensionTypeId? TypeId { get; set; }
 
     /// <summary>

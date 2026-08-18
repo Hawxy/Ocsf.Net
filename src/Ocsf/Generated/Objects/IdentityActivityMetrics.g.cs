@@ -29,7 +29,7 @@ public class IdentityActivityMetrics : OcsfObject
     /// </summary>
     [JsonPropertyName("first_seen_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? FirstSeenTimeDt { get; set; }
 
     /// <summary>
@@ -46,7 +46,7 @@ public class IdentityActivityMetrics : OcsfObject
     /// </summary>
     [JsonPropertyName("last_authentication_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? LastAuthenticationTimeDt { get; set; }
 
     /// <summary>
@@ -64,7 +64,7 @@ public class IdentityActivityMetrics : OcsfObject
     /// </summary>
     [JsonPropertyName("last_seen_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? LastSeenTimeDt { get; set; }
 
     /// <summary>
@@ -81,7 +81,7 @@ public class IdentityActivityMetrics : OcsfObject
     /// </summary>
     [JsonPropertyName("password_last_used_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? PasswordLastUsedTimeDt { get; set; }
 
     /// <summary>

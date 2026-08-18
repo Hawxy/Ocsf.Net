@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Sensor Information object describes a control point sensor that emits data, or originates detections. It can be part of an endpoint or agent running on an OS, a SaaS application, a network device, a Cyber Threat Intelligence (CTI) system, or other detection and enforcement technologies.
 /// </summary>
 [OcsfObject("sensor_info")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "Uid")]
 public class SensorInfo : OcsfObject
 {
     /// <summary>
@@ -39,6 +40,7 @@ public class SensorInfo : OcsfObject
     [JsonPropertyName("sensor_layer_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("SensorLayer")]
     public SensorInfoSensorLayerId? SensorLayerId { get; set; }
 
     /// <summary>

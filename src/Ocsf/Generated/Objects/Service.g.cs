@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Service object describes characteristics of a service, <c> e.g. AWS EC2. </c>
 /// </summary>
 [OcsfObject("service")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "Uid")]
 public class Service : OcsfObject
 {
     /// <summary>

@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Defensive Countermeasure object describes the tactic &amp; technique associated with a countermeasure.
 /// </summary>
 [OcsfObject("d3fend")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "D3fTactic", "D3fTechnique")]
 public class D3fend : OcsfObject
 {
     /// <summary>

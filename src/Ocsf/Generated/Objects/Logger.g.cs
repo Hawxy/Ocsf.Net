@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Logger object represents the device and product where events are stored with times for receipt and transmission. This may be at the source device where the event occurred, a remote scanning device, intermediate hops, or the ultimate destination.
 /// </summary>
 [OcsfObject("logger")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "Uid")]
 public class Logger : OcsfObject
 {
     /// <summary>
@@ -97,7 +98,7 @@ public class Logger : OcsfObject
     /// </summary>
     [JsonPropertyName("logged_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? LoggedTimeDt { get; set; }
 
     /// <summary>
@@ -133,7 +134,7 @@ public class Logger : OcsfObject
     /// </summary>
     [JsonPropertyName("transmit_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? TransmitTimeDt { get; set; }
 
     /// <summary>

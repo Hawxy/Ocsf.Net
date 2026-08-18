@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Unmanned Aerial System object describes the characteristics, Position Location Information (PLI), and other metadata of Unmanned Aerial Systems (UAS) and other unmanned and drone systems used in Remote ID. Remote ID is defined in the Standard Specification for Remote ID and Tracking (ASTM Designation: F3411-22a).
 /// </summary>
 [OcsfObject("unmanned_aerial_system")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "SerialNumber", "Uid", "UidAlt")]
 public class UnmannedAerialSystem : OcsfObject
 {
     /// <summary>
@@ -96,6 +97,7 @@ public class UnmannedAerialSystem : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Type")]
     public UnmannedAerialSystemTypeId? TypeId { get; set; }
 
     /// <summary>

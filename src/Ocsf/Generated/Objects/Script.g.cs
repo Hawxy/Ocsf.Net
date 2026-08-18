@@ -72,6 +72,7 @@ public class Script : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Type")]
     public ScriptTypeId? TypeId { get; set; }
 
     /// <summary>

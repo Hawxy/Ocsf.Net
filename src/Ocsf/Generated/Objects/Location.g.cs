@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Geo Location object describes a geographical location, usually associated with an IP address.
 /// </summary>
 [OcsfObject("location")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "City", "Country", "PostalCode", "Region")]
 public class Location : OcsfObject
 {
     /// <summary>

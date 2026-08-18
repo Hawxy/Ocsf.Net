@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Rule object describes characteristics of a rule associated with a policy or an event.
 /// </summary>
 [OcsfObject("rule")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "Uid")]
 public class Rule : OcsfObject
 {
     /// <summary>

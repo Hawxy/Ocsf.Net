@@ -48,6 +48,7 @@ public class AuthFactor : OcsfObject
     [JsonPropertyName("factor_type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("FactorType")]
     public AuthFactorFactorTypeId? FactorTypeId { get; set; }
 
     /// <summary>

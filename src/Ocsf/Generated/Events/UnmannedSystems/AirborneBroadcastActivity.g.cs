@@ -13,6 +13,7 @@ namespace Ocsf.Events.UnmannedSystems;
 /// Airborne Broadcast Activity events report the activity of any aircraft or unmanned system as reported and tracked by Automatic Dependent Surveillance - Broadcast (ADS-B) receivers. Based on the ADS-B standards described in Code of Federal Regulations (CFR) Title 14 Chapter I Subchapter F Part 91 and in other general Federal Aviation Administration (FAA) supplemental orders and guidance.
 /// </summary>
 [OcsfEventClass(8002, 8, "airborne_broadcast_activity")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Aircraft", "UnmannedAerialSystem", "UnmannedSystemOperatingArea")]
 public class AirborneBroadcastActivity : OcsfEvent
 {
     /// <summary>The <c>class_uid</c> of the <c>airborne_broadcast_activity</c> event class.</summary>
@@ -37,7 +38,8 @@ public class AirborneBroadcastActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("action_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Action")]
     public AirborneBroadcastActivityActionId? ActionId { get; set; }
 
     /// <summary>
@@ -47,6 +49,7 @@ public class AirborneBroadcastActivity : OcsfEvent
     [JsonPropertyName("activity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("ActivityName")]
     public AirborneBroadcastActivityActivityId? ActivityId { get; set; }
 
     /// <summary>
@@ -64,7 +67,8 @@ public class AirborneBroadcastActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("confidence_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Confidence")]
     public AirborneBroadcastActivityConfidenceId? ConfidenceId { get; set; }
 
     /// <summary>
@@ -82,7 +86,8 @@ public class AirborneBroadcastActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("disposition_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Disposition")]
     public AirborneBroadcastActivityDispositionId? DispositionId { get; set; }
 
     /// <summary>
@@ -117,7 +122,8 @@ public class AirborneBroadcastActivity : OcsfEvent
     /// </summary>
     [JsonPropertyName("risk_level_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
+    [OcsfSibling("RiskLevel")]
     public AirborneBroadcastActivityRiskLevelId? RiskLevelId { get; set; }
 
     /// <summary>
@@ -136,6 +142,7 @@ public class AirborneBroadcastActivity : OcsfEvent
     [JsonPropertyName("severity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Severity")]
     public AirborneBroadcastActivitySeverityId? SeverityId { get; set; }
 
     /// <summary>
@@ -153,6 +160,7 @@ public class AirborneBroadcastActivity : OcsfEvent
     [JsonPropertyName("status_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Status")]
     public AirborneBroadcastActivityStatusId? StatusId { get; set; }
 
     /// <summary>

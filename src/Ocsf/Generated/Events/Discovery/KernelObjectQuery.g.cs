@@ -38,7 +38,8 @@ public class KernelObjectQuery : OcsfEvent
     /// </summary>
     [JsonPropertyName("action_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Action")]
     public KernelObjectQueryActionId? ActionId { get; set; }
 
     /// <summary>
@@ -48,6 +49,7 @@ public class KernelObjectQuery : OcsfEvent
     [JsonPropertyName("activity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("ActivityName")]
     public KernelObjectQueryActivityId? ActivityId { get; set; }
 
     /// <summary>
@@ -56,7 +58,8 @@ public class KernelObjectQuery : OcsfEvent
     /// </summary>
     [JsonPropertyName("confidence_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Confidence")]
     public KernelObjectQueryConfidenceId? ConfidenceId { get; set; }
 
     /// <summary>
@@ -65,7 +68,8 @@ public class KernelObjectQuery : OcsfEvent
     /// </summary>
     [JsonPropertyName("disposition_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Disposition")]
     public KernelObjectQueryDispositionId? DispositionId { get; set; }
 
     /// <summary>
@@ -102,6 +106,7 @@ public class KernelObjectQuery : OcsfEvent
     [JsonPropertyName("query_result_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("QueryResult")]
     public KernelObjectQueryQueryResultId? QueryResultId { get; set; }
 
     /// <summary>
@@ -110,7 +115,8 @@ public class KernelObjectQuery : OcsfEvent
     /// </summary>
     [JsonPropertyName("risk_level_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
+    [OcsfSibling("RiskLevel")]
     public KernelObjectQueryRiskLevelId? RiskLevelId { get; set; }
 
     /// <summary>
@@ -121,6 +127,7 @@ public class KernelObjectQuery : OcsfEvent
     [JsonPropertyName("severity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Severity")]
     public KernelObjectQuerySeverityId? SeverityId { get; set; }
 
     /// <summary>
@@ -130,6 +137,7 @@ public class KernelObjectQuery : OcsfEvent
     [JsonPropertyName("status_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Status")]
     public KernelObjectQueryStatusId? StatusId { get; set; }
 
     /// <summary>

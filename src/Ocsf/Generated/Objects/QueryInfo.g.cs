@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The query info object holds information related to data access within a datastore. To access, manipulate, delete, or retrieve data from a datastore, a query must be written using a specific syntax.
 /// </summary>
 [OcsfObject("query_info")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "Uid")]
 public class QueryInfo : OcsfObject
 {
     /// <summary>
@@ -63,7 +64,7 @@ public class QueryInfo : OcsfObject
     /// </summary>
     [JsonPropertyName("query_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? QueryTimeDt { get; set; }
 
     /// <summary>

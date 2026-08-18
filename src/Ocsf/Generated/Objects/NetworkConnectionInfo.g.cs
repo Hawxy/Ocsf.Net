@@ -32,6 +32,7 @@ public class NetworkConnectionInfo : OcsfObject
     [JsonPropertyName("boundary_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Boundary")]
     public NetworkConnectionInfoBoundaryId? BoundaryId { get; set; }
 
     /// <summary>
@@ -57,6 +58,7 @@ public class NetworkConnectionInfo : OcsfObject
     [JsonPropertyName("direction_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Direction")]
     public NetworkConnectionInfoDirectionId? DirectionId { get; set; }
 
     /// <summary>
@@ -100,6 +102,7 @@ public class NetworkConnectionInfo : OcsfObject
     [JsonPropertyName("protocol_ver_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("ProtocolVer")]
     public NetworkConnectionInfoProtocolVerId? ProtocolVerId { get; set; }
 
     /// <summary>

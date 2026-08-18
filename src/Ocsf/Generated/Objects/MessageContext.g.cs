@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// Communication context for AI system interactions including protocols, roles, clients, and session information for MCP and other AI communication systems.
 /// </summary>
 [OcsfObject("message_context")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Application", "Service")]
 public class MessageContext : OcsfObject
 {
     /// <summary>
@@ -30,6 +31,7 @@ public class MessageContext : OcsfObject
     [JsonPropertyName("ai_role_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("AiRole")]
     public MessageContextAiRoleId? AiRoleId { get; set; }
 
     /// <summary>

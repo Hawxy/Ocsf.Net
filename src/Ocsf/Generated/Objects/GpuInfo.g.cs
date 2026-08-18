@@ -30,6 +30,7 @@ public class GpuInfo : OcsfObject
     [JsonPropertyName("bus_type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("BusType")]
     public GpuInfoBusTypeId? BusTypeId { get; set; }
 
     /// <summary>
@@ -74,6 +75,7 @@ public class GpuInfo : OcsfObject
     [JsonPropertyName("vram_mode_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("VramMode")]
     public GpuInfoVramModeId? VramModeId { get; set; }
 
     /// <summary>

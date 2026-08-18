@@ -38,7 +38,7 @@ public class JobTrigger : OcsfObject
     /// </summary>
     [JsonPropertyName("last_run_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? LastRunTimeDt { get; set; }
 
     /// <summary>
@@ -63,7 +63,7 @@ public class JobTrigger : OcsfObject
     /// </summary>
     [JsonPropertyName("next_run_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? NextRunTimeDt { get; set; }
 
     /// <summary>
@@ -92,6 +92,7 @@ public class JobTrigger : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Type")]
     public JobTriggerTypeId? TypeId { get; set; }
 
     /// <summary>

@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The specific resulting evidence information that was queried or discovered. When mapping raw telemetry data users should select the appropriate child object that best matches the evidence type as defined by query_type_id.
 /// </summary>
 [OcsfObject("query_evidence")]
+[OcsfConstraint(OcsfConstraintKind.JustOne, "ConnectionInfo", "File", "Folder", "Group", "Job", "Kernel", "Module", "NetworkInterfaces", "PeripheralDevice", "Process", "RegKey", "RegValue", "Service", "Session", "StartupItem", "User")]
 public class QueryEvidence : OcsfObject
 {
     /// <summary>
@@ -120,6 +121,7 @@ public class QueryEvidence : OcsfObject
     [JsonPropertyName("query_type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("QueryType")]
     public QueryEvidenceQueryTypeId? QueryTypeId { get; set; }
 
     /// <summary>

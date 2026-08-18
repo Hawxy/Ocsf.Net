@@ -38,7 +38,8 @@ public class NetworkConnectionQuery : OcsfEvent
     /// </summary>
     [JsonPropertyName("action_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Action")]
     public NetworkConnectionQueryActionId? ActionId { get; set; }
 
     /// <summary>
@@ -48,6 +49,7 @@ public class NetworkConnectionQuery : OcsfEvent
     [JsonPropertyName("activity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("ActivityName")]
     public NetworkConnectionQueryActivityId? ActivityId { get; set; }
 
     /// <summary>
@@ -56,7 +58,8 @@ public class NetworkConnectionQuery : OcsfEvent
     /// </summary>
     [JsonPropertyName("confidence_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Confidence")]
     public NetworkConnectionQueryConfidenceId? ConfidenceId { get; set; }
 
     /// <summary>
@@ -74,7 +77,8 @@ public class NetworkConnectionQuery : OcsfEvent
     /// </summary>
     [JsonPropertyName("disposition_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Disposition")]
     public NetworkConnectionQueryDispositionId? DispositionId { get; set; }
 
     /// <summary>
@@ -111,6 +115,7 @@ public class NetworkConnectionQuery : OcsfEvent
     [JsonPropertyName("query_result_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("QueryResult")]
     public NetworkConnectionQueryQueryResultId? QueryResultId { get; set; }
 
     /// <summary>
@@ -119,7 +124,8 @@ public class NetworkConnectionQuery : OcsfEvent
     /// </summary>
     [JsonPropertyName("risk_level_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
+    [OcsfSibling("RiskLevel")]
     public NetworkConnectionQueryRiskLevelId? RiskLevelId { get; set; }
 
     /// <summary>
@@ -130,6 +136,7 @@ public class NetworkConnectionQuery : OcsfEvent
     [JsonPropertyName("severity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Severity")]
     public NetworkConnectionQuerySeverityId? SeverityId { get; set; }
 
     /// <summary>
@@ -148,6 +155,7 @@ public class NetworkConnectionQuery : OcsfEvent
     [JsonPropertyName("state_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("State")]
     public NetworkConnectionQueryStateId? StateId { get; set; }
 
     /// <summary>
@@ -157,6 +165,7 @@ public class NetworkConnectionQuery : OcsfEvent
     [JsonPropertyName("status_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Status")]
     public NetworkConnectionQueryStatusId? StatusId { get; set; }
 
     /// <summary>

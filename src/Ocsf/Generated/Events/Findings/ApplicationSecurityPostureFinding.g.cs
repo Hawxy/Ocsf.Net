@@ -14,6 +14,7 @@ namespace Ocsf.Events.Findings;
 /// Note: If the Finding is an incident, i.e. requires incident workflow, also apply the <c>incident</c> profile or aggregate this finding into an <c>Incident Finding</c>.
 /// </summary>
 [OcsfEventClass(2007, 2, "application_security_posture_finding")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Application", "Compliance", "Remediation", "Vulnerabilities")]
 public class ApplicationSecurityPostureFinding : OcsfEvent
 {
     /// <summary>The <c>class_uid</c> of the <c>application_security_posture_finding</c> event class.</summary>
@@ -38,7 +39,8 @@ public class ApplicationSecurityPostureFinding : OcsfEvent
     /// </summary>
     [JsonPropertyName("action_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Action")]
     public ApplicationSecurityPostureFindingActionId? ActionId { get; set; }
 
     /// <summary>
@@ -48,6 +50,7 @@ public class ApplicationSecurityPostureFinding : OcsfEvent
     [JsonPropertyName("activity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("ActivityName")]
     public ApplicationSecurityPostureFindingActivityId? ActivityId { get; set; }
 
     /// <summary>
@@ -65,7 +68,7 @@ public class ApplicationSecurityPostureFinding : OcsfEvent
     /// </summary>
     [JsonPropertyName("assignee")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "incident")]
     public Objects.User? Assignee { get; set; }
 
     /// <summary>
@@ -74,7 +77,7 @@ public class ApplicationSecurityPostureFinding : OcsfEvent
     /// </summary>
     [JsonPropertyName("assignee_group")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "incident")]
     public Objects.Group? AssigneeGroup { get; set; }
 
     /// <summary>
@@ -102,6 +105,7 @@ public class ApplicationSecurityPostureFinding : OcsfEvent
     [JsonPropertyName("confidence_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Confidence")]
     public ApplicationSecurityPostureFindingConfidenceId? ConfidenceId { get; set; }
 
     /// <summary>
@@ -110,7 +114,8 @@ public class ApplicationSecurityPostureFinding : OcsfEvent
     /// </summary>
     [JsonPropertyName("disposition_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Disposition")]
     public ApplicationSecurityPostureFindingDispositionId? DispositionId { get; set; }
 
     /// <summary>
@@ -128,7 +133,7 @@ public class ApplicationSecurityPostureFinding : OcsfEvent
     /// </summary>
     [JsonPropertyName("impact")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "incident")]
     public string? Impact { get; set; }
 
     /// <summary>
@@ -137,7 +142,8 @@ public class ApplicationSecurityPostureFinding : OcsfEvent
     /// </summary>
     [JsonPropertyName("impact_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "incident")]
+    [OcsfSibling("Impact")]
     public ApplicationSecurityPostureFindingImpactId? ImpactId { get; set; }
 
     /// <summary>
@@ -146,7 +152,7 @@ public class ApplicationSecurityPostureFinding : OcsfEvent
     /// </summary>
     [JsonPropertyName("impact_score")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "incident")]
     public int? ImpactScore { get; set; }
 
     /// <summary>
@@ -155,7 +161,7 @@ public class ApplicationSecurityPostureFinding : OcsfEvent
     /// </summary>
     [JsonPropertyName("is_suspected_breach")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "incident")]
     public bool? IsSuspectedBreach { get; set; }
 
     /// <summary>
@@ -172,7 +178,7 @@ public class ApplicationSecurityPostureFinding : OcsfEvent
     /// </summary>
     [JsonPropertyName("priority")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "incident")]
     public string? Priority { get; set; }
 
     /// <summary>
@@ -181,7 +187,8 @@ public class ApplicationSecurityPostureFinding : OcsfEvent
     /// </summary>
     [JsonPropertyName("priority_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "incident")]
+    [OcsfSibling("Priority")]
     public ApplicationSecurityPostureFindingPriorityId? PriorityId { get; set; }
 
     /// <summary>
@@ -208,7 +215,8 @@ public class ApplicationSecurityPostureFinding : OcsfEvent
     /// </summary>
     [JsonPropertyName("risk_level_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
+    [OcsfSibling("RiskLevel")]
     public ApplicationSecurityPostureFindingRiskLevelId? RiskLevelId { get; set; }
 
     /// <summary>
@@ -219,6 +227,7 @@ public class ApplicationSecurityPostureFinding : OcsfEvent
     [JsonPropertyName("severity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Severity")]
     public ApplicationSecurityPostureFindingSeverityId? SeverityId { get; set; }
 
     /// <summary>
@@ -227,7 +236,7 @@ public class ApplicationSecurityPostureFinding : OcsfEvent
     /// </summary>
     [JsonPropertyName("src_url")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "incident")]
     public string? SrcUrl { get; set; }
 
     /// <summary>
@@ -237,6 +246,7 @@ public class ApplicationSecurityPostureFinding : OcsfEvent
     [JsonPropertyName("status_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Status")]
     public ApplicationSecurityPostureFindingStatusId? StatusId { get; set; }
 
     /// <summary>
@@ -246,7 +256,7 @@ public class ApplicationSecurityPostureFinding : OcsfEvent
     [Obsolete("Use tickets instead. Deprecated since 1.5.0.")]
     [JsonPropertyName("ticket")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "incident")]
     public Objects.Ticket? Ticket { get; set; }
 
     /// <summary>
@@ -255,7 +265,7 @@ public class ApplicationSecurityPostureFinding : OcsfEvent
     /// </summary>
     [JsonPropertyName("tickets")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "incident")]
     public List<Objects.Ticket>? Tickets { get; set; }
 
     /// <summary>
@@ -273,7 +283,7 @@ public class ApplicationSecurityPostureFinding : OcsfEvent
     /// </summary>
     [JsonPropertyName("verdict")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "incident")]
     public string? Verdict { get; set; }
 
     /// <summary>
@@ -282,7 +292,8 @@ public class ApplicationSecurityPostureFinding : OcsfEvent
     /// </summary>
     [JsonPropertyName("verdict_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "incident")]
+    [OcsfSibling("Verdict")]
     public ApplicationSecurityPostureFindingVerdictId? VerdictId { get; set; }
 
     /// <summary>

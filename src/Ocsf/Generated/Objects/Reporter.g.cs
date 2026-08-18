@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The entity from which an event or finding was reported.
 /// </summary>
 [OcsfObject("reporter")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Hostname", "Ip", "Name", "Uid")]
 public class Reporter : OcsfObject
 {
     /// <summary>

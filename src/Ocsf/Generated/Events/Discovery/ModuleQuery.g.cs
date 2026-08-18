@@ -38,7 +38,8 @@ public class ModuleQuery : OcsfEvent
     /// </summary>
     [JsonPropertyName("action_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Action")]
     public ModuleQueryActionId? ActionId { get; set; }
 
     /// <summary>
@@ -48,6 +49,7 @@ public class ModuleQuery : OcsfEvent
     [JsonPropertyName("activity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("ActivityName")]
     public ModuleQueryActivityId? ActivityId { get; set; }
 
     /// <summary>
@@ -56,7 +58,8 @@ public class ModuleQuery : OcsfEvent
     /// </summary>
     [JsonPropertyName("confidence_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Confidence")]
     public ModuleQueryConfidenceId? ConfidenceId { get; set; }
 
     /// <summary>
@@ -65,7 +68,8 @@ public class ModuleQuery : OcsfEvent
     /// </summary>
     [JsonPropertyName("disposition_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Disposition")]
     public ModuleQueryDispositionId? DispositionId { get; set; }
 
     /// <summary>
@@ -111,6 +115,7 @@ public class ModuleQuery : OcsfEvent
     [JsonPropertyName("query_result_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("QueryResult")]
     public ModuleQueryQueryResultId? QueryResultId { get; set; }
 
     /// <summary>
@@ -119,7 +124,8 @@ public class ModuleQuery : OcsfEvent
     /// </summary>
     [JsonPropertyName("risk_level_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
+    [OcsfSibling("RiskLevel")]
     public ModuleQueryRiskLevelId? RiskLevelId { get; set; }
 
     /// <summary>
@@ -130,6 +136,7 @@ public class ModuleQuery : OcsfEvent
     [JsonPropertyName("severity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Severity")]
     public ModuleQuerySeverityId? SeverityId { get; set; }
 
     /// <summary>
@@ -139,6 +146,7 @@ public class ModuleQuery : OcsfEvent
     [JsonPropertyName("status_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Status")]
     public ModuleQueryStatusId? StatusId { get; set; }
 
     /// <summary>

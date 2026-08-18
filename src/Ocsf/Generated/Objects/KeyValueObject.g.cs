@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// A generic object allowing to define a <c>{key:value}</c> pair.
 /// </summary>
 [OcsfObject("key_value_object")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Value", "Values")]
 public class KeyValueObject : OcsfObject
 {
     /// <summary>

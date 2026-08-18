@@ -30,6 +30,7 @@ public class SecurityState : OcsfObject
     [JsonPropertyName("state_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("State")]
     public SecurityStateStateId? StateId { get; set; }
 
     /// <summary>

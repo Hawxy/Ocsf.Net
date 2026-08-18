@@ -13,6 +13,7 @@ namespace Ocsf.Events.SystemActivity;
 /// Event Log Activity events report actions pertaining to the system's event logging service(s), such as disabling logging or clearing the log data.
 /// </summary>
 [OcsfEventClass(1008, 1, "event_log_actvity")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "LogFile", "LogName", "LogProvider", "LogType", "LogTypeId")]
 public class EventLogActvity : OcsfEvent
 {
     /// <summary>The <c>class_uid</c> of the <c>event_log_actvity</c> event class.</summary>
@@ -37,7 +38,8 @@ public class EventLogActvity : OcsfEvent
     /// </summary>
     [JsonPropertyName("action_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Action")]
     public EventLogActvityActionId? ActionId { get; set; }
 
     /// <summary>
@@ -47,6 +49,7 @@ public class EventLogActvity : OcsfEvent
     [JsonPropertyName("activity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("ActivityName")]
     public EventLogActvityActivityId? ActivityId { get; set; }
 
     /// <summary>
@@ -55,7 +58,7 @@ public class EventLogActvity : OcsfEvent
     /// </summary>
     [JsonPropertyName("ai_agent")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "ai_operation")]
     public Objects.AiAgent? AiAgent { get; set; }
 
     /// <summary>
@@ -64,7 +67,7 @@ public class EventLogActvity : OcsfEvent
     /// </summary>
     [JsonPropertyName("ai_model")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "ai_operation")]
     public Objects.AiModel? AiModel { get; set; }
 
     /// <summary>
@@ -73,7 +76,8 @@ public class EventLogActvity : OcsfEvent
     /// </summary>
     [JsonPropertyName("confidence_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Confidence")]
     public EventLogActvityConfidenceId? ConfidenceId { get; set; }
 
     /// <summary>
@@ -82,7 +86,7 @@ public class EventLogActvity : OcsfEvent
     /// </summary>
     [JsonPropertyName("delegation")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "ai_operation")]
     public Objects.Delegation? Delegation { get; set; }
 
     /// <summary>
@@ -91,7 +95,8 @@ public class EventLogActvity : OcsfEvent
     /// </summary>
     [JsonPropertyName("disposition_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Disposition")]
     public EventLogActvityDispositionId? DispositionId { get; set; }
 
     /// <summary>
@@ -155,6 +160,7 @@ public class EventLogActvity : OcsfEvent
     [JsonPropertyName("log_type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("LogType")]
     public EventLogActvityLogTypeId? LogTypeId { get; set; }
 
     /// <summary>
@@ -163,7 +169,7 @@ public class EventLogActvity : OcsfEvent
     /// </summary>
     [JsonPropertyName("message_context")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "ai_operation")]
     public Objects.MessageContext? MessageContext { get; set; }
 
     /// <summary>
@@ -172,7 +178,8 @@ public class EventLogActvity : OcsfEvent
     /// </summary>
     [JsonPropertyName("risk_level_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
+    [OcsfSibling("RiskLevel")]
     public EventLogActvityRiskLevelId? RiskLevelId { get; set; }
 
     /// <summary>
@@ -183,6 +190,7 @@ public class EventLogActvity : OcsfEvent
     [JsonPropertyName("severity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Severity")]
     public EventLogActvitySeverityId? SeverityId { get; set; }
 
     /// <summary>
@@ -201,6 +209,7 @@ public class EventLogActvity : OcsfEvent
     [JsonPropertyName("status_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Status")]
     public EventLogActvityStatusId? StatusId { get; set; }
 
     /// <summary>

@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Device object represents an addressable computer system or host, which is typically connected to a computer network and participates in the transmission or processing of data within the computer network.
 /// </summary>
 [OcsfObject("device")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Hostname", "InstanceUid", "InterfaceName", "InterfaceUid", "Ip", "Name", "Uid")]
 public class Device : OcsfObject
 {
     /// <summary>
@@ -45,7 +46,7 @@ public class Device : OcsfObject
     /// </summary>
     [JsonPropertyName("boot_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? BootTimeDt { get; set; }
 
     /// <summary>
@@ -62,7 +63,7 @@ public class Device : OcsfObject
     /// </summary>
     [JsonPropertyName("container")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "container")]
     public Container? Container { get; set; }
 
     /// <summary>
@@ -79,7 +80,7 @@ public class Device : OcsfObject
     /// </summary>
     [JsonPropertyName("created_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? CreatedTimeDt { get; set; }
 
     /// <summary>
@@ -120,7 +121,7 @@ public class Device : OcsfObject
     /// </summary>
     [JsonPropertyName("first_seen_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? FirstSeenTimeDt { get; set; }
 
     /// <summary>
@@ -302,7 +303,7 @@ public class Device : OcsfObject
     /// </summary>
     [JsonPropertyName("last_seen_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? LastSeenTimeDt { get; set; }
 
     /// <summary>
@@ -359,7 +360,7 @@ public class Device : OcsfObject
     /// </summary>
     [JsonPropertyName("modified_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? ModifiedTimeDt { get; set; }
 
     /// <summary>
@@ -377,7 +378,7 @@ public class Device : OcsfObject
     /// </summary>
     [JsonPropertyName("namespace_pid")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "container")]
     public int? NamespacePid { get; set; }
 
     /// <summary>
@@ -462,6 +463,7 @@ public class Device : OcsfObject
     [JsonPropertyName("risk_level_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("RiskLevel")]
     public DeviceRiskLevelId? RiskLevelId { get; set; }
 
     /// <summary>
@@ -504,6 +506,7 @@ public class Device : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Type")]
     public DeviceTypeId? TypeId { get; set; }
 
     /// <summary>

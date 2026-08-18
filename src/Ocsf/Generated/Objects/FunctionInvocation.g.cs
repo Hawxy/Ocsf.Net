@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Function Invocation object provides details regarding the invocation of a function.
 /// </summary>
 [OcsfObject("function_invocation")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Error", "Parameters", "ReturnValue")]
 public class FunctionInvocation : OcsfObject
 {
     /// <summary>

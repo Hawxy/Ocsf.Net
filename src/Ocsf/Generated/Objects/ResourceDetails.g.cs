@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Resource Details object describes details about a resource (including a user) affected by or related to the activity or finding. The <c>name</c> and/or <c>uid</c> should correspond to the resource for which the details pertain. Use <c>role_id</c> to characterize the role of the resource.
 /// </summary>
 [OcsfObject("resource_details")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "Uid")]
 public class ResourceDetails : OcsfObject
 {
     /// <summary>
@@ -29,7 +30,7 @@ public class ResourceDetails : OcsfObject
     /// </summary>
     [JsonPropertyName("cloud_partition")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "cloud")]
     public string? CloudPartition { get; set; }
 
     /// <summary>
@@ -46,7 +47,7 @@ public class ResourceDetails : OcsfObject
     /// </summary>
     [JsonPropertyName("created_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? CreatedTimeDt { get; set; }
 
     /// <summary>
@@ -65,6 +66,7 @@ public class ResourceDetails : OcsfObject
     [JsonPropertyName("criticality_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("Criticality")]
     public ResourceDetailsCriticalityId? CriticalityId { get; set; }
 
     /// <summary>
@@ -82,7 +84,7 @@ public class ResourceDetails : OcsfObject
     [Obsolete("Use the attribute data_classifications instead Deprecated since 1.4.0.")]
     [JsonPropertyName("data_classification")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "data_classification")]
     public DataClassification? DataClassification { get; set; }
 
     /// <summary>
@@ -91,7 +93,7 @@ public class ResourceDetails : OcsfObject
     /// </summary>
     [JsonPropertyName("data_classifications")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "data_classification")]
     public List<DataClassification>? DataClassifications { get; set; }
 
     /// <summary>
@@ -158,7 +160,7 @@ public class ResourceDetails : OcsfObject
     /// </summary>
     [JsonPropertyName("modified_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? ModifiedTimeDt { get; set; }
 
     /// <summary>
@@ -193,7 +195,7 @@ public class ResourceDetails : OcsfObject
     /// </summary>
     [JsonPropertyName("provider")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "cloud")]
     public string? Provider { get; set; }
 
     /// <summary>
@@ -202,7 +204,7 @@ public class ResourceDetails : OcsfObject
     /// </summary>
     [JsonPropertyName("region")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "cloud")]
     public string? Region { get; set; }
 
     /// <summary>
@@ -228,6 +230,7 @@ public class ResourceDetails : OcsfObject
     [JsonPropertyName("role_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Role")]
     public ResourceDetailsRoleId? RoleId { get; set; }
 
     /// <summary>
@@ -294,7 +297,7 @@ public class ResourceDetails : OcsfObject
     /// </summary>
     [JsonPropertyName("zone")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "cloud")]
     public string? Zone { get; set; }
 
     /// <summary>

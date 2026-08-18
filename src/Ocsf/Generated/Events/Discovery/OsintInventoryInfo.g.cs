@@ -37,7 +37,8 @@ public class OsintInventoryInfo : OcsfEvent
     /// </summary>
     [JsonPropertyName("action_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Action")]
     public OsintInventoryInfoActionId? ActionId { get; set; }
 
     /// <summary>
@@ -47,6 +48,7 @@ public class OsintInventoryInfo : OcsfEvent
     [JsonPropertyName("activity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("ActivityName")]
     public OsintInventoryInfoActivityId? ActivityId { get; set; }
 
     /// <summary>
@@ -55,7 +57,8 @@ public class OsintInventoryInfo : OcsfEvent
     /// </summary>
     [JsonPropertyName("confidence_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Confidence")]
     public OsintInventoryInfoConfidenceId? ConfidenceId { get; set; }
 
     /// <summary>
@@ -64,7 +67,8 @@ public class OsintInventoryInfo : OcsfEvent
     /// </summary>
     [JsonPropertyName("disposition_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "security_control")]
+    [OcsfSibling("Disposition")]
     public OsintInventoryInfoDispositionId? DispositionId { get; set; }
 
     /// <summary>
@@ -73,7 +77,8 @@ public class OsintInventoryInfo : OcsfEvent
     /// </summary>
     [JsonPropertyName("risk_level_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "security_control")]
+    [OcsfSibling("RiskLevel")]
     public OsintInventoryInfoRiskLevelId? RiskLevelId { get; set; }
 
     /// <summary>
@@ -84,6 +89,7 @@ public class OsintInventoryInfo : OcsfEvent
     [JsonPropertyName("severity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Severity")]
     public OsintInventoryInfoSeverityId? SeverityId { get; set; }
 
     /// <summary>
@@ -93,6 +99,7 @@ public class OsintInventoryInfo : OcsfEvent
     [JsonPropertyName("status_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Status")]
     public OsintInventoryInfoStatusId? StatusId { get; set; }
 
     /// <summary>

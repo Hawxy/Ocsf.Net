@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The OCSF Schema Extension object provides detailed information about the schema extension used to construct the event. The schema extensions are registered in the <c>extensions.md</c> file.
 /// </summary>
 [OcsfObject("extension")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "Uid")]
 public class Extension : OcsfObject
 {
     /// <summary>

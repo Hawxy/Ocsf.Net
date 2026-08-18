@@ -37,7 +37,7 @@ public class LdapPerson : OcsfObject
     /// </summary>
     [JsonPropertyName("created_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? CreatedTimeDt { get; set; }
 
     /// <summary>
@@ -54,7 +54,7 @@ public class LdapPerson : OcsfObject
     /// </summary>
     [JsonPropertyName("deleted_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? DeletedTimeDt { get; set; }
 
     /// <summary>
@@ -111,7 +111,7 @@ public class LdapPerson : OcsfObject
     /// </summary>
     [JsonPropertyName("hire_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? HireTimeDt { get; set; }
 
     /// <summary>
@@ -144,7 +144,7 @@ public class LdapPerson : OcsfObject
     /// </summary>
     [JsonPropertyName("last_login_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? LastLoginTimeDt { get; set; }
 
     /// <summary>
@@ -177,7 +177,7 @@ public class LdapPerson : OcsfObject
     /// </summary>
     [JsonPropertyName("leave_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? LeaveTimeDt { get; set; }
 
     /// <summary>
@@ -210,7 +210,7 @@ public class LdapPerson : OcsfObject
     /// </summary>
     [JsonPropertyName("modified_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? ModifiedTimeDt { get; set; }
 
     /// <summary>

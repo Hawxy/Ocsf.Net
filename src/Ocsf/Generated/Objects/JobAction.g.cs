@@ -66,6 +66,7 @@ public class JobAction : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Type")]
     public JobActionTypeId? TypeId { get; set; }
 
     /// <summary>

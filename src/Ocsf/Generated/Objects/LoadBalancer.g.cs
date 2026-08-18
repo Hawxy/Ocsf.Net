@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The load balancer object describes the load balancer entity and contains additional information regarding the distribution of traffic across a network.
 /// </summary>
 [OcsfObject("load_balancer")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "Uid")]
 public class LoadBalancer : OcsfObject
 {
     /// <summary>

@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Unmanned System Operating Area object describes details about a precise area of operations for a UAS flight or mission.
 /// </summary>
 [OcsfObject("unmanned_system_operating_area")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "City", "Country", "PostalCode", "Region")]
 public class UnmannedSystemOperatingArea : OcsfObject
 {
     /// <summary>
@@ -107,7 +108,7 @@ public class UnmannedSystemOperatingArea : OcsfObject
     /// </summary>
     [JsonPropertyName("end_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? EndTimeDt { get; set; }
 
     /// <summary>
@@ -239,7 +240,7 @@ public class UnmannedSystemOperatingArea : OcsfObject
     /// </summary>
     [JsonPropertyName("start_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? StartTimeDt { get; set; }
 
     /// <summary>
@@ -257,6 +258,7 @@ public class UnmannedSystemOperatingArea : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Type")]
     public UnmannedSystemOperatingAreaTypeId? TypeId { get; set; }
 
     /// <summary>

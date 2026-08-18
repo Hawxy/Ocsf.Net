@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Product object describes characteristics of a software product.
 /// </summary>
 [OcsfObject("product")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "Uid")]
 public class Product : OcsfObject
 {
     /// <summary>
@@ -30,7 +31,7 @@ public class Product : OcsfObject
     [Obsolete("Use the attribute data_classifications instead Deprecated since 1.4.0.")]
     [JsonPropertyName("data_classification")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "data_classification")]
     public DataClassification? DataClassification { get; set; }
 
     /// <summary>
@@ -39,7 +40,7 @@ public class Product : OcsfObject
     /// </summary>
     [JsonPropertyName("data_classifications")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "data_classification")]
     public List<DataClassification>? DataClassifications { get; set; }
 
     /// <summary>

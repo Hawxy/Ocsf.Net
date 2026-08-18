@@ -30,6 +30,7 @@ public class Fingerprint : OcsfObject
     [JsonPropertyName("algorithm_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Algorithm")]
     public FingerprintAlgorithmId? AlgorithmId { get; set; }
 
     /// <summary>
@@ -47,6 +48,7 @@ public class Fingerprint : OcsfObject
     [JsonPropertyName("encoding_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Encoding")]
     public FingerprintEncodingId? EncodingId { get; set; }
 
     /// <summary>
@@ -64,6 +66,7 @@ public class Fingerprint : OcsfObject
     [JsonPropertyName("serialization_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("Serialization")]
     public FingerprintSerializationId? SerializationId { get; set; }
 
     /// <summary>

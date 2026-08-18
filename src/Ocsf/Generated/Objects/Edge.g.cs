@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// Represents a connection or relationship between two nodes in a graph.
 /// </summary>
 [OcsfObject("edge")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "Uid")]
 public class Edge : OcsfObject
 {
     /// <summary>

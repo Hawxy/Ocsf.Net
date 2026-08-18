@@ -14,6 +14,7 @@ namespace Ocsf.Objects;
 /// A timespan may also be defined by its time interval boundaries, <c>start_time</c> and <c>end_time</c>.
 /// </summary>
 [OcsfObject("timespan")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Duration", "DurationDays", "DurationHours", "DurationMins", "DurationMonths", "DurationSecs", "DurationWeeks", "DurationYears", "EndTime", "StartTime")]
 public class Timespan : OcsfObject
 {
     /// <summary>
@@ -103,7 +104,7 @@ public class Timespan : OcsfObject
     /// </summary>
     [JsonPropertyName("end_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? EndTimeDt { get; set; }
 
     /// <summary>
@@ -121,7 +122,7 @@ public class Timespan : OcsfObject
     /// </summary>
     [JsonPropertyName("start_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? StartTimeDt { get; set; }
 
     /// <summary>
@@ -139,6 +140,7 @@ public class Timespan : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Type")]
     public TimespanTypeId? TypeId { get; set; }
 
     /// <summary>

@@ -64,6 +64,7 @@ public class DomainContact : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Type")]
     public DomainContactTypeId? TypeId { get; set; }
 
     /// <summary>

@@ -55,6 +55,7 @@ public class Observable : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Type")]
     public ObservableTypeId? TypeId { get; set; }
 
     /// <summary>

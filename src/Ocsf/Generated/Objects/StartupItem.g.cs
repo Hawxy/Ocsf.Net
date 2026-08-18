@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The startup item object describes an application component that has associated startup criteria and configurations.
 /// </summary>
 [OcsfObject("startup_item")]
+[OcsfConstraint(OcsfConstraintKind.JustOne, "Driver", "Job", "Process", "WinService")]
 public class StartupItem : OcsfObject
 {
     /// <summary>
@@ -55,6 +56,7 @@ public class StartupItem : OcsfObject
     [JsonPropertyName("run_mode_ids")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("RunModes")]
     public List<StartupItemRunModeIds>? RunModeIds { get; set; }
 
     /// <summary>
@@ -80,6 +82,7 @@ public class StartupItem : OcsfObject
     [JsonPropertyName("run_state_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("RunState")]
     public StartupItemRunStateId? RunStateId { get; set; }
 
     /// <summary>
@@ -97,6 +100,7 @@ public class StartupItem : OcsfObject
     [JsonPropertyName("start_type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("StartType")]
     public StartupItemStartTypeId? StartTypeId { get; set; }
 
     /// <summary>
@@ -114,6 +118,7 @@ public class StartupItem : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Type")]
     public StartupItemTypeId? TypeId { get; set; }
 
     /// <summary>

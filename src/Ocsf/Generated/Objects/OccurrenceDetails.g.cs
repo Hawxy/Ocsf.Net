@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// Details about where in the target entity, specified information was discovered. Only the attributes, relevant to the target entity type should be populated.
 /// </summary>
 [OcsfObject("occurrence_details")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "CellName", "ColumnName", "ColumnNumber", "EndLine", "JsonPath", "PageNumber", "RecordIndexInArray", "RowNumber", "StartLine")]
 public class OccurrenceDetails : OcsfObject
 {
     /// <summary>

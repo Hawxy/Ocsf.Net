@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Email object describes the email metadata such as sender, recipients, and direction, and can include embedded URLs and files.
 /// </summary>
 [OcsfObject("email")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "From", "To")]
 public class Email : OcsfObject
 {
     /// <summary>
@@ -54,7 +55,7 @@ public class Email : OcsfObject
     [Obsolete("Use the attribute data_classifications instead Deprecated since 1.4.0.")]
     [JsonPropertyName("data_classification")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "data_classification")]
     public DataClassification? DataClassification { get; set; }
 
     /// <summary>
@@ -63,7 +64,7 @@ public class Email : OcsfObject
     /// </summary>
     [JsonPropertyName("data_classifications")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfRequirement(OcsfRequirement.Recommended, Profile = "data_classification")]
     public List<DataClassification>? DataClassifications { get; set; }
 
     /// <summary>

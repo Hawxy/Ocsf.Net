@@ -55,6 +55,7 @@ public class Check : OcsfObject
     [JsonPropertyName("severity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("Severity")]
     public CheckSeverityId? SeverityId { get; set; }
 
     /// <summary>
@@ -82,6 +83,7 @@ public class Check : OcsfObject
     [JsonPropertyName("status_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Status")]
     public CheckStatusId? StatusId { get; set; }
 
     /// <summary>

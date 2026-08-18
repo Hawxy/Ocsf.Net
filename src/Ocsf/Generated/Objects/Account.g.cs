@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// The Account object contains details about the account that initiated or performed a specific activity within a system or application. Additionally, the Account object refers to logical Cloud and Software-as-a-Service (SaaS) based containers such as AWS Accounts, Azure Subscriptions, Oracle Cloud Compartments, Google Cloud Projects, and otherwise.
 /// </summary>
 [OcsfObject("account")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "Uid")]
 public class Account : OcsfObject
 {
     /// <summary>
@@ -79,6 +80,7 @@ public class Account : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Type")]
     public AccountTypeId? TypeId { get; set; }
 
     /// <summary>

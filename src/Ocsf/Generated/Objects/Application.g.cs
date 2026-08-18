@@ -13,6 +13,7 @@ namespace Ocsf.Objects;
 /// An Application describes the details for an inventoried application as reported by an Application Security tool or other Developer-centric tooling. Applications can be defined as Kubernetes resources, Containerized resources, or application hosting-specific cloud sources such as AWS Elastic BeanStalk, AWS Lightsail, or Azure Logic Apps.
 /// </summary>
 [OcsfObject("application")]
+[OcsfConstraint(OcsfConstraintKind.AtLeastOne, "Name", "Uid")]
 public class Application : OcsfObject
 {
     /// <summary>
@@ -95,7 +96,7 @@ public class Application : OcsfObject
     /// </summary>
     [JsonPropertyName("region")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "cloud")]
     public string? Region { get; set; }
 
     /// <summary>
@@ -121,6 +122,7 @@ public class Application : OcsfObject
     [JsonPropertyName("risk_level_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("RiskLevel")]
     public ApplicationRiskLevelId? RiskLevelId { get; set; }
 
     /// <summary>

@@ -37,7 +37,7 @@ public class PrivilegeInfo : OcsfObject
     /// </summary>
     [JsonPropertyName("last_used_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? LastUsedTimeDt { get; set; }
 
     /// <summary>
@@ -64,6 +64,7 @@ public class PrivilegeInfo : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("Type")]
     public PrivilegeInfoTypeId? TypeId { get; set; }
 
     /// <summary>

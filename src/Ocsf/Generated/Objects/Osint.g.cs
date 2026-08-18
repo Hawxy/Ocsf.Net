@@ -78,6 +78,7 @@ public class Osint : OcsfObject
     [JsonPropertyName("confidence_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
+    [OcsfSibling("Confidence")]
     public OsintConfidenceId? ConfidenceId { get; set; }
 
     /// <summary>
@@ -94,7 +95,7 @@ public class Osint : OcsfObject
     /// </summary>
     [JsonPropertyName("created_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? CreatedTimeDt { get; set; }
 
     /// <summary>
@@ -136,6 +137,7 @@ public class Osint : OcsfObject
     [JsonPropertyName("detection_pattern_type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("DetectionPatternType")]
     public OsintDetectionPatternTypeId? DetectionPatternTypeId { get; set; }
 
     /// <summary>
@@ -168,7 +170,7 @@ public class Osint : OcsfObject
     /// </summary>
     [JsonPropertyName("expiration_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? ExpirationTimeDt { get; set; }
 
     /// <summary>
@@ -241,7 +243,7 @@ public class Osint : OcsfObject
     /// </summary>
     [JsonPropertyName("modified_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? ModifiedTimeDt { get; set; }
 
     /// <summary>
@@ -307,6 +309,7 @@ public class Osint : OcsfObject
     [JsonPropertyName("severity_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfSibling("Severity")]
     public OsintSeverityId? SeverityId { get; set; }
 
     /// <summary>
@@ -373,6 +376,7 @@ public class Osint : OcsfObject
     [JsonPropertyName("type_id")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
+    [OcsfSibling("Type")]
     public OsintTypeId? TypeId { get; set; }
 
     /// <summary>
@@ -397,7 +401,7 @@ public class Osint : OcsfObject
     /// </summary>
     [JsonPropertyName("uploaded_time_dt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [OcsfRequirement(OcsfRequirement.Optional)]
+    [OcsfRequirement(OcsfRequirement.Optional, Profile = "datetime")]
     public string? UploadedTimeDt { get; set; }
 
     /// <summary>
