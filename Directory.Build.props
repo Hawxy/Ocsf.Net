@@ -8,18 +8,6 @@
     <!-- CS1591: missing XML docs; self-evident members (operators, enum members) stay undocumented -->
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <Deterministic>true</Deterministic>
-    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <Authors>ocsf.net contributors</Authors>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/ocsf-net/ocsf.net</PackageProjectUrl>
-    <RepositoryType>git</RepositoryType>
-    <PackageTags>ocsf;security;schema;telemetry;cybersecurity</PackageTags>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <VersionPrefix>1.9.0</VersionPrefix>
   </PropertyGroup>
 
 </Project>

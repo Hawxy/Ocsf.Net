@@ -1,6 +1,12 @@
 <Project>
 
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
   <ItemGroup>
+    <PackageVersion Include="DotNet.ReproducibleBuilds" Version="1.2.25" />
+    <PackageVersion Include="Nuke.Common" Version="10.1.0" />
     <PackageVersion Include="TUnit" Version="1.65.0" />
   </ItemGroup>
 

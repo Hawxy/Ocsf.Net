@@ -92,6 +92,26 @@ suppression.
 - **Deprecated** classes and attributes are generated with `[Obsolete]` so consumers can
   still read events from older producers.
 
+## Building
+
+The repo builds with [Nuke](https://nuke.build/); the GitHub workflows are generated from
+`build/Build.cs` and invoke the same targets you can run locally:
+
+```
+./build.cmd Test               # Release build + full test suite
+./build.cmd VerifyGenerated    # fails if generated code drifts from the schema snapshot
+./build.cmd AotSmoke           # NativeAOT publish + run of samples/Ocsf.AotSmoke
+./build.cmd NugetPack          # packs Ocsf + Ocsf.Validation into artifacts/
+./build.cmd NugetPush          # pack + push to nuget.org (requires NugetApiKey)
+```
+
+CI runs `Test VerifyGenerated AotSmoke` on pushes and PRs to `main`; publishing is a manual
+`workflow_dispatch` (`Manual Nuget Push`) that authenticates to nuget.org via
+[trusted publishing](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing):
+the `NuGet/login` action exchanges the workflow's OIDC token for a short-lived API key, so no
+long-lived key is stored — only the `NUGET_USER` secret (the nuget.org profile that owns the
+trusted publishing policy). The package version is set in `Package.Build.props`.
+
 ## Regenerating from the schema
 
 Generated code lives under `src/Ocsf/Generated` and `src/Ocsf.Validation/Generated` and is

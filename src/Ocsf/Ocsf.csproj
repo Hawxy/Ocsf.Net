@@ -2,15 +2,20 @@
 
   <PropertyGroup>
     <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
-    <IsAotCompatible>true</IsAotCompatible>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IsPackable>true</IsPackable>
     <PackageId>Ocsf</PackageId>
+    <IsAotCompatible>true</IsAotCompatible>
     <Description>Strongly-typed .NET SDK for the Open Cybersecurity Schema Framework (OCSF) 1.9.0: event classes, objects, and System.Text.Json serialization with full NativeAOT support.</Description>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>events;serialization</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+    <PackageReference Include="DotNet.ReproducibleBuilds">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
+
+  <Import Project="../../Package.Build.props" />
 
 </Project>
