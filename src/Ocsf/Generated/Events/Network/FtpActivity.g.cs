@@ -376,11 +376,103 @@ public class FtpActivity : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public string? Type { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(FtpActivityActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(FtpActivityActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(FtpActivityActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(FtpActivityConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(FtpActivityDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>observation_point_id</c> and the <c>observation_point</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="observationPoint"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetObservationPoint(FtpActivityObservationPointId observationPointId, string? observationPoint = null)
+    {
+        ObservationPointId = observationPointId;
+        if ((observationPoint ?? observationPointId.Caption()) is { } label)
+            ObservationPoint = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(FtpActivityRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(FtpActivitySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(FtpActivityStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -414,6 +506,22 @@ public enum FtpActivityActionId
     /// The action is not mapped. See the <c>action</c> attribute which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="FtpActivityActionId"/>.</summary>
+public static class FtpActivityActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FtpActivityActionId value) => value switch
+    {
+        (FtpActivityActionId)0 => "Unknown",
+        (FtpActivityActionId)1 => "Allowed",
+        (FtpActivityActionId)2 => "Denied",
+        (FtpActivityActionId)3 => "Observed",
+        (FtpActivityActionId)4 => "Modified",
+        (FtpActivityActionId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -456,6 +564,24 @@ public enum FtpActivityActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="FtpActivityActivityId"/>.</summary>
+public static class FtpActivityActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FtpActivityActivityId value) => value switch
+    {
+        (FtpActivityActivityId)0 => "Unknown",
+        (FtpActivityActivityId)1 => "Put",
+        (FtpActivityActivityId)2 => "Get",
+        (FtpActivityActivityId)3 => "Poll",
+        (FtpActivityActivityId)4 => "Delete",
+        (FtpActivityActivityId)5 => "Rename",
+        (FtpActivityActivityId)6 => "List",
+        (FtpActivityActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -473,6 +599,21 @@ public enum FtpActivityConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="FtpActivityConfidenceId"/>.</summary>
+public static class FtpActivityConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FtpActivityConfidenceId value) => value switch
+    {
+        (FtpActivityConfidenceId)0 => "Unknown",
+        (FtpActivityConfidenceId)1 => "Low",
+        (FtpActivityConfidenceId)2 => "Medium",
+        (FtpActivityConfidenceId)3 => "High",
+        (FtpActivityConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -599,6 +740,45 @@ public enum FtpActivityDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="FtpActivityDispositionId"/>.</summary>
+public static class FtpActivityDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FtpActivityDispositionId value) => value switch
+    {
+        (FtpActivityDispositionId)0 => "Unknown",
+        (FtpActivityDispositionId)1 => "Allowed",
+        (FtpActivityDispositionId)2 => "Blocked",
+        (FtpActivityDispositionId)3 => "Quarantined",
+        (FtpActivityDispositionId)4 => "Isolated",
+        (FtpActivityDispositionId)5 => "Deleted",
+        (FtpActivityDispositionId)6 => "Dropped",
+        (FtpActivityDispositionId)7 => "Custom Action",
+        (FtpActivityDispositionId)8 => "Approved",
+        (FtpActivityDispositionId)9 => "Restored",
+        (FtpActivityDispositionId)10 => "Exonerated",
+        (FtpActivityDispositionId)11 => "Corrected",
+        (FtpActivityDispositionId)12 => "Partially Corrected",
+        (FtpActivityDispositionId)13 => "Uncorrected",
+        (FtpActivityDispositionId)14 => "Delayed",
+        (FtpActivityDispositionId)15 => "Detected",
+        (FtpActivityDispositionId)16 => "No Action",
+        (FtpActivityDispositionId)17 => "Logged",
+        (FtpActivityDispositionId)18 => "Tagged",
+        (FtpActivityDispositionId)19 => "Alert",
+        (FtpActivityDispositionId)20 => "Count",
+        (FtpActivityDispositionId)21 => "Reset",
+        (FtpActivityDispositionId)22 => "Captcha",
+        (FtpActivityDispositionId)23 => "Challenge",
+        (FtpActivityDispositionId)24 => "Access Revoked",
+        (FtpActivityDispositionId)25 => "Rejected",
+        (FtpActivityDispositionId)26 => "Unauthorized",
+        (FtpActivityDispositionId)27 => "Error",
+        (FtpActivityDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>observation_point_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>observation_point</c> attribute contains the source-specific label.
@@ -631,6 +811,22 @@ public enum FtpActivityObservationPointId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="FtpActivityObservationPointId"/>.</summary>
+public static class FtpActivityObservationPointIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FtpActivityObservationPointId value) => value switch
+    {
+        (FtpActivityObservationPointId)0 => "Unknown",
+        (FtpActivityObservationPointId)1 => "Source",
+        (FtpActivityObservationPointId)2 => "Destination",
+        (FtpActivityObservationPointId)3 => "Neither",
+        (FtpActivityObservationPointId)4 => "Both",
+        (FtpActivityObservationPointId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -646,6 +842,22 @@ public enum FtpActivityRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="FtpActivityRiskLevelId"/>.</summary>
+public static class FtpActivityRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FtpActivityRiskLevelId value) => value switch
+    {
+        (FtpActivityRiskLevelId)0 => "Info",
+        (FtpActivityRiskLevelId)1 => "Low",
+        (FtpActivityRiskLevelId)2 => "Medium",
+        (FtpActivityRiskLevelId)3 => "High",
+        (FtpActivityRiskLevelId)4 => "Critical",
+        (FtpActivityRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -688,6 +900,24 @@ public enum FtpActivitySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="FtpActivitySeverityId"/>.</summary>
+public static class FtpActivitySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FtpActivitySeverityId value) => value switch
+    {
+        (FtpActivitySeverityId)0 => "Unknown",
+        (FtpActivitySeverityId)1 => "Informational",
+        (FtpActivitySeverityId)2 => "Low",
+        (FtpActivitySeverityId)3 => "Medium",
+        (FtpActivitySeverityId)4 => "High",
+        (FtpActivitySeverityId)5 => "Critical",
+        (FtpActivitySeverityId)6 => "Fatal",
+        (FtpActivitySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -710,4 +940,18 @@ public enum FtpActivityStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="FtpActivityStatusId"/>.</summary>
+public static class FtpActivityStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FtpActivityStatusId value) => value switch
+    {
+        (FtpActivityStatusId)0 => "Unknown",
+        (FtpActivityStatusId)1 => "Success",
+        (FtpActivityStatusId)2 => "Failure",
+        (FtpActivityStatusId)99 => "Other",
+        _ => null,
+    };
 }

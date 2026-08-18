@@ -39,6 +39,13 @@ public static class NameMapper
         return sb.ToString();
     }
 
+    /// <summary>Converts a snake_case schema name to a camelCase C# identifier.</summary>
+    public static string CamelCase(string snakeName)
+    {
+        var pascal = PascalCase(snakeName);
+        return char.IsAsciiLetter(pascal[0]) ? char.ToLowerInvariant(pascal[0]) + pascal[1..] : pascal;
+    }
+
     /// <summary>Escapes an identifier that collides with a C# keyword.</summary>
     public static string Identifier(string name) => CSharpKeywords.Contains(name) ? "@" + name : name;
 

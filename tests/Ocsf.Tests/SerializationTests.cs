@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Ocsf.Events.Iam;
+using Ocsf.Objects;
 
 namespace Ocsf.Tests;
 
@@ -25,6 +26,75 @@ public class SerializationTests
 
         await Assert.That(evt.ActivityId).IsEqualTo(AuthenticationActivityId.Logon);
         await Assert.That(evt.TypeUid).IsEqualTo(300201L);
+    }
+
+    [Test]
+    public async Task SetActivity_WithOtherAndLabel_SetsSiblingTypeUidAndTypeName()
+    {
+        var evt = new Authentication();
+        evt.SetActivity(AuthenticationActivityId.Other, "custom-logon");
+
+        await Assert.That(evt.ActivityId).IsEqualTo(AuthenticationActivityId.Other);
+        await Assert.That(evt.ActivityName).IsEqualTo("custom-logon");
+        await Assert.That(evt.TypeUid).IsEqualTo(300299L);
+        await Assert.That(evt.TypeName).IsEqualTo("Authentication: Other");
+
+        var node = JsonNode.Parse(OcsfJson.Serialize(evt))!;
+        await Assert.That(node["activity_id"]!.GetValue<int>()).IsEqualTo(99);
+        await Assert.That(node["activity_name"]!.GetValue<string>()).IsEqualTo("custom-logon");
+    }
+
+    [Test]
+    public async Task SetActivity_DefaultsLabelAndTypeNameToCaptions()
+    {
+        var evt = new Authentication();
+        evt.SetActivity(AuthenticationActivityId.Logon);
+
+        await Assert.That(evt.ActivityName).IsEqualTo("Logon");
+        await Assert.That(evt.TypeName).IsEqualTo("Authentication: Logon");
+        await Assert.That(evt.TypeUid).IsEqualTo(300201L);
+    }
+
+    [Test]
+    public async Task SiblingSetters_DefaultLabelToCaption()
+    {
+        var evt = new Authentication();
+        evt.SetStatus(AuthenticationStatusId.Success);
+
+        await Assert.That(evt.StatusId).IsEqualTo(AuthenticationStatusId.Success);
+        await Assert.That(evt.Status).IsEqualTo("Success");
+
+        evt.SetStatus(AuthenticationStatusId.Failure, "denied by policy");
+        await Assert.That(evt.Status).IsEqualTo("denied by policy");
+    }
+
+    [Test]
+    public async Task SiblingSetters_LeaveSiblingUntouchedForUndefinedCodes()
+    {
+        var evt = new Authentication();
+        evt.SetStatus((AuthenticationStatusId)47);
+
+        await Assert.That((int)evt.StatusId!.Value).IsEqualTo(47);
+        await Assert.That(evt.Status).IsNull();
+    }
+
+    [Test]
+    public async Task Caption_ReturnsSchemaCaptionOrNull()
+    {
+        await Assert.That(AuthenticationActivityId.Logon.Caption()).IsEqualTo("Logon");
+        await Assert.That(AuthenticationActivityId.Other.Caption()).IsEqualTo("Other");
+        await Assert.That(((AuthenticationActivityId)47).Caption()).IsNull();
+        await Assert.That(Objects.UserTypeId.Admin.Caption()).IsEqualTo("Admin");
+    }
+
+    [Test]
+    public async Task ObjectSiblingSetters_AssignBothProperties()
+    {
+        var user = new Objects.User();
+        user.SetType(Objects.UserTypeId.Admin);
+
+        await Assert.That(user.TypeId).IsEqualTo(Objects.UserTypeId.Admin);
+        await Assert.That(user.Type).IsEqualTo("Admin");
     }
 
     [Test]

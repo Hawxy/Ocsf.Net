@@ -413,7 +413,10 @@ public static class Emitter
         w.WriteLine($"public class {className} : OcsfObject");
         w.WriteLine("{");
         w.Indent();
-        WriteAttributeProperties(w, schema, mapper, className, obj.Attributes, enums, EmitTarget.Object, objectPrefix: "");
+        var usedNames = new HashSet<string>(StringComparer.Ordinal) { className };
+        WriteAttributeProperties(w, schema, mapper, className, obj.Attributes, enums, EmitTarget.Object,
+            objectPrefix: "", usedNames);
+        WriteSiblingSetters(w, schema, className, obj.Attributes, enums, isEventClass: false, usedNames);
         w.Dedent();
         w.WriteLine("}");
 
@@ -439,7 +442,8 @@ public static class Emitter
         w.WriteLine("{");
         w.Indent();
         WriteAttributeProperties(w, schema, mapper, "OcsfEvent", schema.BaseEvent.Attributes, enums,
-            EmitTarget.BaseEvent, objectPrefix: "Objects.");
+            EmitTarget.BaseEvent, objectPrefix: "Objects.",
+            new HashSet<string>(StringComparer.Ordinal) { "OcsfEvent" });
         w.Dedent();
         w.WriteLine("}");
 
@@ -486,21 +490,13 @@ public static class Emitter
         w.Dedent();
         w.WriteLine("}");
 
-        WriteAttributeProperties(w, schema, mapper, className, cls.Attributes, enums,
-            EmitTarget.EventClass, objectPrefix: "Objects.", leadingBlankLine: true);
-
-        if (enums.Any(e => e.Name == className + "ActivityId"))
+        var usedNames = new HashSet<string>(StringComparer.Ordinal)
         {
-            w.WriteLine();
-            w.WriteLine("/// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>");
-            w.WriteLine($"public void SetActivity({className}ActivityId activity)");
-            w.WriteLine("{");
-            w.Indent();
-            w.WriteLine("ActivityId = activity;");
-            w.WriteLine("TypeUid = EventClassUid * 100L + (long)activity;");
-            w.Dedent();
-            w.WriteLine("}");
-        }
+            className, "EventClassUid", "EventCategoryUid",
+        };
+        WriteAttributeProperties(w, schema, mapper, className, cls.Attributes, enums,
+            EmitTarget.EventClass, objectPrefix: "Objects.", usedNames, leadingBlankLine: true);
+        WriteSiblingSetters(w, schema, className, cls.Attributes, enums, isEventClass: true, usedNames);
 
         w.Dedent();
         w.WriteLine("}");
@@ -548,9 +544,9 @@ public static class Emitter
         List<EnumDecl> enums,
         EmitTarget target,
         string objectPrefix,
+        HashSet<string> usedNames,
         bool leadingBlankLine = false)
     {
-        var usedNames = new HashSet<string>(StringComparer.Ordinal) { ownerPascal };
         var first = !leadingBlankLine;
 
         foreach (var (attrName, attr) in attributes.OrderBy(a => a.Key, StringComparer.Ordinal))
@@ -568,7 +564,7 @@ public static class Emitter
             if (!usedNames.Add(propName))
                 throw new InvalidOperationException($"Duplicate property name '{propName}' in '{ownerPascal}'.");
 
-            var baseType = ResolvePropertyType(schema, mapper, ownerPascal, attrName, attr, enums, target, objectPrefix);
+            var baseType = ResolvePropertyType(schema, mapper, ownerPascal, attrName, propName, attr, enums, target, objectPrefix);
             var fullType = attr.IsArray ? $"List<{baseType}>?" : baseType + "?";
 
             w.WriteDocSummary(BuildAttributeDoc(attrName, attr));
@@ -612,6 +608,7 @@ public static class Emitter
         TypeMapper mapper,
         string ownerPascal,
         string attrName,
+        string propName,
         SchemaAttribute attr,
         List<EnumDecl> enums,
         EmitTarget target,
@@ -642,14 +639,87 @@ public static class Emitter
         {
             var enumName = ownerPascal + NameMapper.PascalCase(attrName);
             if (enums.All(e => e.Name != enumName))
-                enums.Add(BuildEnumDecl(enumName, attrName, attr));
+                enums.Add(BuildEnumDecl(enumName, attrName, propName, attr));
             return enumName;
         }
 
         return mapper.MapScalar(ocsfType);
     }
 
-    private static EnumDecl BuildEnumDecl(string enumName, string attrName, SchemaAttribute attr)
+    /// <summary>
+    /// Emits a Set* helper for every non-array enum attribute with a sibling label attribute,
+    /// assigning the enum and optionally the label in one call. On event classes, activity_id
+    /// additionally recomputes type_uid.
+    /// </summary>
+    private static void WriteSiblingSetters(
+        CodeWriter w,
+        ExportSchema schema,
+        string ownerPascal,
+        Dictionary<string, SchemaAttribute> attributes,
+        List<EnumDecl> enums,
+        bool isEventClass,
+        HashSet<string> usedNames)
+    {
+        foreach (var decl in enums.Where(e => e.Sibling is not null && !e.IsArray)
+                     .OrderBy(e => e.AttrName, StringComparer.Ordinal))
+        {
+            var sibling = decl.Sibling!;
+
+            // Deprecated attributes keep their properties for compatibility but get no new
+            // convenience surface (and assigning them would trip CS0618).
+            if (attributes.TryGetValue(decl.AttrName, out var enumAttr) && enumAttr.Deprecated is not null)
+                continue;
+            if (attributes.TryGetValue(sibling, out var siblingAttr) && siblingAttr.Deprecated is not null)
+                continue;
+            if (!attributes.ContainsKey(sibling)
+                && !(isEventClass && schema.BaseEvent.Attributes.ContainsKey(sibling)))
+            {
+                throw new InvalidOperationException(
+                    $"Sibling attribute '{sibling}' of '{ownerPascal}.{decl.AttrName}' has no property to assign.");
+            }
+
+            var baseName = decl.AttrName.EndsWith("_id", StringComparison.Ordinal)
+                ? decl.AttrName[..^3]
+                : decl.AttrName;
+            var methodName = "Set" + NameMapper.PascalCase(baseName);
+            if (!usedNames.Add(methodName))
+                throw new InvalidOperationException($"Duplicate member name '{methodName}' in '{ownerPascal}'.");
+
+            var siblingProp = NameMapper.PascalCase(sibling);
+            var enumParam = NameMapper.Identifier(NameMapper.CamelCase(decl.AttrName));
+            var labelParam = NameMapper.Identifier(NameMapper.CamelCase(sibling));
+            var isActivity = isEventClass && decl.AttrName == "activity_id";
+
+            w.WriteLine();
+            w.WriteLine("/// <summary>");
+            w.WriteLine($"/// Sets <c>{decl.AttrName}</c> and the <c>{sibling}</c> sibling label" +
+                        (isActivity ? ", and recomputes <c>type_uid</c> and <c>type_name</c>." : "."));
+            w.WriteLine($"/// The label defaults to the schema caption of the value; pass <paramref name=\"{labelParam}\"/>");
+            w.WriteLine("/// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).");
+            w.WriteLine("/// </summary>");
+            w.WriteLine($"public void {methodName}({decl.Name} {enumParam}, string? {labelParam} = null)");
+            w.WriteLine("{");
+            w.Indent();
+            w.WriteLine($"{decl.PropertyName} = {enumParam};");
+            if (isActivity)
+                w.WriteLine($"TypeUid = EventClassUid * 100L + (long){enumParam};");
+            w.WriteLine($"if (({labelParam} ?? {enumParam}.Caption()) is {{ }} label)");
+            w.Indent();
+            w.WriteLine($"{siblingProp} = label;");
+            w.Dedent();
+            if (isActivity)
+            {
+                w.WriteLine($"if (ClassName is not null && {enumParam}.Caption() is {{ }} typeCaption)");
+                w.Indent();
+                w.WriteLine("TypeName = $\"{ClassName}: {typeCaption}\";");
+                w.Dedent();
+            }
+            w.Dedent();
+            w.WriteLine("}");
+        }
+    }
+
+    private static EnumDecl BuildEnumDecl(string enumName, string attrName, string propertyName, SchemaAttribute attr)
     {
         var used = new HashSet<string>(StringComparer.Ordinal);
         var members = attr.Enum!
@@ -658,6 +728,7 @@ public static class Emitter
             .Select(m => new EnumMemberDecl(
                 m.Value,
                 NameMapper.EnumMemberName(m.Member.Caption, m.Value.ToString(System.Globalization.CultureInfo.InvariantCulture), used),
+                m.Member.Caption,
                 m.Member.Description,
                 m.Member.Deprecated))
             .ToList();
@@ -665,7 +736,8 @@ public static class Emitter
         var doc = $"Values for the <c>{attrName}</c> attribute.";
         if (attr.Sibling is { Length: > 0 })
             doc += $"\nWhen the value is <c>Other</c> (99), the <c>{attr.Sibling}</c> attribute contains the source-specific label.";
-        return new EnumDecl(enumName, doc, members);
+        return new EnumDecl(enumName, doc, members, attrName,
+            propertyName, attr.Sibling is { Length: > 0 } ? attr.Sibling : null, attr.IsArray);
     }
 
     internal static void WriteEnumDecls(CodeWriter w, List<EnumDecl> enums)
@@ -684,6 +756,24 @@ public static class Emitter
                 WriteObsolete(w, member.Deprecated);
                 w.WriteLine($"{member.Name} = {member.Value},");
             }
+            w.Dedent();
+            w.WriteLine("}");
+
+            w.WriteLine();
+            w.WriteLine($"/// <summary>Schema caption lookup for <see cref=\"{decl.Name}\"/>.</summary>");
+            w.WriteLine($"public static class {decl.Name}Extensions");
+            w.WriteLine("{");
+            w.Indent();
+            w.WriteLine("/// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>");
+            w.WriteLine($"public static string? Caption(this {decl.Name} value) => value switch");
+            w.WriteLine("{");
+            w.Indent();
+            // Values are cast rather than named so captions of deprecated members do not trip CS0618.
+            foreach (var member in decl.Members)
+                w.WriteLine($"({decl.Name}){member.Value} => {DocFormatter.CSharpStringLiteral(member.Caption)},");
+            w.WriteLine("_ => null,");
+            w.Dedent();
+            w.WriteLine("};");
             w.Dedent();
             w.WriteLine("}");
         }
@@ -714,6 +804,14 @@ public static class Emitter
     };
 }
 
-internal sealed record EnumDecl(string Name, string Doc, List<EnumMemberDecl> Members);
+internal sealed record EnumDecl(
+    string Name,
+    string Doc,
+    List<EnumMemberDecl> Members,
+    string AttrName,
+    string PropertyName,
+    string? Sibling,
+    bool IsArray);
 
-internal sealed record EnumMemberDecl(long Value, string Name, string? Description, SchemaDeprecation? Deprecated);
+internal sealed record EnumMemberDecl(
+    long Value, string Name, string Caption, string? Description, SchemaDeprecation? Deprecated);

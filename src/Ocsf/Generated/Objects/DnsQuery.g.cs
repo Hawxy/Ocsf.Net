@@ -110,3 +110,21 @@ public enum DnsQueryOpcodeId
     /// </summary>
     Other = 99,
 }
+
+/// <summary>Schema caption lookup for <see cref="DnsQueryOpcodeId"/>.</summary>
+public static class DnsQueryOpcodeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DnsQueryOpcodeId value) => value switch
+    {
+        (DnsQueryOpcodeId)0 => "Query",
+        (DnsQueryOpcodeId)1 => "Inverse Query",
+        (DnsQueryOpcodeId)2 => "Status",
+        (DnsQueryOpcodeId)3 => "Reserved",
+        (DnsQueryOpcodeId)4 => "Notify",
+        (DnsQueryOpcodeId)5 => "Update",
+        (DnsQueryOpcodeId)6 => "DSO Message",
+        (DnsQueryOpcodeId)99 => "Other",
+        _ => null,
+    };
+}

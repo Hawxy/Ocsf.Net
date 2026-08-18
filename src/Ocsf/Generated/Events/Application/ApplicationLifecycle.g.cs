@@ -149,11 +149,91 @@ public class ApplicationLifecycle : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public ApplicationLifecycleStatusId? StatusId { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(ApplicationLifecycleActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(ApplicationLifecycleActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(ApplicationLifecycleActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(ApplicationLifecycleConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(ApplicationLifecycleDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(ApplicationLifecycleRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(ApplicationLifecycleSeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(ApplicationLifecycleStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -187,6 +267,22 @@ public enum ApplicationLifecycleActionId
     /// The action is not mapped. See the <c>action</c> attribute which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ApplicationLifecycleActionId"/>.</summary>
+public static class ApplicationLifecycleActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ApplicationLifecycleActionId value) => value switch
+    {
+        (ApplicationLifecycleActionId)0 => "Unknown",
+        (ApplicationLifecycleActionId)1 => "Allowed",
+        (ApplicationLifecycleActionId)2 => "Denied",
+        (ApplicationLifecycleActionId)3 => "Observed",
+        (ApplicationLifecycleActionId)4 => "Modified",
+        (ApplicationLifecycleActionId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -237,6 +333,26 @@ public enum ApplicationLifecycleActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ApplicationLifecycleActivityId"/>.</summary>
+public static class ApplicationLifecycleActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ApplicationLifecycleActivityId value) => value switch
+    {
+        (ApplicationLifecycleActivityId)0 => "Unknown",
+        (ApplicationLifecycleActivityId)1 => "Install",
+        (ApplicationLifecycleActivityId)2 => "Remove",
+        (ApplicationLifecycleActivityId)3 => "Start",
+        (ApplicationLifecycleActivityId)4 => "Stop",
+        (ApplicationLifecycleActivityId)5 => "Restart",
+        (ApplicationLifecycleActivityId)6 => "Enable",
+        (ApplicationLifecycleActivityId)7 => "Disable",
+        (ApplicationLifecycleActivityId)8 => "Update",
+        (ApplicationLifecycleActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -254,6 +370,21 @@ public enum ApplicationLifecycleConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ApplicationLifecycleConfidenceId"/>.</summary>
+public static class ApplicationLifecycleConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ApplicationLifecycleConfidenceId value) => value switch
+    {
+        (ApplicationLifecycleConfidenceId)0 => "Unknown",
+        (ApplicationLifecycleConfidenceId)1 => "Low",
+        (ApplicationLifecycleConfidenceId)2 => "Medium",
+        (ApplicationLifecycleConfidenceId)3 => "High",
+        (ApplicationLifecycleConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -380,6 +511,45 @@ public enum ApplicationLifecycleDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ApplicationLifecycleDispositionId"/>.</summary>
+public static class ApplicationLifecycleDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ApplicationLifecycleDispositionId value) => value switch
+    {
+        (ApplicationLifecycleDispositionId)0 => "Unknown",
+        (ApplicationLifecycleDispositionId)1 => "Allowed",
+        (ApplicationLifecycleDispositionId)2 => "Blocked",
+        (ApplicationLifecycleDispositionId)3 => "Quarantined",
+        (ApplicationLifecycleDispositionId)4 => "Isolated",
+        (ApplicationLifecycleDispositionId)5 => "Deleted",
+        (ApplicationLifecycleDispositionId)6 => "Dropped",
+        (ApplicationLifecycleDispositionId)7 => "Custom Action",
+        (ApplicationLifecycleDispositionId)8 => "Approved",
+        (ApplicationLifecycleDispositionId)9 => "Restored",
+        (ApplicationLifecycleDispositionId)10 => "Exonerated",
+        (ApplicationLifecycleDispositionId)11 => "Corrected",
+        (ApplicationLifecycleDispositionId)12 => "Partially Corrected",
+        (ApplicationLifecycleDispositionId)13 => "Uncorrected",
+        (ApplicationLifecycleDispositionId)14 => "Delayed",
+        (ApplicationLifecycleDispositionId)15 => "Detected",
+        (ApplicationLifecycleDispositionId)16 => "No Action",
+        (ApplicationLifecycleDispositionId)17 => "Logged",
+        (ApplicationLifecycleDispositionId)18 => "Tagged",
+        (ApplicationLifecycleDispositionId)19 => "Alert",
+        (ApplicationLifecycleDispositionId)20 => "Count",
+        (ApplicationLifecycleDispositionId)21 => "Reset",
+        (ApplicationLifecycleDispositionId)22 => "Captcha",
+        (ApplicationLifecycleDispositionId)23 => "Challenge",
+        (ApplicationLifecycleDispositionId)24 => "Access Revoked",
+        (ApplicationLifecycleDispositionId)25 => "Rejected",
+        (ApplicationLifecycleDispositionId)26 => "Unauthorized",
+        (ApplicationLifecycleDispositionId)27 => "Error",
+        (ApplicationLifecycleDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -395,6 +565,22 @@ public enum ApplicationLifecycleRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ApplicationLifecycleRiskLevelId"/>.</summary>
+public static class ApplicationLifecycleRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ApplicationLifecycleRiskLevelId value) => value switch
+    {
+        (ApplicationLifecycleRiskLevelId)0 => "Info",
+        (ApplicationLifecycleRiskLevelId)1 => "Low",
+        (ApplicationLifecycleRiskLevelId)2 => "Medium",
+        (ApplicationLifecycleRiskLevelId)3 => "High",
+        (ApplicationLifecycleRiskLevelId)4 => "Critical",
+        (ApplicationLifecycleRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -437,6 +623,24 @@ public enum ApplicationLifecycleSeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ApplicationLifecycleSeverityId"/>.</summary>
+public static class ApplicationLifecycleSeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ApplicationLifecycleSeverityId value) => value switch
+    {
+        (ApplicationLifecycleSeverityId)0 => "Unknown",
+        (ApplicationLifecycleSeverityId)1 => "Informational",
+        (ApplicationLifecycleSeverityId)2 => "Low",
+        (ApplicationLifecycleSeverityId)3 => "Medium",
+        (ApplicationLifecycleSeverityId)4 => "High",
+        (ApplicationLifecycleSeverityId)5 => "Critical",
+        (ApplicationLifecycleSeverityId)6 => "Fatal",
+        (ApplicationLifecycleSeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -459,4 +663,18 @@ public enum ApplicationLifecycleStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ApplicationLifecycleStatusId"/>.</summary>
+public static class ApplicationLifecycleStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ApplicationLifecycleStatusId value) => value switch
+    {
+        (ApplicationLifecycleStatusId)0 => "Unknown",
+        (ApplicationLifecycleStatusId)1 => "Success",
+        (ApplicationLifecycleStatusId)2 => "Failure",
+        (ApplicationLifecycleStatusId)99 => "Other",
+        _ => null,
+    };
 }

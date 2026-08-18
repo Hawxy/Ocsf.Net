@@ -367,11 +367,115 @@ public class SshActivity : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public Objects.NetworkTraffic? Traffic { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(SshActivityActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(SshActivityActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(SshActivityActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>auth_type_id</c> and the <c>auth_type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="authType"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAuthType(SshActivityAuthTypeId authTypeId, string? authType = null)
+    {
+        AuthTypeId = authTypeId;
+        if ((authType ?? authTypeId.Caption()) is { } label)
+            AuthType = label;
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(SshActivityConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(SshActivityDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>observation_point_id</c> and the <c>observation_point</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="observationPoint"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetObservationPoint(SshActivityObservationPointId observationPointId, string? observationPoint = null)
+    {
+        ObservationPointId = observationPointId;
+        if ((observationPoint ?? observationPointId.Caption()) is { } label)
+            ObservationPoint = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(SshActivityRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(SshActivitySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(SshActivityStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -405,6 +509,22 @@ public enum SshActivityActionId
     /// The action is not mapped. See the <c>action</c> attribute which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="SshActivityActionId"/>.</summary>
+public static class SshActivityActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SshActivityActionId value) => value switch
+    {
+        (SshActivityActionId)0 => "Unknown",
+        (SshActivityActionId)1 => "Allowed",
+        (SshActivityActionId)2 => "Denied",
+        (SshActivityActionId)3 => "Observed",
+        (SshActivityActionId)4 => "Modified",
+        (SshActivityActionId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -451,6 +571,25 @@ public enum SshActivityActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="SshActivityActivityId"/>.</summary>
+public static class SshActivityActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SshActivityActivityId value) => value switch
+    {
+        (SshActivityActivityId)0 => "Unknown",
+        (SshActivityActivityId)1 => "Open",
+        (SshActivityActivityId)2 => "Close",
+        (SshActivityActivityId)3 => "Reset",
+        (SshActivityActivityId)4 => "Fail",
+        (SshActivityActivityId)5 => "Refuse",
+        (SshActivityActivityId)6 => "Traffic",
+        (SshActivityActivityId)7 => "Listen",
+        (SshActivityActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>auth_type_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>auth_type</c> attribute contains the source-specific label.
@@ -491,6 +630,24 @@ public enum SshActivityAuthTypeId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="SshActivityAuthTypeId"/>.</summary>
+public static class SshActivityAuthTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SshActivityAuthTypeId value) => value switch
+    {
+        (SshActivityAuthTypeId)0 => "Unknown",
+        (SshActivityAuthTypeId)1 => "Certificate Based",
+        (SshActivityAuthTypeId)2 => "GSSAPI",
+        (SshActivityAuthTypeId)3 => "Host Based",
+        (SshActivityAuthTypeId)4 => "Keyboard Interactive",
+        (SshActivityAuthTypeId)5 => "Password",
+        (SshActivityAuthTypeId)6 => "Public Key",
+        (SshActivityAuthTypeId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -508,6 +665,21 @@ public enum SshActivityConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="SshActivityConfidenceId"/>.</summary>
+public static class SshActivityConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SshActivityConfidenceId value) => value switch
+    {
+        (SshActivityConfidenceId)0 => "Unknown",
+        (SshActivityConfidenceId)1 => "Low",
+        (SshActivityConfidenceId)2 => "Medium",
+        (SshActivityConfidenceId)3 => "High",
+        (SshActivityConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -634,6 +806,45 @@ public enum SshActivityDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="SshActivityDispositionId"/>.</summary>
+public static class SshActivityDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SshActivityDispositionId value) => value switch
+    {
+        (SshActivityDispositionId)0 => "Unknown",
+        (SshActivityDispositionId)1 => "Allowed",
+        (SshActivityDispositionId)2 => "Blocked",
+        (SshActivityDispositionId)3 => "Quarantined",
+        (SshActivityDispositionId)4 => "Isolated",
+        (SshActivityDispositionId)5 => "Deleted",
+        (SshActivityDispositionId)6 => "Dropped",
+        (SshActivityDispositionId)7 => "Custom Action",
+        (SshActivityDispositionId)8 => "Approved",
+        (SshActivityDispositionId)9 => "Restored",
+        (SshActivityDispositionId)10 => "Exonerated",
+        (SshActivityDispositionId)11 => "Corrected",
+        (SshActivityDispositionId)12 => "Partially Corrected",
+        (SshActivityDispositionId)13 => "Uncorrected",
+        (SshActivityDispositionId)14 => "Delayed",
+        (SshActivityDispositionId)15 => "Detected",
+        (SshActivityDispositionId)16 => "No Action",
+        (SshActivityDispositionId)17 => "Logged",
+        (SshActivityDispositionId)18 => "Tagged",
+        (SshActivityDispositionId)19 => "Alert",
+        (SshActivityDispositionId)20 => "Count",
+        (SshActivityDispositionId)21 => "Reset",
+        (SshActivityDispositionId)22 => "Captcha",
+        (SshActivityDispositionId)23 => "Challenge",
+        (SshActivityDispositionId)24 => "Access Revoked",
+        (SshActivityDispositionId)25 => "Rejected",
+        (SshActivityDispositionId)26 => "Unauthorized",
+        (SshActivityDispositionId)27 => "Error",
+        (SshActivityDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>observation_point_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>observation_point</c> attribute contains the source-specific label.
@@ -666,6 +877,22 @@ public enum SshActivityObservationPointId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="SshActivityObservationPointId"/>.</summary>
+public static class SshActivityObservationPointIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SshActivityObservationPointId value) => value switch
+    {
+        (SshActivityObservationPointId)0 => "Unknown",
+        (SshActivityObservationPointId)1 => "Source",
+        (SshActivityObservationPointId)2 => "Destination",
+        (SshActivityObservationPointId)3 => "Neither",
+        (SshActivityObservationPointId)4 => "Both",
+        (SshActivityObservationPointId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -681,6 +908,22 @@ public enum SshActivityRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="SshActivityRiskLevelId"/>.</summary>
+public static class SshActivityRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SshActivityRiskLevelId value) => value switch
+    {
+        (SshActivityRiskLevelId)0 => "Info",
+        (SshActivityRiskLevelId)1 => "Low",
+        (SshActivityRiskLevelId)2 => "Medium",
+        (SshActivityRiskLevelId)3 => "High",
+        (SshActivityRiskLevelId)4 => "Critical",
+        (SshActivityRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -723,6 +966,24 @@ public enum SshActivitySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="SshActivitySeverityId"/>.</summary>
+public static class SshActivitySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SshActivitySeverityId value) => value switch
+    {
+        (SshActivitySeverityId)0 => "Unknown",
+        (SshActivitySeverityId)1 => "Informational",
+        (SshActivitySeverityId)2 => "Low",
+        (SshActivitySeverityId)3 => "Medium",
+        (SshActivitySeverityId)4 => "High",
+        (SshActivitySeverityId)5 => "Critical",
+        (SshActivitySeverityId)6 => "Fatal",
+        (SshActivitySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -745,4 +1006,18 @@ public enum SshActivityStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="SshActivityStatusId"/>.</summary>
+public static class SshActivityStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SshActivityStatusId value) => value switch
+    {
+        (SshActivityStatusId)0 => "Unknown",
+        (SshActivityStatusId)1 => "Success",
+        (SshActivityStatusId)2 => "Failure",
+        (SshActivityStatusId)99 => "Other",
+        _ => null,
+    };
 }

@@ -72,7 +72,7 @@ public class EmitterTests
         await Assert.That(auth).Contains("[OcsfEventClass(3002, 3, \"authentication\")]");
         await Assert.That(auth).Contains("public const int EventClassUid = 3002;");
         await Assert.That(auth).Contains("TypeUid = EventClassUid * 100L;");
-        await Assert.That(auth).Contains("public void SetActivity(AuthenticationActivityId activity)");
+        await Assert.That(auth).Contains("public void SetActivity(AuthenticationActivityId activityId, string? activityName = null)");
         await Assert.That(auth).Contains("public Objects.User? User { get; set; }");
         await Assert.That(auth).Contains("public enum AuthenticationActivityId");
         // Inherited base attributes are not redeclared.
@@ -104,6 +104,38 @@ public class EmitterTests
         var fileActivity = outputs.Single(o => o.RelativePath.EndsWith("Events/SystemActivity/FileActivity.g.cs")).Content;
 
         await Assert.That(fileActivity).Contains("namespace Ocsf.Events.SystemActivity;");
+    }
+
+    [Test]
+    public async Task SiblingSetters_AreEmittedForEnumAttributesWithSiblings()
+    {
+        var outputs = Emitter.EmitAll(Schema.Value);
+        var auth = outputs.Single(o => o.RelativePath.EndsWith("Events/Iam/Authentication.g.cs")).Content;
+        var user = outputs.Single(o => o.RelativePath.EndsWith("Objects/User.g.cs")).Content;
+
+        await Assert.That(auth).Contains(
+            "public void SetActivity(AuthenticationActivityId activityId, string? activityName = null)");
+        await Assert.That(auth).Contains("TypeUid = EventClassUid * 100L + (long)activityId;");
+        await Assert.That(auth).Contains(
+            "public void SetStatus(AuthenticationStatusId statusId, string? status = null)");
+        await Assert.That(user).Contains(
+            "public void SetType(UserTypeId typeId, string? type = null)");
+        await Assert.That(auth).Contains("public static class AuthenticationActivityIdExtensions");
+        await Assert.That(auth).Contains("TypeName = $\"{ClassName}: {typeCaption}\";");
+        await Assert.That(user).Contains("public static string? Caption(this UserTypeId value)");
+    }
+
+    [Test]
+    public async Task SiblingSetters_SkipArrayEnumsAndDeprecatedAttributes()
+    {
+        var outputs = Emitter.EmitAll(Schema.Value);
+        var dns = outputs.Single(o => o.RelativePath.EndsWith("Events/Network/DnsActivity.g.cs")).Content;
+        var hwInfo = outputs.Single(o => o.RelativePath.EndsWith("Objects/DeviceHwInfo.g.cs")).Content;
+
+        // flag_ids is an array enum; its sibling holds an array of labels.
+        await Assert.That(dns).DoesNotContain("public void SetFlag");
+        // cpu_architecture_id is deprecated; no helper is generated for it.
+        await Assert.That(hwInfo).DoesNotContain("public void SetCpuArchitecture(");
     }
 
     [Test]

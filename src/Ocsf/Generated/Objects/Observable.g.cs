@@ -74,6 +74,18 @@ public class Observable : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public string? Value { get; set; }
+
+    /// <summary>
+    /// Sets <c>type_id</c> and the <c>type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="type"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetType(ObservableTypeId typeId, string? type = null)
+    {
+        TypeId = typeId;
+        if ((type ?? typeId.Caption()) is { } label)
+            Type = label;
+    }
 }
 
 /// <summary>
@@ -357,4 +369,66 @@ public enum ObservableTypeId
     /// The observable data type is not mapped. See the <c>type</c> attribute, which may contain data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ObservableTypeId"/>.</summary>
+public static class ObservableTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ObservableTypeId value) => value switch
+    {
+        (ObservableTypeId)0 => "Unknown",
+        (ObservableTypeId)1 => "Hostname",
+        (ObservableTypeId)2 => "IP Address",
+        (ObservableTypeId)3 => "MAC Address",
+        (ObservableTypeId)4 => "User Name",
+        (ObservableTypeId)5 => "Email Address",
+        (ObservableTypeId)6 => "URL String",
+        (ObservableTypeId)7 => "File Name",
+        (ObservableTypeId)8 => "Hash",
+        (ObservableTypeId)9 => "Process Name",
+        (ObservableTypeId)10 => "Resource UID",
+        (ObservableTypeId)11 => "Port",
+        (ObservableTypeId)12 => "Subnet",
+        (ObservableTypeId)13 => "Command Line",
+        (ObservableTypeId)14 => "Country",
+        (ObservableTypeId)15 => "Process ID",
+        (ObservableTypeId)16 => "HTTP User-Agent",
+        (ObservableTypeId)17 => "CWE Object: uid",
+        (ObservableTypeId)18 => "CVE Object: uid",
+        (ObservableTypeId)19 => "User Credential ID",
+        (ObservableTypeId)20 => "Endpoint",
+        (ObservableTypeId)21 => "User",
+        (ObservableTypeId)22 => "Email",
+        (ObservableTypeId)23 => "Uniform Resource Locator",
+        (ObservableTypeId)24 => "File",
+        (ObservableTypeId)25 => "Process",
+        (ObservableTypeId)26 => "Geo Location",
+        (ObservableTypeId)27 => "Container",
+        (ObservableTypeId)28 => "Registry Key",
+        (ObservableTypeId)29 => "Registry Value",
+        (ObservableTypeId)30 => "Fingerprint",
+        (ObservableTypeId)31 => "User Object: uid",
+        (ObservableTypeId)32 => "Group Object: name",
+        (ObservableTypeId)33 => "Group Object: uid",
+        (ObservableTypeId)34 => "Account Object: name",
+        (ObservableTypeId)35 => "Account Object: uid",
+        (ObservableTypeId)36 => "Script Content",
+        (ObservableTypeId)37 => "Serial Number",
+        (ObservableTypeId)38 => "Resource Details Object: name",
+        (ObservableTypeId)39 => "Process Entity Object: uid",
+        (ObservableTypeId)40 => "Email Object: subject",
+        (ObservableTypeId)41 => "Email Object: uid",
+        (ObservableTypeId)42 => "Message UID",
+        (ObservableTypeId)43 => "Registry Value Object: name",
+        (ObservableTypeId)44 => "Advisory Object: uid",
+        (ObservableTypeId)45 => "File Path",
+        (ObservableTypeId)46 => "Registry Key Path",
+        (ObservableTypeId)47 => "Device Object: uid",
+        (ObservableTypeId)48 => "Network Endpoint Object: uid",
+        (ObservableTypeId)49 => "IAM Role Object: name",
+        (ObservableTypeId)50 => "IAM Role Object: uid",
+        (ObservableTypeId)99 => "Other",
+        _ => null,
+    };
 }

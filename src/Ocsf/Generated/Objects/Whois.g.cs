@@ -168,6 +168,18 @@ public class Whois : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public string? Subnet { get; set; }
+
+    /// <summary>
+    /// Sets <c>dnssec_status_id</c> and the <c>dnssec_status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="dnssecStatus"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDnssecStatus(WhoisDnssecStatusId dnssecStatusId, string? dnssecStatus = null)
+    {
+        DnssecStatusId = dnssecStatusId;
+        if ((dnssecStatus ?? dnssecStatusId.Caption()) is { } label)
+            DnssecStatus = label;
+    }
 }
 
 /// <summary>
@@ -192,4 +204,18 @@ public enum WhoisDnssecStatusId
     /// The DNSSEC status is not mapped. See the <c>dnssec_status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="WhoisDnssecStatusId"/>.</summary>
+public static class WhoisDnssecStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this WhoisDnssecStatusId value) => value switch
+    {
+        (WhoisDnssecStatusId)0 => "Unknown",
+        (WhoisDnssecStatusId)1 => "Signed",
+        (WhoisDnssecStatusId)2 => "Unsigned",
+        (WhoisDnssecStatusId)99 => "Other",
+        _ => null,
+    };
 }

@@ -173,6 +173,30 @@ public class Job : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public User? User { get; set; }
+
+    /// <summary>
+    /// Sets <c>run_state_id</c> and the <c>run_state</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="runState"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRunState(JobRunStateId runStateId, string? runState = null)
+    {
+        RunStateId = runStateId;
+        if ((runState ?? runStateId.Caption()) is { } label)
+            RunState = label;
+    }
+
+    /// <summary>
+    /// Sets <c>type_id</c> and the <c>type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="type"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetType(JobTypeId typeId, string? type = null)
+    {
+        TypeId = typeId;
+        if ((type ?? typeId.Caption()) is { } label)
+            Type = label;
+    }
 }
 
 /// <summary>
@@ -194,6 +218,23 @@ public enum JobRunStateId
     /// The run state is not mapped. See the <c>run_state</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="JobRunStateId"/>.</summary>
+public static class JobRunStateIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this JobRunStateId value) => value switch
+    {
+        (JobRunStateId)0 => "Unknown",
+        (JobRunStateId)1 => "Ready",
+        (JobRunStateId)2 => "Queued",
+        (JobRunStateId)3 => "Running",
+        (JobRunStateId)4 => "Stopped",
+        (JobRunStateId)5 => "Disabled",
+        (JobRunStateId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -226,4 +267,20 @@ public enum JobTypeId
     /// The job orchestration mechanism is not mapped. See the <c>type</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="JobTypeId"/>.</summary>
+public static class JobTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this JobTypeId value) => value switch
+    {
+        (JobTypeId)0 => "Unknown",
+        (JobTypeId)1 => "Task Scheduler",
+        (JobTypeId)2 => "Cron",
+        (JobTypeId)3 => "Systemd",
+        (JobTypeId)4 => "Launchd",
+        (JobTypeId)99 => "Other",
+        _ => null,
+    };
 }

@@ -220,11 +220,103 @@ public class DatastoreActivity : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public DatastoreActivityTypeId? TypeId { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(DatastoreActivityActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(DatastoreActivityActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(DatastoreActivityActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(DatastoreActivityConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(DatastoreActivityDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(DatastoreActivityRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(DatastoreActivitySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(DatastoreActivityStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
+    }
+
+    /// <summary>
+    /// Sets <c>type_id</c> and the <c>type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="type"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetType(DatastoreActivityTypeId typeId, string? type = null)
+    {
+        TypeId = typeId;
+        if ((type ?? typeId.Caption()) is { } label)
+            Type = label;
     }
 }
 
@@ -258,6 +350,22 @@ public enum DatastoreActivityActionId
     /// The action is not mapped. See the <c>action</c> attribute which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="DatastoreActivityActionId"/>.</summary>
+public static class DatastoreActivityActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DatastoreActivityActionId value) => value switch
+    {
+        (DatastoreActivityActionId)0 => "Unknown",
+        (DatastoreActivityActionId)1 => "Allowed",
+        (DatastoreActivityActionId)2 => "Denied",
+        (DatastoreActivityActionId)3 => "Observed",
+        (DatastoreActivityActionId)4 => "Modified",
+        (DatastoreActivityActionId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -316,6 +424,28 @@ public enum DatastoreActivityActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="DatastoreActivityActivityId"/>.</summary>
+public static class DatastoreActivityActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DatastoreActivityActivityId value) => value switch
+    {
+        (DatastoreActivityActivityId)0 => "Unknown",
+        (DatastoreActivityActivityId)1 => "Read",
+        (DatastoreActivityActivityId)2 => "Update",
+        (DatastoreActivityActivityId)3 => "Connect",
+        (DatastoreActivityActivityId)4 => "Query",
+        (DatastoreActivityActivityId)5 => "Write",
+        (DatastoreActivityActivityId)6 => "Create",
+        (DatastoreActivityActivityId)7 => "Delete",
+        (DatastoreActivityActivityId)8 => "List",
+        (DatastoreActivityActivityId)9 => "Encrypt",
+        (DatastoreActivityActivityId)10 => "Decrypt",
+        (DatastoreActivityActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -333,6 +463,21 @@ public enum DatastoreActivityConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="DatastoreActivityConfidenceId"/>.</summary>
+public static class DatastoreActivityConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DatastoreActivityConfidenceId value) => value switch
+    {
+        (DatastoreActivityConfidenceId)0 => "Unknown",
+        (DatastoreActivityConfidenceId)1 => "Low",
+        (DatastoreActivityConfidenceId)2 => "Medium",
+        (DatastoreActivityConfidenceId)3 => "High",
+        (DatastoreActivityConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -459,6 +604,45 @@ public enum DatastoreActivityDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="DatastoreActivityDispositionId"/>.</summary>
+public static class DatastoreActivityDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DatastoreActivityDispositionId value) => value switch
+    {
+        (DatastoreActivityDispositionId)0 => "Unknown",
+        (DatastoreActivityDispositionId)1 => "Allowed",
+        (DatastoreActivityDispositionId)2 => "Blocked",
+        (DatastoreActivityDispositionId)3 => "Quarantined",
+        (DatastoreActivityDispositionId)4 => "Isolated",
+        (DatastoreActivityDispositionId)5 => "Deleted",
+        (DatastoreActivityDispositionId)6 => "Dropped",
+        (DatastoreActivityDispositionId)7 => "Custom Action",
+        (DatastoreActivityDispositionId)8 => "Approved",
+        (DatastoreActivityDispositionId)9 => "Restored",
+        (DatastoreActivityDispositionId)10 => "Exonerated",
+        (DatastoreActivityDispositionId)11 => "Corrected",
+        (DatastoreActivityDispositionId)12 => "Partially Corrected",
+        (DatastoreActivityDispositionId)13 => "Uncorrected",
+        (DatastoreActivityDispositionId)14 => "Delayed",
+        (DatastoreActivityDispositionId)15 => "Detected",
+        (DatastoreActivityDispositionId)16 => "No Action",
+        (DatastoreActivityDispositionId)17 => "Logged",
+        (DatastoreActivityDispositionId)18 => "Tagged",
+        (DatastoreActivityDispositionId)19 => "Alert",
+        (DatastoreActivityDispositionId)20 => "Count",
+        (DatastoreActivityDispositionId)21 => "Reset",
+        (DatastoreActivityDispositionId)22 => "Captcha",
+        (DatastoreActivityDispositionId)23 => "Challenge",
+        (DatastoreActivityDispositionId)24 => "Access Revoked",
+        (DatastoreActivityDispositionId)25 => "Rejected",
+        (DatastoreActivityDispositionId)26 => "Unauthorized",
+        (DatastoreActivityDispositionId)27 => "Error",
+        (DatastoreActivityDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -474,6 +658,22 @@ public enum DatastoreActivityRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="DatastoreActivityRiskLevelId"/>.</summary>
+public static class DatastoreActivityRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DatastoreActivityRiskLevelId value) => value switch
+    {
+        (DatastoreActivityRiskLevelId)0 => "Info",
+        (DatastoreActivityRiskLevelId)1 => "Low",
+        (DatastoreActivityRiskLevelId)2 => "Medium",
+        (DatastoreActivityRiskLevelId)3 => "High",
+        (DatastoreActivityRiskLevelId)4 => "Critical",
+        (DatastoreActivityRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -516,6 +716,24 @@ public enum DatastoreActivitySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="DatastoreActivitySeverityId"/>.</summary>
+public static class DatastoreActivitySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DatastoreActivitySeverityId value) => value switch
+    {
+        (DatastoreActivitySeverityId)0 => "Unknown",
+        (DatastoreActivitySeverityId)1 => "Informational",
+        (DatastoreActivitySeverityId)2 => "Low",
+        (DatastoreActivitySeverityId)3 => "Medium",
+        (DatastoreActivitySeverityId)4 => "High",
+        (DatastoreActivitySeverityId)5 => "Critical",
+        (DatastoreActivitySeverityId)6 => "Fatal",
+        (DatastoreActivitySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -540,6 +758,20 @@ public enum DatastoreActivityStatusId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="DatastoreActivityStatusId"/>.</summary>
+public static class DatastoreActivityStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DatastoreActivityStatusId value) => value switch
+    {
+        (DatastoreActivityStatusId)0 => "Unknown",
+        (DatastoreActivityStatusId)1 => "Success",
+        (DatastoreActivityStatusId)2 => "Failure",
+        (DatastoreActivityStatusId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>type_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>type</c> attribute contains the source-specific label.
@@ -557,4 +789,19 @@ public enum DatastoreActivityTypeId
     /// The datastore resource type is not mapped.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="DatastoreActivityTypeId"/>.</summary>
+public static class DatastoreActivityTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DatastoreActivityTypeId value) => value switch
+    {
+        (DatastoreActivityTypeId)0 => "Unknown",
+        (DatastoreActivityTypeId)1 => "Database",
+        (DatastoreActivityTypeId)2 => "Databucket",
+        (DatastoreActivityTypeId)3 => "Table",
+        (DatastoreActivityTypeId)99 => "Other",
+        _ => null,
+    };
 }

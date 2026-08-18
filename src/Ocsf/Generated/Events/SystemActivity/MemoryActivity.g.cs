@@ -176,11 +176,91 @@ public class MemoryActivity : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public MemoryActivityStatusId? StatusId { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(MemoryActivityActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(MemoryActivityActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(MemoryActivityActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(MemoryActivityConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(MemoryActivityDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(MemoryActivityRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(MemoryActivitySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(MemoryActivityStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -214,6 +294,22 @@ public enum MemoryActivityActionId
     /// The action is not mapped. See the <c>action</c> attribute which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="MemoryActivityActionId"/>.</summary>
+public static class MemoryActivityActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this MemoryActivityActionId value) => value switch
+    {
+        (MemoryActivityActionId)0 => "Unknown",
+        (MemoryActivityActionId)1 => "Allowed",
+        (MemoryActivityActionId)2 => "Denied",
+        (MemoryActivityActionId)3 => "Observed",
+        (MemoryActivityActionId)4 => "Modified",
+        (MemoryActivityActionId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -256,6 +352,27 @@ public enum MemoryActivityActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="MemoryActivityActivityId"/>.</summary>
+public static class MemoryActivityActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this MemoryActivityActivityId value) => value switch
+    {
+        (MemoryActivityActivityId)0 => "Unknown",
+        (MemoryActivityActivityId)1 => "Allocate Page",
+        (MemoryActivityActivityId)2 => "Modify Page",
+        (MemoryActivityActivityId)3 => "Delete Page",
+        (MemoryActivityActivityId)4 => "Buffer Overflow",
+        (MemoryActivityActivityId)5 => "Disable DEP",
+        (MemoryActivityActivityId)6 => "Enable DEP",
+        (MemoryActivityActivityId)7 => "Read",
+        (MemoryActivityActivityId)8 => "Write",
+        (MemoryActivityActivityId)9 => "Map View",
+        (MemoryActivityActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -273,6 +390,21 @@ public enum MemoryActivityConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="MemoryActivityConfidenceId"/>.</summary>
+public static class MemoryActivityConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this MemoryActivityConfidenceId value) => value switch
+    {
+        (MemoryActivityConfidenceId)0 => "Unknown",
+        (MemoryActivityConfidenceId)1 => "Low",
+        (MemoryActivityConfidenceId)2 => "Medium",
+        (MemoryActivityConfidenceId)3 => "High",
+        (MemoryActivityConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -399,6 +531,45 @@ public enum MemoryActivityDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="MemoryActivityDispositionId"/>.</summary>
+public static class MemoryActivityDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this MemoryActivityDispositionId value) => value switch
+    {
+        (MemoryActivityDispositionId)0 => "Unknown",
+        (MemoryActivityDispositionId)1 => "Allowed",
+        (MemoryActivityDispositionId)2 => "Blocked",
+        (MemoryActivityDispositionId)3 => "Quarantined",
+        (MemoryActivityDispositionId)4 => "Isolated",
+        (MemoryActivityDispositionId)5 => "Deleted",
+        (MemoryActivityDispositionId)6 => "Dropped",
+        (MemoryActivityDispositionId)7 => "Custom Action",
+        (MemoryActivityDispositionId)8 => "Approved",
+        (MemoryActivityDispositionId)9 => "Restored",
+        (MemoryActivityDispositionId)10 => "Exonerated",
+        (MemoryActivityDispositionId)11 => "Corrected",
+        (MemoryActivityDispositionId)12 => "Partially Corrected",
+        (MemoryActivityDispositionId)13 => "Uncorrected",
+        (MemoryActivityDispositionId)14 => "Delayed",
+        (MemoryActivityDispositionId)15 => "Detected",
+        (MemoryActivityDispositionId)16 => "No Action",
+        (MemoryActivityDispositionId)17 => "Logged",
+        (MemoryActivityDispositionId)18 => "Tagged",
+        (MemoryActivityDispositionId)19 => "Alert",
+        (MemoryActivityDispositionId)20 => "Count",
+        (MemoryActivityDispositionId)21 => "Reset",
+        (MemoryActivityDispositionId)22 => "Captcha",
+        (MemoryActivityDispositionId)23 => "Challenge",
+        (MemoryActivityDispositionId)24 => "Access Revoked",
+        (MemoryActivityDispositionId)25 => "Rejected",
+        (MemoryActivityDispositionId)26 => "Unauthorized",
+        (MemoryActivityDispositionId)27 => "Error",
+        (MemoryActivityDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -414,6 +585,22 @@ public enum MemoryActivityRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="MemoryActivityRiskLevelId"/>.</summary>
+public static class MemoryActivityRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this MemoryActivityRiskLevelId value) => value switch
+    {
+        (MemoryActivityRiskLevelId)0 => "Info",
+        (MemoryActivityRiskLevelId)1 => "Low",
+        (MemoryActivityRiskLevelId)2 => "Medium",
+        (MemoryActivityRiskLevelId)3 => "High",
+        (MemoryActivityRiskLevelId)4 => "Critical",
+        (MemoryActivityRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -456,6 +643,24 @@ public enum MemoryActivitySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="MemoryActivitySeverityId"/>.</summary>
+public static class MemoryActivitySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this MemoryActivitySeverityId value) => value switch
+    {
+        (MemoryActivitySeverityId)0 => "Unknown",
+        (MemoryActivitySeverityId)1 => "Informational",
+        (MemoryActivitySeverityId)2 => "Low",
+        (MemoryActivitySeverityId)3 => "Medium",
+        (MemoryActivitySeverityId)4 => "High",
+        (MemoryActivitySeverityId)5 => "Critical",
+        (MemoryActivitySeverityId)6 => "Fatal",
+        (MemoryActivitySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -478,4 +683,18 @@ public enum MemoryActivityStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="MemoryActivityStatusId"/>.</summary>
+public static class MemoryActivityStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this MemoryActivityStatusId value) => value switch
+    {
+        (MemoryActivityStatusId)0 => "Unknown",
+        (MemoryActivityStatusId)1 => "Success",
+        (MemoryActivityStatusId)2 => "Failure",
+        (MemoryActivityStatusId)99 => "Other",
+        _ => null,
+    };
 }

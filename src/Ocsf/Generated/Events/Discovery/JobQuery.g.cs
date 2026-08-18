@@ -132,11 +132,103 @@ public class JobQuery : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public JobQueryStatusId? StatusId { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(JobQueryActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(JobQueryActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(JobQueryActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(JobQueryConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(JobQueryDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>query_result_id</c> and the <c>query_result</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="queryResult"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetQueryResult(JobQueryQueryResultId queryResultId, string? queryResult = null)
+    {
+        QueryResultId = queryResultId;
+        if ((queryResult ?? queryResultId.Caption()) is { } label)
+            QueryResult = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(JobQueryRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(JobQuerySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(JobQueryStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -172,6 +264,22 @@ public enum JobQueryActionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="JobQueryActionId"/>.</summary>
+public static class JobQueryActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this JobQueryActionId value) => value switch
+    {
+        (JobQueryActionId)0 => "Unknown",
+        (JobQueryActionId)1 => "Allowed",
+        (JobQueryActionId)2 => "Denied",
+        (JobQueryActionId)3 => "Observed",
+        (JobQueryActionId)4 => "Modified",
+        (JobQueryActionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>activity_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>activity_name</c> attribute contains the source-specific label.
@@ -192,6 +300,19 @@ public enum JobQueryActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="JobQueryActivityId"/>.</summary>
+public static class JobQueryActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this JobQueryActivityId value) => value switch
+    {
+        (JobQueryActivityId)0 => "Unknown",
+        (JobQueryActivityId)1 => "Query",
+        (JobQueryActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -209,6 +330,21 @@ public enum JobQueryConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="JobQueryConfidenceId"/>.</summary>
+public static class JobQueryConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this JobQueryConfidenceId value) => value switch
+    {
+        (JobQueryConfidenceId)0 => "Unknown",
+        (JobQueryConfidenceId)1 => "Low",
+        (JobQueryConfidenceId)2 => "Medium",
+        (JobQueryConfidenceId)3 => "High",
+        (JobQueryConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -335,6 +471,45 @@ public enum JobQueryDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="JobQueryDispositionId"/>.</summary>
+public static class JobQueryDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this JobQueryDispositionId value) => value switch
+    {
+        (JobQueryDispositionId)0 => "Unknown",
+        (JobQueryDispositionId)1 => "Allowed",
+        (JobQueryDispositionId)2 => "Blocked",
+        (JobQueryDispositionId)3 => "Quarantined",
+        (JobQueryDispositionId)4 => "Isolated",
+        (JobQueryDispositionId)5 => "Deleted",
+        (JobQueryDispositionId)6 => "Dropped",
+        (JobQueryDispositionId)7 => "Custom Action",
+        (JobQueryDispositionId)8 => "Approved",
+        (JobQueryDispositionId)9 => "Restored",
+        (JobQueryDispositionId)10 => "Exonerated",
+        (JobQueryDispositionId)11 => "Corrected",
+        (JobQueryDispositionId)12 => "Partially Corrected",
+        (JobQueryDispositionId)13 => "Uncorrected",
+        (JobQueryDispositionId)14 => "Delayed",
+        (JobQueryDispositionId)15 => "Detected",
+        (JobQueryDispositionId)16 => "No Action",
+        (JobQueryDispositionId)17 => "Logged",
+        (JobQueryDispositionId)18 => "Tagged",
+        (JobQueryDispositionId)19 => "Alert",
+        (JobQueryDispositionId)20 => "Count",
+        (JobQueryDispositionId)21 => "Reset",
+        (JobQueryDispositionId)22 => "Captcha",
+        (JobQueryDispositionId)23 => "Challenge",
+        (JobQueryDispositionId)24 => "Access Revoked",
+        (JobQueryDispositionId)25 => "Rejected",
+        (JobQueryDispositionId)26 => "Unauthorized",
+        (JobQueryDispositionId)27 => "Error",
+        (JobQueryDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>query_result_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>query_result</c> attribute contains the source-specific label.
@@ -371,6 +546,23 @@ public enum JobQueryQueryResultId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="JobQueryQueryResultId"/>.</summary>
+public static class JobQueryQueryResultIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this JobQueryQueryResultId value) => value switch
+    {
+        (JobQueryQueryResultId)0 => "Unknown",
+        (JobQueryQueryResultId)1 => "Exists",
+        (JobQueryQueryResultId)2 => "Partial",
+        (JobQueryQueryResultId)3 => "Does not exist",
+        (JobQueryQueryResultId)4 => "Error",
+        (JobQueryQueryResultId)5 => "Unsupported",
+        (JobQueryQueryResultId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -386,6 +578,22 @@ public enum JobQueryRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="JobQueryRiskLevelId"/>.</summary>
+public static class JobQueryRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this JobQueryRiskLevelId value) => value switch
+    {
+        (JobQueryRiskLevelId)0 => "Info",
+        (JobQueryRiskLevelId)1 => "Low",
+        (JobQueryRiskLevelId)2 => "Medium",
+        (JobQueryRiskLevelId)3 => "High",
+        (JobQueryRiskLevelId)4 => "Critical",
+        (JobQueryRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -428,6 +636,24 @@ public enum JobQuerySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="JobQuerySeverityId"/>.</summary>
+public static class JobQuerySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this JobQuerySeverityId value) => value switch
+    {
+        (JobQuerySeverityId)0 => "Unknown",
+        (JobQuerySeverityId)1 => "Informational",
+        (JobQuerySeverityId)2 => "Low",
+        (JobQuerySeverityId)3 => "Medium",
+        (JobQuerySeverityId)4 => "High",
+        (JobQuerySeverityId)5 => "Critical",
+        (JobQuerySeverityId)6 => "Fatal",
+        (JobQuerySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -450,4 +676,18 @@ public enum JobQueryStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="JobQueryStatusId"/>.</summary>
+public static class JobQueryStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this JobQueryStatusId value) => value switch
+    {
+        (JobQueryStatusId)0 => "Unknown",
+        (JobQueryStatusId)1 => "Success",
+        (JobQueryStatusId)2 => "Failure",
+        (JobQueryStatusId)99 => "Other",
+        _ => null,
+    };
 }

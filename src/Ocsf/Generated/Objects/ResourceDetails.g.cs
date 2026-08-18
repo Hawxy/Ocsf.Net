@@ -296,6 +296,30 @@ public class ResourceDetails : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public string? Zone { get; set; }
+
+    /// <summary>
+    /// Sets <c>criticality_id</c> and the <c>criticality</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="criticality"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetCriticality(ResourceDetailsCriticalityId criticalityId, string? criticality = null)
+    {
+        CriticalityId = criticalityId;
+        if ((criticality ?? criticalityId.Caption()) is { } label)
+            Criticality = label;
+    }
+
+    /// <summary>
+    /// Sets <c>role_id</c> and the <c>role</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="role"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRole(ResourceDetailsRoleId roleId, string? role = null)
+    {
+        RoleId = roleId;
+        if ((role ?? roleId.Caption()) is { } label)
+            Role = label;
+    }
 }
 
 /// <summary>
@@ -330,6 +354,22 @@ public enum ResourceDetailsCriticalityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ResourceDetailsCriticalityId"/>.</summary>
+public static class ResourceDetailsCriticalityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ResourceDetailsCriticalityId value) => value switch
+    {
+        (ResourceDetailsCriticalityId)0 => "Unknown",
+        (ResourceDetailsCriticalityId)1 => "Low",
+        (ResourceDetailsCriticalityId)2 => "Medium",
+        (ResourceDetailsCriticalityId)3 => "High",
+        (ResourceDetailsCriticalityId)4 => "Very High",
+        (ResourceDetailsCriticalityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>role_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>role</c> attribute contains the source-specific label.
@@ -360,4 +400,20 @@ public enum ResourceDetailsRoleId
     /// The role is not mapped. See the role attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ResourceDetailsRoleId"/>.</summary>
+public static class ResourceDetailsRoleIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ResourceDetailsRoleId value) => value switch
+    {
+        (ResourceDetailsRoleId)0 => "Unknown",
+        (ResourceDetailsRoleId)1 => "Target",
+        (ResourceDetailsRoleId)2 => "Actor",
+        (ResourceDetailsRoleId)3 => "Affected",
+        (ResourceDetailsRoleId)4 => "Related",
+        (ResourceDetailsRoleId)99 => "Other",
+        _ => null,
+    };
 }

@@ -133,11 +133,103 @@ public class NetworksQuery : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public NetworksQueryStatusId? StatusId { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(NetworksQueryActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(NetworksQueryActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(NetworksQueryActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(NetworksQueryConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(NetworksQueryDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>query_result_id</c> and the <c>query_result</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="queryResult"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetQueryResult(NetworksQueryQueryResultId queryResultId, string? queryResult = null)
+    {
+        QueryResultId = queryResultId;
+        if ((queryResult ?? queryResultId.Caption()) is { } label)
+            QueryResult = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(NetworksQueryRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(NetworksQuerySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(NetworksQueryStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -173,6 +265,22 @@ public enum NetworksQueryActionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="NetworksQueryActionId"/>.</summary>
+public static class NetworksQueryActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NetworksQueryActionId value) => value switch
+    {
+        (NetworksQueryActionId)0 => "Unknown",
+        (NetworksQueryActionId)1 => "Allowed",
+        (NetworksQueryActionId)2 => "Denied",
+        (NetworksQueryActionId)3 => "Observed",
+        (NetworksQueryActionId)4 => "Modified",
+        (NetworksQueryActionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>activity_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>activity_name</c> attribute contains the source-specific label.
@@ -193,6 +301,19 @@ public enum NetworksQueryActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="NetworksQueryActivityId"/>.</summary>
+public static class NetworksQueryActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NetworksQueryActivityId value) => value switch
+    {
+        (NetworksQueryActivityId)0 => "Unknown",
+        (NetworksQueryActivityId)1 => "Query",
+        (NetworksQueryActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -210,6 +331,21 @@ public enum NetworksQueryConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="NetworksQueryConfidenceId"/>.</summary>
+public static class NetworksQueryConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NetworksQueryConfidenceId value) => value switch
+    {
+        (NetworksQueryConfidenceId)0 => "Unknown",
+        (NetworksQueryConfidenceId)1 => "Low",
+        (NetworksQueryConfidenceId)2 => "Medium",
+        (NetworksQueryConfidenceId)3 => "High",
+        (NetworksQueryConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -336,6 +472,45 @@ public enum NetworksQueryDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="NetworksQueryDispositionId"/>.</summary>
+public static class NetworksQueryDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NetworksQueryDispositionId value) => value switch
+    {
+        (NetworksQueryDispositionId)0 => "Unknown",
+        (NetworksQueryDispositionId)1 => "Allowed",
+        (NetworksQueryDispositionId)2 => "Blocked",
+        (NetworksQueryDispositionId)3 => "Quarantined",
+        (NetworksQueryDispositionId)4 => "Isolated",
+        (NetworksQueryDispositionId)5 => "Deleted",
+        (NetworksQueryDispositionId)6 => "Dropped",
+        (NetworksQueryDispositionId)7 => "Custom Action",
+        (NetworksQueryDispositionId)8 => "Approved",
+        (NetworksQueryDispositionId)9 => "Restored",
+        (NetworksQueryDispositionId)10 => "Exonerated",
+        (NetworksQueryDispositionId)11 => "Corrected",
+        (NetworksQueryDispositionId)12 => "Partially Corrected",
+        (NetworksQueryDispositionId)13 => "Uncorrected",
+        (NetworksQueryDispositionId)14 => "Delayed",
+        (NetworksQueryDispositionId)15 => "Detected",
+        (NetworksQueryDispositionId)16 => "No Action",
+        (NetworksQueryDispositionId)17 => "Logged",
+        (NetworksQueryDispositionId)18 => "Tagged",
+        (NetworksQueryDispositionId)19 => "Alert",
+        (NetworksQueryDispositionId)20 => "Count",
+        (NetworksQueryDispositionId)21 => "Reset",
+        (NetworksQueryDispositionId)22 => "Captcha",
+        (NetworksQueryDispositionId)23 => "Challenge",
+        (NetworksQueryDispositionId)24 => "Access Revoked",
+        (NetworksQueryDispositionId)25 => "Rejected",
+        (NetworksQueryDispositionId)26 => "Unauthorized",
+        (NetworksQueryDispositionId)27 => "Error",
+        (NetworksQueryDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>query_result_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>query_result</c> attribute contains the source-specific label.
@@ -372,6 +547,23 @@ public enum NetworksQueryQueryResultId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="NetworksQueryQueryResultId"/>.</summary>
+public static class NetworksQueryQueryResultIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NetworksQueryQueryResultId value) => value switch
+    {
+        (NetworksQueryQueryResultId)0 => "Unknown",
+        (NetworksQueryQueryResultId)1 => "Exists",
+        (NetworksQueryQueryResultId)2 => "Partial",
+        (NetworksQueryQueryResultId)3 => "Does not exist",
+        (NetworksQueryQueryResultId)4 => "Error",
+        (NetworksQueryQueryResultId)5 => "Unsupported",
+        (NetworksQueryQueryResultId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -387,6 +579,22 @@ public enum NetworksQueryRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="NetworksQueryRiskLevelId"/>.</summary>
+public static class NetworksQueryRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NetworksQueryRiskLevelId value) => value switch
+    {
+        (NetworksQueryRiskLevelId)0 => "Info",
+        (NetworksQueryRiskLevelId)1 => "Low",
+        (NetworksQueryRiskLevelId)2 => "Medium",
+        (NetworksQueryRiskLevelId)3 => "High",
+        (NetworksQueryRiskLevelId)4 => "Critical",
+        (NetworksQueryRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -429,6 +637,24 @@ public enum NetworksQuerySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="NetworksQuerySeverityId"/>.</summary>
+public static class NetworksQuerySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NetworksQuerySeverityId value) => value switch
+    {
+        (NetworksQuerySeverityId)0 => "Unknown",
+        (NetworksQuerySeverityId)1 => "Informational",
+        (NetworksQuerySeverityId)2 => "Low",
+        (NetworksQuerySeverityId)3 => "Medium",
+        (NetworksQuerySeverityId)4 => "High",
+        (NetworksQuerySeverityId)5 => "Critical",
+        (NetworksQuerySeverityId)6 => "Fatal",
+        (NetworksQuerySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -451,4 +677,18 @@ public enum NetworksQueryStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="NetworksQueryStatusId"/>.</summary>
+public static class NetworksQueryStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NetworksQueryStatusId value) => value switch
+    {
+        (NetworksQueryStatusId)0 => "Unknown",
+        (NetworksQueryStatusId)1 => "Success",
+        (NetworksQueryStatusId)2 => "Failure",
+        (NetworksQueryStatusId)99 => "Other",
+        _ => null,
+    };
 }

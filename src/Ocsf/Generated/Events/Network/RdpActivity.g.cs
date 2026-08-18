@@ -399,11 +399,103 @@ public class RdpActivity : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public Objects.User? User { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(RdpActivityActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(RdpActivityActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(RdpActivityActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(RdpActivityConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(RdpActivityDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>observation_point_id</c> and the <c>observation_point</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="observationPoint"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetObservationPoint(RdpActivityObservationPointId observationPointId, string? observationPoint = null)
+    {
+        ObservationPointId = observationPointId;
+        if ((observationPoint ?? observationPointId.Caption()) is { } label)
+            ObservationPoint = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(RdpActivityRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(RdpActivitySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(RdpActivityStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -437,6 +529,22 @@ public enum RdpActivityActionId
     /// The action is not mapped. See the <c>action</c> attribute which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="RdpActivityActionId"/>.</summary>
+public static class RdpActivityActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this RdpActivityActionId value) => value switch
+    {
+        (RdpActivityActionId)0 => "Unknown",
+        (RdpActivityActionId)1 => "Allowed",
+        (RdpActivityActionId)2 => "Denied",
+        (RdpActivityActionId)3 => "Observed",
+        (RdpActivityActionId)4 => "Modified",
+        (RdpActivityActionId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -487,6 +595,26 @@ public enum RdpActivityActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="RdpActivityActivityId"/>.</summary>
+public static class RdpActivityActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this RdpActivityActivityId value) => value switch
+    {
+        (RdpActivityActivityId)0 => "Unknown",
+        (RdpActivityActivityId)1 => "Initial Request",
+        (RdpActivityActivityId)2 => "Initial Response",
+        (RdpActivityActivityId)3 => "Connect Request",
+        (RdpActivityActivityId)4 => "Connect Response",
+        (RdpActivityActivityId)5 => "TLS Handshake",
+        (RdpActivityActivityId)6 => "Traffic",
+        (RdpActivityActivityId)7 => "Disconnect",
+        (RdpActivityActivityId)8 => "Reconnect",
+        (RdpActivityActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -504,6 +632,21 @@ public enum RdpActivityConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="RdpActivityConfidenceId"/>.</summary>
+public static class RdpActivityConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this RdpActivityConfidenceId value) => value switch
+    {
+        (RdpActivityConfidenceId)0 => "Unknown",
+        (RdpActivityConfidenceId)1 => "Low",
+        (RdpActivityConfidenceId)2 => "Medium",
+        (RdpActivityConfidenceId)3 => "High",
+        (RdpActivityConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -630,6 +773,45 @@ public enum RdpActivityDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="RdpActivityDispositionId"/>.</summary>
+public static class RdpActivityDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this RdpActivityDispositionId value) => value switch
+    {
+        (RdpActivityDispositionId)0 => "Unknown",
+        (RdpActivityDispositionId)1 => "Allowed",
+        (RdpActivityDispositionId)2 => "Blocked",
+        (RdpActivityDispositionId)3 => "Quarantined",
+        (RdpActivityDispositionId)4 => "Isolated",
+        (RdpActivityDispositionId)5 => "Deleted",
+        (RdpActivityDispositionId)6 => "Dropped",
+        (RdpActivityDispositionId)7 => "Custom Action",
+        (RdpActivityDispositionId)8 => "Approved",
+        (RdpActivityDispositionId)9 => "Restored",
+        (RdpActivityDispositionId)10 => "Exonerated",
+        (RdpActivityDispositionId)11 => "Corrected",
+        (RdpActivityDispositionId)12 => "Partially Corrected",
+        (RdpActivityDispositionId)13 => "Uncorrected",
+        (RdpActivityDispositionId)14 => "Delayed",
+        (RdpActivityDispositionId)15 => "Detected",
+        (RdpActivityDispositionId)16 => "No Action",
+        (RdpActivityDispositionId)17 => "Logged",
+        (RdpActivityDispositionId)18 => "Tagged",
+        (RdpActivityDispositionId)19 => "Alert",
+        (RdpActivityDispositionId)20 => "Count",
+        (RdpActivityDispositionId)21 => "Reset",
+        (RdpActivityDispositionId)22 => "Captcha",
+        (RdpActivityDispositionId)23 => "Challenge",
+        (RdpActivityDispositionId)24 => "Access Revoked",
+        (RdpActivityDispositionId)25 => "Rejected",
+        (RdpActivityDispositionId)26 => "Unauthorized",
+        (RdpActivityDispositionId)27 => "Error",
+        (RdpActivityDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>observation_point_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>observation_point</c> attribute contains the source-specific label.
@@ -662,6 +844,22 @@ public enum RdpActivityObservationPointId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="RdpActivityObservationPointId"/>.</summary>
+public static class RdpActivityObservationPointIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this RdpActivityObservationPointId value) => value switch
+    {
+        (RdpActivityObservationPointId)0 => "Unknown",
+        (RdpActivityObservationPointId)1 => "Source",
+        (RdpActivityObservationPointId)2 => "Destination",
+        (RdpActivityObservationPointId)3 => "Neither",
+        (RdpActivityObservationPointId)4 => "Both",
+        (RdpActivityObservationPointId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -677,6 +875,22 @@ public enum RdpActivityRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="RdpActivityRiskLevelId"/>.</summary>
+public static class RdpActivityRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this RdpActivityRiskLevelId value) => value switch
+    {
+        (RdpActivityRiskLevelId)0 => "Info",
+        (RdpActivityRiskLevelId)1 => "Low",
+        (RdpActivityRiskLevelId)2 => "Medium",
+        (RdpActivityRiskLevelId)3 => "High",
+        (RdpActivityRiskLevelId)4 => "Critical",
+        (RdpActivityRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -719,6 +933,24 @@ public enum RdpActivitySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="RdpActivitySeverityId"/>.</summary>
+public static class RdpActivitySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this RdpActivitySeverityId value) => value switch
+    {
+        (RdpActivitySeverityId)0 => "Unknown",
+        (RdpActivitySeverityId)1 => "Informational",
+        (RdpActivitySeverityId)2 => "Low",
+        (RdpActivitySeverityId)3 => "Medium",
+        (RdpActivitySeverityId)4 => "High",
+        (RdpActivitySeverityId)5 => "Critical",
+        (RdpActivitySeverityId)6 => "Fatal",
+        (RdpActivitySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -741,4 +973,18 @@ public enum RdpActivityStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="RdpActivityStatusId"/>.</summary>
+public static class RdpActivityStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this RdpActivityStatusId value) => value switch
+    {
+        (RdpActivityStatusId)0 => "Unknown",
+        (RdpActivityStatusId)1 => "Success",
+        (RdpActivityStatusId)2 => "Failure",
+        (RdpActivityStatusId)99 => "Other",
+        _ => null,
+    };
 }

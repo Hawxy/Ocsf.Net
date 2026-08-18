@@ -31,6 +31,18 @@ public class SecurityState : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public SecurityStateStateId? StateId { get; set; }
+
+    /// <summary>
+    /// Sets <c>state_id</c> and the <c>state</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="state"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetState(SecurityStateStateId stateId, string? state = null)
+    {
+        StateId = stateId;
+        if ((state ?? stateId.Caption()) is { } label)
+            State = label;
+    }
 }
 
 /// <summary>
@@ -139,4 +151,39 @@ public enum SecurityStateStateId
     /// The security state is not mapped. See the <c>state</c> attribute, which contains data source specific values.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="SecurityStateStateId"/>.</summary>
+public static class SecurityStateStateIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SecurityStateStateId value) => value switch
+    {
+        (SecurityStateStateId)0 => "Unknown",
+        (SecurityStateStateId)1 => "Missing or outdated content",
+        (SecurityStateStateId)2 => "Policy mismatch",
+        (SecurityStateStateId)3 => "In network quarantine",
+        (SecurityStateStateId)4 => "Protection off",
+        (SecurityStateStateId)5 => "Protection malfunction",
+        (SecurityStateStateId)6 => "Protection not licensed",
+        (SecurityStateStateId)7 => "Unremediated threat",
+        (SecurityStateStateId)8 => "Suspicious reputation",
+        (SecurityStateStateId)9 => "Reboot pending",
+        (SecurityStateStateId)10 => "Content is locked",
+        (SecurityStateStateId)11 => "Not installed",
+        (SecurityStateStateId)12 => "Writable system partition",
+        (SecurityStateStateId)13 => "SafetyNet failure",
+        (SecurityStateStateId)14 => "Failed boot verify",
+        (SecurityStateStateId)15 => "Modified execution environment",
+        (SecurityStateStateId)16 => "SELinux disabled",
+        (SecurityStateStateId)17 => "Elevated privilege shell",
+        (SecurityStateStateId)18 => "iOS file system altered",
+        (SecurityStateStateId)19 => "Open remote access",
+        (SecurityStateStateId)20 => "OTA updates disabled",
+        (SecurityStateStateId)21 => "Rooted",
+        (SecurityStateStateId)22 => "Android partition modified",
+        (SecurityStateStateId)23 => "Compliance failure",
+        (SecurityStateStateId)99 => "Other",
+        _ => null,
+    };
 }

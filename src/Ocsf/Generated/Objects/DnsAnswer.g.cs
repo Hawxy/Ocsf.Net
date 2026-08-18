@@ -111,3 +111,21 @@ public enum DnsAnswerFlagIds
     /// </summary>
     Other = 99,
 }
+
+/// <summary>Schema caption lookup for <see cref="DnsAnswerFlagIds"/>.</summary>
+public static class DnsAnswerFlagIdsExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DnsAnswerFlagIds value) => value switch
+    {
+        (DnsAnswerFlagIds)0 => "Unknown",
+        (DnsAnswerFlagIds)1 => "Authoritative Answer",
+        (DnsAnswerFlagIds)2 => "Truncated Response",
+        (DnsAnswerFlagIds)3 => "Recursion Desired",
+        (DnsAnswerFlagIds)4 => "Recursion Available",
+        (DnsAnswerFlagIds)5 => "Authentic Data",
+        (DnsAnswerFlagIds)6 => "Checking Disabled",
+        (DnsAnswerFlagIds)99 => "Other",
+        _ => null,
+    };
+}

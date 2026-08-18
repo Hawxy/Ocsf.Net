@@ -412,11 +412,115 @@ public class SmbActivity : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public string? TreeUid { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(SmbActivityActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(SmbActivityActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(SmbActivityActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(SmbActivityConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(SmbActivityDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>observation_point_id</c> and the <c>observation_point</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="observationPoint"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetObservationPoint(SmbActivityObservationPointId observationPointId, string? observationPoint = null)
+    {
+        ObservationPointId = observationPointId;
+        if ((observationPoint ?? observationPointId.Caption()) is { } label)
+            ObservationPoint = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(SmbActivityRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(SmbActivitySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>share_type_id</c> and the <c>share_type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="shareType"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetShareType(SmbActivityShareTypeId shareTypeId, string? shareType = null)
+    {
+        ShareTypeId = shareTypeId;
+        if ((shareType ?? shareTypeId.Caption()) is { } label)
+            ShareType = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(SmbActivityStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -450,6 +554,22 @@ public enum SmbActivityActionId
     /// The action is not mapped. See the <c>action</c> attribute which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="SmbActivityActionId"/>.</summary>
+public static class SmbActivityActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SmbActivityActionId value) => value switch
+    {
+        (SmbActivityActionId)0 => "Unknown",
+        (SmbActivityActionId)1 => "Allowed",
+        (SmbActivityActionId)2 => "Denied",
+        (SmbActivityActionId)3 => "Observed",
+        (SmbActivityActionId)4 => "Modified",
+        (SmbActivityActionId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -492,6 +612,24 @@ public enum SmbActivityActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="SmbActivityActivityId"/>.</summary>
+public static class SmbActivityActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SmbActivityActivityId value) => value switch
+    {
+        (SmbActivityActivityId)0 => "Unknown",
+        (SmbActivityActivityId)1 => "File Supersede",
+        (SmbActivityActivityId)2 => "File Open",
+        (SmbActivityActivityId)3 => "File Create",
+        (SmbActivityActivityId)4 => "File Open If",
+        (SmbActivityActivityId)5 => "File Overwrite",
+        (SmbActivityActivityId)6 => "File Overwrite If",
+        (SmbActivityActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -509,6 +647,21 @@ public enum SmbActivityConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="SmbActivityConfidenceId"/>.</summary>
+public static class SmbActivityConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SmbActivityConfidenceId value) => value switch
+    {
+        (SmbActivityConfidenceId)0 => "Unknown",
+        (SmbActivityConfidenceId)1 => "Low",
+        (SmbActivityConfidenceId)2 => "Medium",
+        (SmbActivityConfidenceId)3 => "High",
+        (SmbActivityConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -635,6 +788,45 @@ public enum SmbActivityDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="SmbActivityDispositionId"/>.</summary>
+public static class SmbActivityDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SmbActivityDispositionId value) => value switch
+    {
+        (SmbActivityDispositionId)0 => "Unknown",
+        (SmbActivityDispositionId)1 => "Allowed",
+        (SmbActivityDispositionId)2 => "Blocked",
+        (SmbActivityDispositionId)3 => "Quarantined",
+        (SmbActivityDispositionId)4 => "Isolated",
+        (SmbActivityDispositionId)5 => "Deleted",
+        (SmbActivityDispositionId)6 => "Dropped",
+        (SmbActivityDispositionId)7 => "Custom Action",
+        (SmbActivityDispositionId)8 => "Approved",
+        (SmbActivityDispositionId)9 => "Restored",
+        (SmbActivityDispositionId)10 => "Exonerated",
+        (SmbActivityDispositionId)11 => "Corrected",
+        (SmbActivityDispositionId)12 => "Partially Corrected",
+        (SmbActivityDispositionId)13 => "Uncorrected",
+        (SmbActivityDispositionId)14 => "Delayed",
+        (SmbActivityDispositionId)15 => "Detected",
+        (SmbActivityDispositionId)16 => "No Action",
+        (SmbActivityDispositionId)17 => "Logged",
+        (SmbActivityDispositionId)18 => "Tagged",
+        (SmbActivityDispositionId)19 => "Alert",
+        (SmbActivityDispositionId)20 => "Count",
+        (SmbActivityDispositionId)21 => "Reset",
+        (SmbActivityDispositionId)22 => "Captcha",
+        (SmbActivityDispositionId)23 => "Challenge",
+        (SmbActivityDispositionId)24 => "Access Revoked",
+        (SmbActivityDispositionId)25 => "Rejected",
+        (SmbActivityDispositionId)26 => "Unauthorized",
+        (SmbActivityDispositionId)27 => "Error",
+        (SmbActivityDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>observation_point_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>observation_point</c> attribute contains the source-specific label.
@@ -667,6 +859,22 @@ public enum SmbActivityObservationPointId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="SmbActivityObservationPointId"/>.</summary>
+public static class SmbActivityObservationPointIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SmbActivityObservationPointId value) => value switch
+    {
+        (SmbActivityObservationPointId)0 => "Unknown",
+        (SmbActivityObservationPointId)1 => "Source",
+        (SmbActivityObservationPointId)2 => "Destination",
+        (SmbActivityObservationPointId)3 => "Neither",
+        (SmbActivityObservationPointId)4 => "Both",
+        (SmbActivityObservationPointId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -682,6 +890,22 @@ public enum SmbActivityRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="SmbActivityRiskLevelId"/>.</summary>
+public static class SmbActivityRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SmbActivityRiskLevelId value) => value switch
+    {
+        (SmbActivityRiskLevelId)0 => "Info",
+        (SmbActivityRiskLevelId)1 => "Low",
+        (SmbActivityRiskLevelId)2 => "Medium",
+        (SmbActivityRiskLevelId)3 => "High",
+        (SmbActivityRiskLevelId)4 => "Critical",
+        (SmbActivityRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -724,6 +948,24 @@ public enum SmbActivitySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="SmbActivitySeverityId"/>.</summary>
+public static class SmbActivitySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SmbActivitySeverityId value) => value switch
+    {
+        (SmbActivitySeverityId)0 => "Unknown",
+        (SmbActivitySeverityId)1 => "Informational",
+        (SmbActivitySeverityId)2 => "Low",
+        (SmbActivitySeverityId)3 => "Medium",
+        (SmbActivitySeverityId)4 => "High",
+        (SmbActivitySeverityId)5 => "Critical",
+        (SmbActivitySeverityId)6 => "Fatal",
+        (SmbActivitySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>share_type_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>share_type</c> attribute contains the source-specific label.
@@ -741,6 +983,21 @@ public enum SmbActivityShareTypeId
     /// The share type is not mapped. See the <c>share_type</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="SmbActivityShareTypeId"/>.</summary>
+public static class SmbActivityShareTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SmbActivityShareTypeId value) => value switch
+    {
+        (SmbActivityShareTypeId)0 => "Unknown",
+        (SmbActivityShareTypeId)1 => "File",
+        (SmbActivityShareTypeId)2 => "Pipe",
+        (SmbActivityShareTypeId)3 => "Print",
+        (SmbActivityShareTypeId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -765,4 +1022,18 @@ public enum SmbActivityStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="SmbActivityStatusId"/>.</summary>
+public static class SmbActivityStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SmbActivityStatusId value) => value switch
+    {
+        (SmbActivityStatusId)0 => "Unknown",
+        (SmbActivityStatusId)1 => "Success",
+        (SmbActivityStatusId)2 => "Failure",
+        (SmbActivityStatusId)99 => "Other",
+        _ => null,
+    };
 }

@@ -432,6 +432,54 @@ public class Osint : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public Whois? Whois { get; set; }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(OsintConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>detection_pattern_type_id</c> and the <c>detection_pattern_type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="detectionPatternType"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDetectionPatternType(OsintDetectionPatternTypeId detectionPatternTypeId, string? detectionPatternType = null)
+    {
+        DetectionPatternTypeId = detectionPatternTypeId;
+        if ((detectionPatternType ?? detectionPatternTypeId.Caption()) is { } label)
+            DetectionPatternType = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(OsintSeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>type_id</c> and the <c>type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="type"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetType(OsintTypeId typeId, string? type = null)
+    {
+        TypeId = typeId;
+        if ((type ?? typeId.Caption()) is { } label)
+            Type = label;
+    }
 }
 
 /// <summary>
@@ -451,6 +499,21 @@ public enum OsintConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="OsintConfidenceId"/>.</summary>
+public static class OsintConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this OsintConfidenceId value) => value switch
+    {
+        (OsintConfidenceId)0 => "Unknown",
+        (OsintConfidenceId)1 => "Low",
+        (OsintConfidenceId)2 => "Medium",
+        (OsintConfidenceId)3 => "High",
+        (OsintConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -473,6 +536,24 @@ public enum OsintDetectionPatternTypeId
     /// The detection pattern type is not mapped. See the <c>detection_pattern_type</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="OsintDetectionPatternTypeId"/>.</summary>
+public static class OsintDetectionPatternTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this OsintDetectionPatternTypeId value) => value switch
+    {
+        (OsintDetectionPatternTypeId)0 => "Unknown",
+        (OsintDetectionPatternTypeId)1 => "STIX",
+        (OsintDetectionPatternTypeId)2 => "PCRE",
+        (OsintDetectionPatternTypeId)3 => "SIGMA",
+        (OsintDetectionPatternTypeId)4 => "Snort",
+        (OsintDetectionPatternTypeId)5 => "Suricata",
+        (OsintDetectionPatternTypeId)6 => "YARA",
+        (OsintDetectionPatternTypeId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -513,6 +594,24 @@ public enum OsintSeverityId
     /// The event/finding severity is not mapped. See the <c>severity</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="OsintSeverityId"/>.</summary>
+public static class OsintSeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this OsintSeverityId value) => value switch
+    {
+        (OsintSeverityId)0 => "Unknown",
+        (OsintSeverityId)1 => "Informational",
+        (OsintSeverityId)2 => "Low",
+        (OsintSeverityId)3 => "Medium",
+        (OsintSeverityId)4 => "High",
+        (OsintSeverityId)5 => "Critical",
+        (OsintSeverityId)6 => "Fatal",
+        (OsintSeverityId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -585,4 +684,30 @@ public enum OsintTypeId
     /// The indicator type is not directly listed.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="OsintTypeId"/>.</summary>
+public static class OsintTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this OsintTypeId value) => value switch
+    {
+        (OsintTypeId)0 => "Unknown",
+        (OsintTypeId)1 => "IP Address",
+        (OsintTypeId)2 => "Domain",
+        (OsintTypeId)3 => "Hostname",
+        (OsintTypeId)4 => "Hash",
+        (OsintTypeId)5 => "URL",
+        (OsintTypeId)6 => "User Agent",
+        (OsintTypeId)7 => "Digital Certificate",
+        (OsintTypeId)8 => "Email",
+        (OsintTypeId)9 => "Email Address",
+        (OsintTypeId)10 => "Vulnerability",
+        (OsintTypeId)11 => "File",
+        (OsintTypeId)12 => "Registry Key",
+        (OsintTypeId)13 => "Registry Value",
+        (OsintTypeId)14 => "Command Line",
+        (OsintTypeId)99 => "Other",
+        _ => null,
+    };
 }

@@ -219,11 +219,91 @@ public class AuthorizeSession : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Required)]
     public Objects.User? User { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(AuthorizeSessionActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(AuthorizeSessionActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(AuthorizeSessionActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(AuthorizeSessionConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(AuthorizeSessionDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(AuthorizeSessionRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(AuthorizeSessionSeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(AuthorizeSessionStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -259,6 +339,22 @@ public enum AuthorizeSessionActionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="AuthorizeSessionActionId"/>.</summary>
+public static class AuthorizeSessionActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AuthorizeSessionActionId value) => value switch
+    {
+        (AuthorizeSessionActionId)0 => "Unknown",
+        (AuthorizeSessionActionId)1 => "Allowed",
+        (AuthorizeSessionActionId)2 => "Denied",
+        (AuthorizeSessionActionId)3 => "Observed",
+        (AuthorizeSessionActionId)4 => "Modified",
+        (AuthorizeSessionActionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>activity_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>activity_name</c> attribute contains the source-specific label.
@@ -287,6 +383,21 @@ public enum AuthorizeSessionActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="AuthorizeSessionActivityId"/>.</summary>
+public static class AuthorizeSessionActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AuthorizeSessionActivityId value) => value switch
+    {
+        (AuthorizeSessionActivityId)0 => "Unknown",
+        (AuthorizeSessionActivityId)1 => "Assign Privileges",
+        (AuthorizeSessionActivityId)2 => "Assign Groups",
+        (AuthorizeSessionActivityId)3 => "Assign Roles",
+        (AuthorizeSessionActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -304,6 +415,21 @@ public enum AuthorizeSessionConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="AuthorizeSessionConfidenceId"/>.</summary>
+public static class AuthorizeSessionConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AuthorizeSessionConfidenceId value) => value switch
+    {
+        (AuthorizeSessionConfidenceId)0 => "Unknown",
+        (AuthorizeSessionConfidenceId)1 => "Low",
+        (AuthorizeSessionConfidenceId)2 => "Medium",
+        (AuthorizeSessionConfidenceId)3 => "High",
+        (AuthorizeSessionConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -430,6 +556,45 @@ public enum AuthorizeSessionDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="AuthorizeSessionDispositionId"/>.</summary>
+public static class AuthorizeSessionDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AuthorizeSessionDispositionId value) => value switch
+    {
+        (AuthorizeSessionDispositionId)0 => "Unknown",
+        (AuthorizeSessionDispositionId)1 => "Allowed",
+        (AuthorizeSessionDispositionId)2 => "Blocked",
+        (AuthorizeSessionDispositionId)3 => "Quarantined",
+        (AuthorizeSessionDispositionId)4 => "Isolated",
+        (AuthorizeSessionDispositionId)5 => "Deleted",
+        (AuthorizeSessionDispositionId)6 => "Dropped",
+        (AuthorizeSessionDispositionId)7 => "Custom Action",
+        (AuthorizeSessionDispositionId)8 => "Approved",
+        (AuthorizeSessionDispositionId)9 => "Restored",
+        (AuthorizeSessionDispositionId)10 => "Exonerated",
+        (AuthorizeSessionDispositionId)11 => "Corrected",
+        (AuthorizeSessionDispositionId)12 => "Partially Corrected",
+        (AuthorizeSessionDispositionId)13 => "Uncorrected",
+        (AuthorizeSessionDispositionId)14 => "Delayed",
+        (AuthorizeSessionDispositionId)15 => "Detected",
+        (AuthorizeSessionDispositionId)16 => "No Action",
+        (AuthorizeSessionDispositionId)17 => "Logged",
+        (AuthorizeSessionDispositionId)18 => "Tagged",
+        (AuthorizeSessionDispositionId)19 => "Alert",
+        (AuthorizeSessionDispositionId)20 => "Count",
+        (AuthorizeSessionDispositionId)21 => "Reset",
+        (AuthorizeSessionDispositionId)22 => "Captcha",
+        (AuthorizeSessionDispositionId)23 => "Challenge",
+        (AuthorizeSessionDispositionId)24 => "Access Revoked",
+        (AuthorizeSessionDispositionId)25 => "Rejected",
+        (AuthorizeSessionDispositionId)26 => "Unauthorized",
+        (AuthorizeSessionDispositionId)27 => "Error",
+        (AuthorizeSessionDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -445,6 +610,22 @@ public enum AuthorizeSessionRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="AuthorizeSessionRiskLevelId"/>.</summary>
+public static class AuthorizeSessionRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AuthorizeSessionRiskLevelId value) => value switch
+    {
+        (AuthorizeSessionRiskLevelId)0 => "Info",
+        (AuthorizeSessionRiskLevelId)1 => "Low",
+        (AuthorizeSessionRiskLevelId)2 => "Medium",
+        (AuthorizeSessionRiskLevelId)3 => "High",
+        (AuthorizeSessionRiskLevelId)4 => "Critical",
+        (AuthorizeSessionRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -487,6 +668,24 @@ public enum AuthorizeSessionSeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="AuthorizeSessionSeverityId"/>.</summary>
+public static class AuthorizeSessionSeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AuthorizeSessionSeverityId value) => value switch
+    {
+        (AuthorizeSessionSeverityId)0 => "Unknown",
+        (AuthorizeSessionSeverityId)1 => "Informational",
+        (AuthorizeSessionSeverityId)2 => "Low",
+        (AuthorizeSessionSeverityId)3 => "Medium",
+        (AuthorizeSessionSeverityId)4 => "High",
+        (AuthorizeSessionSeverityId)5 => "Critical",
+        (AuthorizeSessionSeverityId)6 => "Fatal",
+        (AuthorizeSessionSeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -509,4 +708,18 @@ public enum AuthorizeSessionStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="AuthorizeSessionStatusId"/>.</summary>
+public static class AuthorizeSessionStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AuthorizeSessionStatusId value) => value switch
+    {
+        (AuthorizeSessionStatusId)0 => "Unknown",
+        (AuthorizeSessionStatusId)1 => "Success",
+        (AuthorizeSessionStatusId)2 => "Failure",
+        (AuthorizeSessionStatusId)99 => "Other",
+        _ => null,
+    };
 }

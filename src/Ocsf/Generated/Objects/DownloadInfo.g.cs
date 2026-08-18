@@ -56,6 +56,18 @@ public class DownloadInfo : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public DownloadInfoTypeId? TypeId { get; set; }
+
+    /// <summary>
+    /// Sets <c>type_id</c> and the <c>type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="type"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetType(DownloadInfoTypeId typeId, string? type = null)
+    {
+        TypeId = typeId;
+        if ((type ?? typeId.Caption()) is { } label)
+            Type = label;
+    }
 }
 
 /// <summary>
@@ -92,4 +104,21 @@ public enum DownloadInfoTypeId
     /// The file's download type is not mapped. See the <c>type</c> attribute, which contains an event source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="DownloadInfoTypeId"/>.</summary>
+public static class DownloadInfoTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DownloadInfoTypeId value) => value switch
+    {
+        (DownloadInfoTypeId)0 => "Unknown",
+        (DownloadInfoTypeId)1 => "Local Machine",
+        (DownloadInfoTypeId)2 => "Intranet",
+        (DownloadInfoTypeId)3 => "Trusted",
+        (DownloadInfoTypeId)4 => "Internet",
+        (DownloadInfoTypeId)5 => "Untrusted",
+        (DownloadInfoTypeId)99 => "Other",
+        _ => null,
+    };
 }

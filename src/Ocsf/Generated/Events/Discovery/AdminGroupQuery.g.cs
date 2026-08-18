@@ -141,11 +141,103 @@ public class AdminGroupQuery : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public List<Objects.User>? Users { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(AdminGroupQueryActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(AdminGroupQueryActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(AdminGroupQueryActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(AdminGroupQueryConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(AdminGroupQueryDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>query_result_id</c> and the <c>query_result</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="queryResult"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetQueryResult(AdminGroupQueryQueryResultId queryResultId, string? queryResult = null)
+    {
+        QueryResultId = queryResultId;
+        if ((queryResult ?? queryResultId.Caption()) is { } label)
+            QueryResult = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(AdminGroupQueryRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(AdminGroupQuerySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(AdminGroupQueryStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -181,6 +273,22 @@ public enum AdminGroupQueryActionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="AdminGroupQueryActionId"/>.</summary>
+public static class AdminGroupQueryActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AdminGroupQueryActionId value) => value switch
+    {
+        (AdminGroupQueryActionId)0 => "Unknown",
+        (AdminGroupQueryActionId)1 => "Allowed",
+        (AdminGroupQueryActionId)2 => "Denied",
+        (AdminGroupQueryActionId)3 => "Observed",
+        (AdminGroupQueryActionId)4 => "Modified",
+        (AdminGroupQueryActionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>activity_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>activity_name</c> attribute contains the source-specific label.
@@ -201,6 +309,19 @@ public enum AdminGroupQueryActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="AdminGroupQueryActivityId"/>.</summary>
+public static class AdminGroupQueryActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AdminGroupQueryActivityId value) => value switch
+    {
+        (AdminGroupQueryActivityId)0 => "Unknown",
+        (AdminGroupQueryActivityId)1 => "Query",
+        (AdminGroupQueryActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -218,6 +339,21 @@ public enum AdminGroupQueryConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="AdminGroupQueryConfidenceId"/>.</summary>
+public static class AdminGroupQueryConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AdminGroupQueryConfidenceId value) => value switch
+    {
+        (AdminGroupQueryConfidenceId)0 => "Unknown",
+        (AdminGroupQueryConfidenceId)1 => "Low",
+        (AdminGroupQueryConfidenceId)2 => "Medium",
+        (AdminGroupQueryConfidenceId)3 => "High",
+        (AdminGroupQueryConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -344,6 +480,45 @@ public enum AdminGroupQueryDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="AdminGroupQueryDispositionId"/>.</summary>
+public static class AdminGroupQueryDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AdminGroupQueryDispositionId value) => value switch
+    {
+        (AdminGroupQueryDispositionId)0 => "Unknown",
+        (AdminGroupQueryDispositionId)1 => "Allowed",
+        (AdminGroupQueryDispositionId)2 => "Blocked",
+        (AdminGroupQueryDispositionId)3 => "Quarantined",
+        (AdminGroupQueryDispositionId)4 => "Isolated",
+        (AdminGroupQueryDispositionId)5 => "Deleted",
+        (AdminGroupQueryDispositionId)6 => "Dropped",
+        (AdminGroupQueryDispositionId)7 => "Custom Action",
+        (AdminGroupQueryDispositionId)8 => "Approved",
+        (AdminGroupQueryDispositionId)9 => "Restored",
+        (AdminGroupQueryDispositionId)10 => "Exonerated",
+        (AdminGroupQueryDispositionId)11 => "Corrected",
+        (AdminGroupQueryDispositionId)12 => "Partially Corrected",
+        (AdminGroupQueryDispositionId)13 => "Uncorrected",
+        (AdminGroupQueryDispositionId)14 => "Delayed",
+        (AdminGroupQueryDispositionId)15 => "Detected",
+        (AdminGroupQueryDispositionId)16 => "No Action",
+        (AdminGroupQueryDispositionId)17 => "Logged",
+        (AdminGroupQueryDispositionId)18 => "Tagged",
+        (AdminGroupQueryDispositionId)19 => "Alert",
+        (AdminGroupQueryDispositionId)20 => "Count",
+        (AdminGroupQueryDispositionId)21 => "Reset",
+        (AdminGroupQueryDispositionId)22 => "Captcha",
+        (AdminGroupQueryDispositionId)23 => "Challenge",
+        (AdminGroupQueryDispositionId)24 => "Access Revoked",
+        (AdminGroupQueryDispositionId)25 => "Rejected",
+        (AdminGroupQueryDispositionId)26 => "Unauthorized",
+        (AdminGroupQueryDispositionId)27 => "Error",
+        (AdminGroupQueryDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>query_result_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>query_result</c> attribute contains the source-specific label.
@@ -380,6 +555,23 @@ public enum AdminGroupQueryQueryResultId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="AdminGroupQueryQueryResultId"/>.</summary>
+public static class AdminGroupQueryQueryResultIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AdminGroupQueryQueryResultId value) => value switch
+    {
+        (AdminGroupQueryQueryResultId)0 => "Unknown",
+        (AdminGroupQueryQueryResultId)1 => "Exists",
+        (AdminGroupQueryQueryResultId)2 => "Partial",
+        (AdminGroupQueryQueryResultId)3 => "Does not exist",
+        (AdminGroupQueryQueryResultId)4 => "Error",
+        (AdminGroupQueryQueryResultId)5 => "Unsupported",
+        (AdminGroupQueryQueryResultId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -395,6 +587,22 @@ public enum AdminGroupQueryRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="AdminGroupQueryRiskLevelId"/>.</summary>
+public static class AdminGroupQueryRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AdminGroupQueryRiskLevelId value) => value switch
+    {
+        (AdminGroupQueryRiskLevelId)0 => "Info",
+        (AdminGroupQueryRiskLevelId)1 => "Low",
+        (AdminGroupQueryRiskLevelId)2 => "Medium",
+        (AdminGroupQueryRiskLevelId)3 => "High",
+        (AdminGroupQueryRiskLevelId)4 => "Critical",
+        (AdminGroupQueryRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -437,6 +645,24 @@ public enum AdminGroupQuerySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="AdminGroupQuerySeverityId"/>.</summary>
+public static class AdminGroupQuerySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AdminGroupQuerySeverityId value) => value switch
+    {
+        (AdminGroupQuerySeverityId)0 => "Unknown",
+        (AdminGroupQuerySeverityId)1 => "Informational",
+        (AdminGroupQuerySeverityId)2 => "Low",
+        (AdminGroupQuerySeverityId)3 => "Medium",
+        (AdminGroupQuerySeverityId)4 => "High",
+        (AdminGroupQuerySeverityId)5 => "Critical",
+        (AdminGroupQuerySeverityId)6 => "Fatal",
+        (AdminGroupQuerySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -459,4 +685,18 @@ public enum AdminGroupQueryStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="AdminGroupQueryStatusId"/>.</summary>
+public static class AdminGroupQueryStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AdminGroupQueryStatusId value) => value switch
+    {
+        (AdminGroupQueryStatusId)0 => "Unknown",
+        (AdminGroupQueryStatusId)1 => "Success",
+        (AdminGroupQueryStatusId)2 => "Failure",
+        (AdminGroupQueryStatusId)99 => "Other",
+        _ => null,
+    };
 }

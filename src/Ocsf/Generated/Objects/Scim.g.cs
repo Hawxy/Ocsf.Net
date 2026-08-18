@@ -208,6 +208,30 @@ public class Scim : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public string? Version { get; set; }
+
+    /// <summary>
+    /// Sets <c>auth_protocol_id</c> and the <c>auth_protocol</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="authProtocol"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAuthProtocol(ScimAuthProtocolId authProtocolId, string? authProtocol = null)
+    {
+        AuthProtocolId = authProtocolId;
+        if ((authProtocol ?? authProtocolId.Caption()) is { } label)
+            AuthProtocol = label;
+    }
+
+    /// <summary>
+    /// Sets <c>state_id</c> and the <c>state</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="state"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetState(ScimStateId stateId, string? state = null)
+    {
+        StateId = stateId;
+        if ((state ?? stateId.Caption()) is { } label)
+            State = label;
+    }
 }
 
 /// <summary>
@@ -236,6 +260,30 @@ public enum ScimAuthProtocolId
     /// The authentication protocol is not mapped. See the <c>auth_protocol</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ScimAuthProtocolId"/>.</summary>
+public static class ScimAuthProtocolIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ScimAuthProtocolId value) => value switch
+    {
+        (ScimAuthProtocolId)0 => "Unknown",
+        (ScimAuthProtocolId)1 => "NTLM",
+        (ScimAuthProtocolId)2 => "Kerberos",
+        (ScimAuthProtocolId)3 => "Digest",
+        (ScimAuthProtocolId)4 => "OpenID",
+        (ScimAuthProtocolId)5 => "SAML",
+        (ScimAuthProtocolId)6 => "OAUTH 2.0",
+        (ScimAuthProtocolId)7 => "PAP",
+        (ScimAuthProtocolId)8 => "CHAP",
+        (ScimAuthProtocolId)9 => "EAP",
+        (ScimAuthProtocolId)10 => "RADIUS",
+        (ScimAuthProtocolId)11 => "Basic Authentication",
+        (ScimAuthProtocolId)12 => "LDAP",
+        (ScimAuthProtocolId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -268,4 +316,20 @@ public enum ScimStateId
     /// The provisioning state of the SCIM resource is not mapped. See the <c>state</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ScimStateId"/>.</summary>
+public static class ScimStateIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ScimStateId value) => value switch
+    {
+        (ScimStateId)0 => "Unknown",
+        (ScimStateId)1 => "Pending",
+        (ScimStateId)2 => "Active",
+        (ScimStateId)3 => "Failed",
+        (ScimStateId)4 => "Deleted",
+        (ScimStateId)99 => "Other",
+        _ => null,
+    };
 }

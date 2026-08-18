@@ -282,6 +282,18 @@ public class Process : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public JsonElement? Xattributes { get; set; }
+
+    /// <summary>
+    /// Sets <c>integrity_id</c> and the <c>integrity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="integrity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetIntegrity(ProcessIntegrityId integrityId, string? integrity = null)
+    {
+        IntegrityId = integrityId;
+        if ((integrity ?? integrityId.Caption()) is { } label)
+            Integrity = label;
+    }
 }
 
 /// <summary>
@@ -304,4 +316,22 @@ public enum ProcessIntegrityId
     /// The integrity level is not mapped. See the <c>integrity</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ProcessIntegrityId"/>.</summary>
+public static class ProcessIntegrityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ProcessIntegrityId value) => value switch
+    {
+        (ProcessIntegrityId)0 => "Unknown",
+        (ProcessIntegrityId)1 => "Untrusted",
+        (ProcessIntegrityId)2 => "Low",
+        (ProcessIntegrityId)3 => "Medium",
+        (ProcessIntegrityId)4 => "High",
+        (ProcessIntegrityId)5 => "System",
+        (ProcessIntegrityId)6 => "Protected",
+        (ProcessIntegrityId)99 => "Other",
+        _ => null,
+    };
 }

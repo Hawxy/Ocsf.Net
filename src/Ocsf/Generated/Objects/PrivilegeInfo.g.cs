@@ -65,6 +65,18 @@ public class PrivilegeInfo : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public PrivilegeInfoTypeId? TypeId { get; set; }
+
+    /// <summary>
+    /// Sets <c>type_id</c> and the <c>type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="type"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetType(PrivilegeInfoTypeId typeId, string? type = null)
+    {
+        TypeId = typeId;
+        if ((type ?? typeId.Caption()) is { } label)
+            Type = label;
+    }
 }
 
 /// <summary>
@@ -93,4 +105,19 @@ public enum PrivilegeInfoTypeId
     /// The privilege type is not mapped. See the <c>type</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="PrivilegeInfoTypeId"/>.</summary>
+public static class PrivilegeInfoTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this PrivilegeInfoTypeId value) => value switch
+    {
+        (PrivilegeInfoTypeId)0 => "Unknown",
+        (PrivilegeInfoTypeId)1 => "Read",
+        (PrivilegeInfoTypeId)2 => "Write",
+        (PrivilegeInfoTypeId)3 => "Execute",
+        (PrivilegeInfoTypeId)99 => "Other",
+        _ => null,
+    };
 }

@@ -75,6 +75,42 @@ public class Fingerprint : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
     public string? Value { get; set; }
+
+    /// <summary>
+    /// Sets <c>algorithm_id</c> and the <c>algorithm</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="algorithm"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAlgorithm(FingerprintAlgorithmId algorithmId, string? algorithm = null)
+    {
+        AlgorithmId = algorithmId;
+        if ((algorithm ?? algorithmId.Caption()) is { } label)
+            Algorithm = label;
+    }
+
+    /// <summary>
+    /// Sets <c>encoding_id</c> and the <c>encoding</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="encoding"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetEncoding(FingerprintEncodingId encodingId, string? encoding = null)
+    {
+        EncodingId = encodingId;
+        if ((encoding ?? encodingId.Caption()) is { } label)
+            Encoding = label;
+    }
+
+    /// <summary>
+    /// Sets <c>serialization_id</c> and the <c>serialization</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="serialization"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSerialization(FingerprintSerializationId serializationId, string? serialization = null)
+    {
+        SerializationId = serializationId;
+        if ((serialization ?? serializationId.Caption()) is { } label)
+            Serialization = label;
+    }
 }
 
 /// <summary>
@@ -173,6 +209,38 @@ public enum FingerprintAlgorithmId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="FingerprintAlgorithmId"/>.</summary>
+public static class FingerprintAlgorithmIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FingerprintAlgorithmId value) => value switch
+    {
+        (FingerprintAlgorithmId)0 => "Unknown",
+        (FingerprintAlgorithmId)1 => "MD5",
+        (FingerprintAlgorithmId)2 => "SHA-1",
+        (FingerprintAlgorithmId)3 => "SHA-256",
+        (FingerprintAlgorithmId)4 => "SHA-512",
+        (FingerprintAlgorithmId)5 => "CTPH",
+        (FingerprintAlgorithmId)6 => "TLSH",
+        (FingerprintAlgorithmId)7 => "quickXorHash",
+        (FingerprintAlgorithmId)8 => "SHA-224",
+        (FingerprintAlgorithmId)9 => "SHA-384",
+        (FingerprintAlgorithmId)10 => "SHA-512/224",
+        (FingerprintAlgorithmId)11 => "SHA-512/256",
+        (FingerprintAlgorithmId)12 => "SHA3-224",
+        (FingerprintAlgorithmId)13 => "SHA3-256",
+        (FingerprintAlgorithmId)14 => "SHA3-384",
+        (FingerprintAlgorithmId)15 => "SHA3-512",
+        (FingerprintAlgorithmId)16 => "xxHash H3 64-bit",
+        (FingerprintAlgorithmId)17 => "xxHash H3 128-bit",
+        (FingerprintAlgorithmId)18 => "Imphash",
+        (FingerprintAlgorithmId)19 => "NPF",
+        (FingerprintAlgorithmId)20 => "HASSH",
+        (FingerprintAlgorithmId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>encoding_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>encoding</c> attribute contains the source-specific label.
@@ -199,6 +267,21 @@ public enum FingerprintEncodingId
     /// The encoding of the fingerprint value is not mapped. See the <c>encoding</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="FingerprintEncodingId"/>.</summary>
+public static class FingerprintEncodingIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FingerprintEncodingId value) => value switch
+    {
+        (FingerprintEncodingId)0 => "Unknown",
+        (FingerprintEncodingId)1 => "Hex",
+        (FingerprintEncodingId)2 => "Base64",
+        (FingerprintEncodingId)3 => "Base64URL",
+        (FingerprintEncodingId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -241,4 +324,24 @@ public enum FingerprintSerializationId
     /// </summary>
     AppPackage = 8,
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="FingerprintSerializationId"/>.</summary>
+public static class FingerprintSerializationIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FingerprintSerializationId value) => value switch
+    {
+        (FingerprintSerializationId)0 => "Unknown",
+        (FingerprintSerializationId)1 => "Flat",
+        (FingerprintSerializationId)2 => "JCS",
+        (FingerprintSerializationId)3 => "JWS",
+        (FingerprintSerializationId)4 => "COSE",
+        (FingerprintSerializationId)5 => "DSSE",
+        (FingerprintSerializationId)6 => "Authenticode",
+        (FingerprintSerializationId)7 => "Code Signing",
+        (FingerprintSerializationId)8 => "App Package",
+        (FingerprintSerializationId)99 => "Other",
+        _ => null,
+    };
 }

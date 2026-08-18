@@ -159,11 +159,115 @@ public class NetworkConnectionQuery : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public NetworkConnectionQueryStatusId? StatusId { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(NetworkConnectionQueryActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(NetworkConnectionQueryActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(NetworkConnectionQueryActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(NetworkConnectionQueryConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(NetworkConnectionQueryDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>query_result_id</c> and the <c>query_result</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="queryResult"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetQueryResult(NetworkConnectionQueryQueryResultId queryResultId, string? queryResult = null)
+    {
+        QueryResultId = queryResultId;
+        if ((queryResult ?? queryResultId.Caption()) is { } label)
+            QueryResult = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(NetworkConnectionQueryRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(NetworkConnectionQuerySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>state_id</c> and the <c>state</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="state"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetState(NetworkConnectionQueryStateId stateId, string? state = null)
+    {
+        StateId = stateId;
+        if ((state ?? stateId.Caption()) is { } label)
+            State = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(NetworkConnectionQueryStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -199,6 +303,22 @@ public enum NetworkConnectionQueryActionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="NetworkConnectionQueryActionId"/>.</summary>
+public static class NetworkConnectionQueryActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NetworkConnectionQueryActionId value) => value switch
+    {
+        (NetworkConnectionQueryActionId)0 => "Unknown",
+        (NetworkConnectionQueryActionId)1 => "Allowed",
+        (NetworkConnectionQueryActionId)2 => "Denied",
+        (NetworkConnectionQueryActionId)3 => "Observed",
+        (NetworkConnectionQueryActionId)4 => "Modified",
+        (NetworkConnectionQueryActionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>activity_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>activity_name</c> attribute contains the source-specific label.
@@ -219,6 +339,19 @@ public enum NetworkConnectionQueryActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="NetworkConnectionQueryActivityId"/>.</summary>
+public static class NetworkConnectionQueryActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NetworkConnectionQueryActivityId value) => value switch
+    {
+        (NetworkConnectionQueryActivityId)0 => "Unknown",
+        (NetworkConnectionQueryActivityId)1 => "Query",
+        (NetworkConnectionQueryActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -236,6 +369,21 @@ public enum NetworkConnectionQueryConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="NetworkConnectionQueryConfidenceId"/>.</summary>
+public static class NetworkConnectionQueryConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NetworkConnectionQueryConfidenceId value) => value switch
+    {
+        (NetworkConnectionQueryConfidenceId)0 => "Unknown",
+        (NetworkConnectionQueryConfidenceId)1 => "Low",
+        (NetworkConnectionQueryConfidenceId)2 => "Medium",
+        (NetworkConnectionQueryConfidenceId)3 => "High",
+        (NetworkConnectionQueryConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -362,6 +510,45 @@ public enum NetworkConnectionQueryDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="NetworkConnectionQueryDispositionId"/>.</summary>
+public static class NetworkConnectionQueryDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NetworkConnectionQueryDispositionId value) => value switch
+    {
+        (NetworkConnectionQueryDispositionId)0 => "Unknown",
+        (NetworkConnectionQueryDispositionId)1 => "Allowed",
+        (NetworkConnectionQueryDispositionId)2 => "Blocked",
+        (NetworkConnectionQueryDispositionId)3 => "Quarantined",
+        (NetworkConnectionQueryDispositionId)4 => "Isolated",
+        (NetworkConnectionQueryDispositionId)5 => "Deleted",
+        (NetworkConnectionQueryDispositionId)6 => "Dropped",
+        (NetworkConnectionQueryDispositionId)7 => "Custom Action",
+        (NetworkConnectionQueryDispositionId)8 => "Approved",
+        (NetworkConnectionQueryDispositionId)9 => "Restored",
+        (NetworkConnectionQueryDispositionId)10 => "Exonerated",
+        (NetworkConnectionQueryDispositionId)11 => "Corrected",
+        (NetworkConnectionQueryDispositionId)12 => "Partially Corrected",
+        (NetworkConnectionQueryDispositionId)13 => "Uncorrected",
+        (NetworkConnectionQueryDispositionId)14 => "Delayed",
+        (NetworkConnectionQueryDispositionId)15 => "Detected",
+        (NetworkConnectionQueryDispositionId)16 => "No Action",
+        (NetworkConnectionQueryDispositionId)17 => "Logged",
+        (NetworkConnectionQueryDispositionId)18 => "Tagged",
+        (NetworkConnectionQueryDispositionId)19 => "Alert",
+        (NetworkConnectionQueryDispositionId)20 => "Count",
+        (NetworkConnectionQueryDispositionId)21 => "Reset",
+        (NetworkConnectionQueryDispositionId)22 => "Captcha",
+        (NetworkConnectionQueryDispositionId)23 => "Challenge",
+        (NetworkConnectionQueryDispositionId)24 => "Access Revoked",
+        (NetworkConnectionQueryDispositionId)25 => "Rejected",
+        (NetworkConnectionQueryDispositionId)26 => "Unauthorized",
+        (NetworkConnectionQueryDispositionId)27 => "Error",
+        (NetworkConnectionQueryDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>query_result_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>query_result</c> attribute contains the source-specific label.
@@ -398,6 +585,23 @@ public enum NetworkConnectionQueryQueryResultId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="NetworkConnectionQueryQueryResultId"/>.</summary>
+public static class NetworkConnectionQueryQueryResultIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NetworkConnectionQueryQueryResultId value) => value switch
+    {
+        (NetworkConnectionQueryQueryResultId)0 => "Unknown",
+        (NetworkConnectionQueryQueryResultId)1 => "Exists",
+        (NetworkConnectionQueryQueryResultId)2 => "Partial",
+        (NetworkConnectionQueryQueryResultId)3 => "Does not exist",
+        (NetworkConnectionQueryQueryResultId)4 => "Error",
+        (NetworkConnectionQueryQueryResultId)5 => "Unsupported",
+        (NetworkConnectionQueryQueryResultId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -413,6 +617,22 @@ public enum NetworkConnectionQueryRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="NetworkConnectionQueryRiskLevelId"/>.</summary>
+public static class NetworkConnectionQueryRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NetworkConnectionQueryRiskLevelId value) => value switch
+    {
+        (NetworkConnectionQueryRiskLevelId)0 => "Info",
+        (NetworkConnectionQueryRiskLevelId)1 => "Low",
+        (NetworkConnectionQueryRiskLevelId)2 => "Medium",
+        (NetworkConnectionQueryRiskLevelId)3 => "High",
+        (NetworkConnectionQueryRiskLevelId)4 => "Critical",
+        (NetworkConnectionQueryRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -453,6 +673,24 @@ public enum NetworkConnectionQuerySeverityId
     /// The event/finding severity is not mapped. See the <c>severity</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="NetworkConnectionQuerySeverityId"/>.</summary>
+public static class NetworkConnectionQuerySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NetworkConnectionQuerySeverityId value) => value switch
+    {
+        (NetworkConnectionQuerySeverityId)0 => "Unknown",
+        (NetworkConnectionQuerySeverityId)1 => "Informational",
+        (NetworkConnectionQuerySeverityId)2 => "Low",
+        (NetworkConnectionQuerySeverityId)3 => "Medium",
+        (NetworkConnectionQuerySeverityId)4 => "High",
+        (NetworkConnectionQuerySeverityId)5 => "Critical",
+        (NetworkConnectionQuerySeverityId)6 => "Fatal",
+        (NetworkConnectionQuerySeverityId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -515,6 +753,29 @@ public enum NetworkConnectionQueryStateId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="NetworkConnectionQueryStateId"/>.</summary>
+public static class NetworkConnectionQueryStateIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NetworkConnectionQueryStateId value) => value switch
+    {
+        (NetworkConnectionQueryStateId)0 => "Unknown",
+        (NetworkConnectionQueryStateId)1 => "ESTABLISHED",
+        (NetworkConnectionQueryStateId)2 => "SYN_SENT",
+        (NetworkConnectionQueryStateId)3 => "SYN_RECV",
+        (NetworkConnectionQueryStateId)4 => "FIN_WAIT1",
+        (NetworkConnectionQueryStateId)5 => "FIN_WAIT2",
+        (NetworkConnectionQueryStateId)6 => "TIME_WAIT",
+        (NetworkConnectionQueryStateId)7 => "CLOSED",
+        (NetworkConnectionQueryStateId)8 => "CLOSE_WAIT",
+        (NetworkConnectionQueryStateId)9 => "LAST_ACK",
+        (NetworkConnectionQueryStateId)10 => "LISTEN",
+        (NetworkConnectionQueryStateId)11 => "CLOSING",
+        (NetworkConnectionQueryStateId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -537,4 +798,18 @@ public enum NetworkConnectionQueryStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="NetworkConnectionQueryStatusId"/>.</summary>
+public static class NetworkConnectionQueryStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NetworkConnectionQueryStatusId value) => value switch
+    {
+        (NetworkConnectionQueryStatusId)0 => "Unknown",
+        (NetworkConnectionQueryStatusId)1 => "Success",
+        (NetworkConnectionQueryStatusId)2 => "Failure",
+        (NetworkConnectionQueryStatusId)99 => "Other",
+        _ => null,
+    };
 }

@@ -368,11 +368,115 @@ public class NtpActivity : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Required)]
     public string? Version { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(NtpActivityActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(NtpActivityActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(NtpActivityActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(NtpActivityConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(NtpActivityDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>observation_point_id</c> and the <c>observation_point</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="observationPoint"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetObservationPoint(NtpActivityObservationPointId observationPointId, string? observationPoint = null)
+    {
+        ObservationPointId = observationPointId;
+        if ((observationPoint ?? observationPointId.Caption()) is { } label)
+            ObservationPoint = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(NtpActivityRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(NtpActivitySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(NtpActivityStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
+    }
+
+    /// <summary>
+    /// Sets <c>stratum_id</c> and the <c>stratum</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="stratum"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStratum(NtpActivityStratumId stratumId, string? stratum = null)
+    {
+        StratumId = stratumId;
+        if ((stratum ?? stratumId.Caption()) is { } label)
+            Stratum = label;
     }
 }
 
@@ -406,6 +510,22 @@ public enum NtpActivityActionId
     /// The action is not mapped. See the <c>action</c> attribute which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="NtpActivityActionId"/>.</summary>
+public static class NtpActivityActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NtpActivityActionId value) => value switch
+    {
+        (NtpActivityActionId)0 => "Unknown",
+        (NtpActivityActionId)1 => "Allowed",
+        (NtpActivityActionId)2 => "Denied",
+        (NtpActivityActionId)3 => "Observed",
+        (NtpActivityActionId)4 => "Modified",
+        (NtpActivityActionId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -452,6 +572,25 @@ public enum NtpActivityActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="NtpActivityActivityId"/>.</summary>
+public static class NtpActivityActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NtpActivityActivityId value) => value switch
+    {
+        (NtpActivityActivityId)0 => "Unknown",
+        (NtpActivityActivityId)1 => "Symmetric Active Exchange",
+        (NtpActivityActivityId)2 => "Symmetric Passive Response",
+        (NtpActivityActivityId)3 => "Client Synchronization",
+        (NtpActivityActivityId)4 => "Server Response",
+        (NtpActivityActivityId)5 => "Broadcast",
+        (NtpActivityActivityId)6 => "Control",
+        (NtpActivityActivityId)7 => "Private Use Case",
+        (NtpActivityActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -469,6 +608,21 @@ public enum NtpActivityConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="NtpActivityConfidenceId"/>.</summary>
+public static class NtpActivityConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NtpActivityConfidenceId value) => value switch
+    {
+        (NtpActivityConfidenceId)0 => "Unknown",
+        (NtpActivityConfidenceId)1 => "Low",
+        (NtpActivityConfidenceId)2 => "Medium",
+        (NtpActivityConfidenceId)3 => "High",
+        (NtpActivityConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -595,6 +749,45 @@ public enum NtpActivityDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="NtpActivityDispositionId"/>.</summary>
+public static class NtpActivityDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NtpActivityDispositionId value) => value switch
+    {
+        (NtpActivityDispositionId)0 => "Unknown",
+        (NtpActivityDispositionId)1 => "Allowed",
+        (NtpActivityDispositionId)2 => "Blocked",
+        (NtpActivityDispositionId)3 => "Quarantined",
+        (NtpActivityDispositionId)4 => "Isolated",
+        (NtpActivityDispositionId)5 => "Deleted",
+        (NtpActivityDispositionId)6 => "Dropped",
+        (NtpActivityDispositionId)7 => "Custom Action",
+        (NtpActivityDispositionId)8 => "Approved",
+        (NtpActivityDispositionId)9 => "Restored",
+        (NtpActivityDispositionId)10 => "Exonerated",
+        (NtpActivityDispositionId)11 => "Corrected",
+        (NtpActivityDispositionId)12 => "Partially Corrected",
+        (NtpActivityDispositionId)13 => "Uncorrected",
+        (NtpActivityDispositionId)14 => "Delayed",
+        (NtpActivityDispositionId)15 => "Detected",
+        (NtpActivityDispositionId)16 => "No Action",
+        (NtpActivityDispositionId)17 => "Logged",
+        (NtpActivityDispositionId)18 => "Tagged",
+        (NtpActivityDispositionId)19 => "Alert",
+        (NtpActivityDispositionId)20 => "Count",
+        (NtpActivityDispositionId)21 => "Reset",
+        (NtpActivityDispositionId)22 => "Captcha",
+        (NtpActivityDispositionId)23 => "Challenge",
+        (NtpActivityDispositionId)24 => "Access Revoked",
+        (NtpActivityDispositionId)25 => "Rejected",
+        (NtpActivityDispositionId)26 => "Unauthorized",
+        (NtpActivityDispositionId)27 => "Error",
+        (NtpActivityDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>observation_point_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>observation_point</c> attribute contains the source-specific label.
@@ -627,6 +820,22 @@ public enum NtpActivityObservationPointId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="NtpActivityObservationPointId"/>.</summary>
+public static class NtpActivityObservationPointIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NtpActivityObservationPointId value) => value switch
+    {
+        (NtpActivityObservationPointId)0 => "Unknown",
+        (NtpActivityObservationPointId)1 => "Source",
+        (NtpActivityObservationPointId)2 => "Destination",
+        (NtpActivityObservationPointId)3 => "Neither",
+        (NtpActivityObservationPointId)4 => "Both",
+        (NtpActivityObservationPointId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -642,6 +851,22 @@ public enum NtpActivityRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="NtpActivityRiskLevelId"/>.</summary>
+public static class NtpActivityRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NtpActivityRiskLevelId value) => value switch
+    {
+        (NtpActivityRiskLevelId)0 => "Info",
+        (NtpActivityRiskLevelId)1 => "Low",
+        (NtpActivityRiskLevelId)2 => "Medium",
+        (NtpActivityRiskLevelId)3 => "High",
+        (NtpActivityRiskLevelId)4 => "Critical",
+        (NtpActivityRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -684,6 +909,24 @@ public enum NtpActivitySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="NtpActivitySeverityId"/>.</summary>
+public static class NtpActivitySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NtpActivitySeverityId value) => value switch
+    {
+        (NtpActivitySeverityId)0 => "Unknown",
+        (NtpActivitySeverityId)1 => "Informational",
+        (NtpActivitySeverityId)2 => "Low",
+        (NtpActivitySeverityId)3 => "Medium",
+        (NtpActivitySeverityId)4 => "High",
+        (NtpActivitySeverityId)5 => "Critical",
+        (NtpActivitySeverityId)6 => "Fatal",
+        (NtpActivitySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -706,6 +949,20 @@ public enum NtpActivityStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="NtpActivityStatusId"/>.</summary>
+public static class NtpActivityStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NtpActivityStatusId value) => value switch
+    {
+        (NtpActivityStatusId)0 => "Unknown",
+        (NtpActivityStatusId)1 => "Success",
+        (NtpActivityStatusId)2 => "Failure",
+        (NtpActivityStatusId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -735,4 +992,20 @@ public enum NtpActivityStratumId
     /// The stratum level is not mapped. See the <c>stratum</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="NtpActivityStratumId"/>.</summary>
+public static class NtpActivityStratumIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NtpActivityStratumId value) => value switch
+    {
+        (NtpActivityStratumId)0 => "Unknown",
+        (NtpActivityStratumId)1 => "Primary Server",
+        (NtpActivityStratumId)2 => "Secondary Server",
+        (NtpActivityStratumId)16 => "Unsynchronized",
+        (NtpActivityStratumId)17 => "Reserved",
+        (NtpActivityStratumId)99 => "Other",
+        _ => null,
+    };
 }

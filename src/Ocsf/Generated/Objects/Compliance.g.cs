@@ -141,6 +141,18 @@ public class Compliance : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public ComplianceStatusId? StatusId { get; set; }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(ComplianceStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
+    }
 }
 
 /// <summary>
@@ -169,4 +181,19 @@ public enum ComplianceStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ComplianceStatusId"/>.</summary>
+public static class ComplianceStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ComplianceStatusId value) => value switch
+    {
+        (ComplianceStatusId)0 => "Unknown",
+        (ComplianceStatusId)1 => "Pass",
+        (ComplianceStatusId)2 => "Warning",
+        (ComplianceStatusId)3 => "Fail",
+        (ComplianceStatusId)99 => "Other",
+        _ => null,
+    };
 }

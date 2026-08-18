@@ -199,6 +199,18 @@ public class QueryEvidence : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public List<User>? Users { get; set; }
+
+    /// <summary>
+    /// Sets <c>query_type_id</c> and the <c>query_type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="queryType"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetQueryType(QueryEvidenceQueryTypeId queryTypeId, string? queryType = null)
+    {
+        QueryTypeId = queryTypeId;
+        if ((queryType ?? queryTypeId.Caption()) is { } label)
+            QueryType = label;
+    }
 }
 
 /// <summary>
@@ -289,6 +301,36 @@ public enum QueryEvidenceQueryTypeId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="QueryEvidenceQueryTypeId"/>.</summary>
+public static class QueryEvidenceQueryTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this QueryEvidenceQueryTypeId value) => value switch
+    {
+        (QueryEvidenceQueryTypeId)0 => "Unknown",
+        (QueryEvidenceQueryTypeId)1 => "Kernel",
+        (QueryEvidenceQueryTypeId)2 => "File",
+        (QueryEvidenceQueryTypeId)3 => "Folder",
+        (QueryEvidenceQueryTypeId)4 => "Admin Group",
+        (QueryEvidenceQueryTypeId)5 => "Job",
+        (QueryEvidenceQueryTypeId)6 => "Module",
+        (QueryEvidenceQueryTypeId)7 => "Network Connection",
+        (QueryEvidenceQueryTypeId)8 => "Network Interfaces",
+        (QueryEvidenceQueryTypeId)9 => "Peripheral Device",
+        (QueryEvidenceQueryTypeId)10 => "Process",
+        (QueryEvidenceQueryTypeId)11 => "Service",
+        (QueryEvidenceQueryTypeId)12 => "Session",
+        (QueryEvidenceQueryTypeId)13 => "User",
+        (QueryEvidenceQueryTypeId)14 => "Users",
+        (QueryEvidenceQueryTypeId)15 => "Startup Item",
+        (QueryEvidenceQueryTypeId)16 => "Registry Key",
+        (QueryEvidenceQueryTypeId)17 => "Registry Value",
+        (QueryEvidenceQueryTypeId)18 => "Prefetch",
+        (QueryEvidenceQueryTypeId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>tcp_state_id</c> attribute.
 /// </summary>
@@ -342,4 +384,26 @@ public enum QueryEvidenceTcpStateId
     /// The socket connection has been closed by the local application and the remote peer simultaneously, and the remote peer has not yet acknowledged the close attempt of the local application.
     /// </summary>
     CLOSING = 11,
+}
+
+/// <summary>Schema caption lookup for <see cref="QueryEvidenceTcpStateId"/>.</summary>
+public static class QueryEvidenceTcpStateIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this QueryEvidenceTcpStateId value) => value switch
+    {
+        (QueryEvidenceTcpStateId)0 => "Unknown",
+        (QueryEvidenceTcpStateId)1 => "ESTABLISHED",
+        (QueryEvidenceTcpStateId)2 => "SYN-SENT",
+        (QueryEvidenceTcpStateId)3 => "SYN-RECEIVED",
+        (QueryEvidenceTcpStateId)4 => "FIN-WAIT-1",
+        (QueryEvidenceTcpStateId)5 => "FIN-WAIT-2",
+        (QueryEvidenceTcpStateId)6 => "TIME-WAIT",
+        (QueryEvidenceTcpStateId)7 => "CLOSED",
+        (QueryEvidenceTcpStateId)8 => "CLOSE-WAIT",
+        (QueryEvidenceTcpStateId)9 => "LAST-ACK",
+        (QueryEvidenceTcpStateId)10 => "LISTEN",
+        (QueryEvidenceTcpStateId)11 => "CLOSING",
+        _ => null,
+    };
 }

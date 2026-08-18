@@ -309,6 +309,30 @@ public class NetworkEndpoint : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public string? Zone { get; set; }
+
+    /// <summary>
+    /// Sets <c>network_scope_id</c> and the <c>network_scope</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="networkScope"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetNetworkScope(NetworkEndpointNetworkScopeId networkScopeId, string? networkScope = null)
+    {
+        NetworkScopeId = networkScopeId;
+        if ((networkScope ?? networkScopeId.Caption()) is { } label)
+            NetworkScope = label;
+    }
+
+    /// <summary>
+    /// Sets <c>type_id</c> and the <c>type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="type"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetType(NetworkEndpointTypeId typeId, string? type = null)
+    {
+        TypeId = typeId;
+        if ((type ?? typeId.Caption()) is { } label)
+            Type = label;
+    }
 }
 
 /// <summary>
@@ -333,6 +357,20 @@ public enum NetworkEndpointNetworkScopeId
     /// The network scope is not mapped. See the <c>network_scope</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="NetworkEndpointNetworkScopeId"/>.</summary>
+public static class NetworkEndpointNetworkScopeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NetworkEndpointNetworkScopeId value) => value switch
+    {
+        (NetworkEndpointNetworkScopeId)0 => "Unknown",
+        (NetworkEndpointNetworkScopeId)1 => "Internal",
+        (NetworkEndpointNetworkScopeId)2 => "External",
+        (NetworkEndpointNetworkScopeId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -364,4 +402,31 @@ public enum NetworkEndpointTypeId
     /// The type is not mapped. See the <c>type</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="NetworkEndpointTypeId"/>.</summary>
+public static class NetworkEndpointTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NetworkEndpointTypeId value) => value switch
+    {
+        (NetworkEndpointTypeId)0 => "Unknown",
+        (NetworkEndpointTypeId)1 => "Server",
+        (NetworkEndpointTypeId)2 => "Desktop",
+        (NetworkEndpointTypeId)3 => "Laptop",
+        (NetworkEndpointTypeId)4 => "Tablet",
+        (NetworkEndpointTypeId)5 => "Mobile",
+        (NetworkEndpointTypeId)6 => "Virtual",
+        (NetworkEndpointTypeId)7 => "IOT",
+        (NetworkEndpointTypeId)8 => "Browser",
+        (NetworkEndpointTypeId)9 => "Firewall",
+        (NetworkEndpointTypeId)10 => "Switch",
+        (NetworkEndpointTypeId)11 => "Hub",
+        (NetworkEndpointTypeId)12 => "Router",
+        (NetworkEndpointTypeId)13 => "IDS",
+        (NetworkEndpointTypeId)14 => "IPS",
+        (NetworkEndpointTypeId)15 => "Load Balancer",
+        (NetworkEndpointTypeId)99 => "Other",
+        _ => null,
+    };
 }

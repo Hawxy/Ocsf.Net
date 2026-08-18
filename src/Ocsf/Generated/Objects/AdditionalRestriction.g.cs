@@ -40,6 +40,18 @@ public class AdditionalRestriction : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public AdditionalRestrictionStatusId? StatusId { get; set; }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(AdditionalRestrictionStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
+    }
 }
 
 /// <summary>
@@ -68,4 +80,19 @@ public enum AdditionalRestrictionStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="AdditionalRestrictionStatusId"/>.</summary>
+public static class AdditionalRestrictionStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AdditionalRestrictionStatusId value) => value switch
+    {
+        (AdditionalRestrictionStatusId)0 => "Unknown",
+        (AdditionalRestrictionStatusId)1 => "Applicable",
+        (AdditionalRestrictionStatusId)2 => "Inapplicable",
+        (AdditionalRestrictionStatusId)3 => "Evaluation Error",
+        (AdditionalRestrictionStatusId)99 => "Other",
+        _ => null,
+    };
 }

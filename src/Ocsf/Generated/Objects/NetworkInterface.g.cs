@@ -108,6 +108,18 @@ public class NetworkInterface : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public long? UidNumeric { get; set; }
+
+    /// <summary>
+    /// Sets <c>type_id</c> and the <c>type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="type"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetType(NetworkInterfaceTypeId typeId, string? type = null)
+    {
+        TypeId = typeId;
+        if ((type ?? typeId.Caption()) is { } label)
+            Type = label;
+    }
 }
 
 /// <summary>
@@ -128,4 +140,20 @@ public enum NetworkInterfaceTypeId
     /// The type is not mapped. See the <c>type</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="NetworkInterfaceTypeId"/>.</summary>
+public static class NetworkInterfaceTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NetworkInterfaceTypeId value) => value switch
+    {
+        (NetworkInterfaceTypeId)0 => "Unknown",
+        (NetworkInterfaceTypeId)1 => "Wired",
+        (NetworkInterfaceTypeId)2 => "Wireless",
+        (NetworkInterfaceTypeId)3 => "Mobile",
+        (NetworkInterfaceTypeId)4 => "Tunnel",
+        (NetworkInterfaceTypeId)99 => "Other",
+        _ => null,
+    };
 }

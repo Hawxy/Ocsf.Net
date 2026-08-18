@@ -98,6 +98,42 @@ public class Packet : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
     public string? Value { get; set; }
+
+    /// <summary>
+    /// Sets <c>encoding_id</c> and the <c>encoding</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="encoding"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetEncoding(PacketEncodingId encodingId, string? encoding = null)
+    {
+        EncodingId = encodingId;
+        if ((encoding ?? encodingId.Caption()) is { } label)
+            Encoding = label;
+    }
+
+    /// <summary>
+    /// Sets <c>format_id</c> and the <c>format</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="format"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetFormat(PacketFormatId formatId, string? format = null)
+    {
+        FormatId = formatId;
+        if ((format ?? formatId.Caption()) is { } label)
+            Format = label;
+    }
+
+    /// <summary>
+    /// Sets <c>source_id</c> and the <c>source</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="source"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSource(PacketSourceId sourceId, string? source = null)
+    {
+        SourceId = sourceId;
+        if ((source ?? sourceId.Caption()) is { } label)
+            Source = label;
+    }
 }
 
 /// <summary>
@@ -126,6 +162,21 @@ public enum PacketEncodingId
     /// The encoding method is not mapped. Refer to the <c>encoding</c> field for the original source-specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="PacketEncodingId"/>.</summary>
+public static class PacketEncodingIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this PacketEncodingId value) => value switch
+    {
+        (PacketEncodingId)0 => "Unknown",
+        (PacketEncodingId)1 => "Base64",
+        (PacketEncodingId)2 => "Hexadecimal",
+        (PacketEncodingId)3 => "URL Encoded",
+        (PacketEncodingId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -166,6 +217,24 @@ public enum PacketFormatId
     /// The packet format is not mapped. Refer to the <c>format</c> field for the original source-specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="PacketFormatId"/>.</summary>
+public static class PacketFormatIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this PacketFormatId value) => value switch
+    {
+        (PacketFormatId)0 => "Unknown",
+        (PacketFormatId)1 => "PCAP",
+        (PacketFormatId)2 => "PCAPNG",
+        (PacketFormatId)3 => "Snoop",
+        (PacketFormatId)4 => "ERF",
+        (PacketFormatId)5 => "NetMon",
+        (PacketFormatId)6 => "5Views",
+        (PacketFormatId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -210,4 +279,23 @@ public enum PacketSourceId
     /// The packet source is not mapped. Refer to the <c>source</c> field for the original source-specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="PacketSourceId"/>.</summary>
+public static class PacketSourceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this PacketSourceId value) => value switch
+    {
+        (PacketSourceId)0 => "Unknown",
+        (PacketSourceId)1 => "Wire",
+        (PacketSourceId)2 => "Stream",
+        (PacketSourceId)3 => "Decoder",
+        (PacketSourceId)4 => "TAP",
+        (PacketSourceId)5 => "SPAN",
+        (PacketSourceId)6 => "Endpoint",
+        (PacketSourceId)7 => "Virtual",
+        (PacketSourceId)99 => "Other",
+        _ => null,
+    };
 }

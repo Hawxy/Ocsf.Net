@@ -141,6 +141,18 @@ public class UnmannedAerialSystem : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public string? VerticalSpeed { get; set; }
+
+    /// <summary>
+    /// Sets <c>type_id</c> and the <c>type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="type"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetType(UnmannedAerialSystemTypeId typeId, string? type = null)
+    {
+        TypeId = typeId;
+        if ((type ?? typeId.Caption()) is { } label)
+            Type = label;
+    }
 }
 
 /// <summary>
@@ -183,4 +195,30 @@ public enum UnmannedAerialSystemTypeId
     /// The type is not mapped. See the <c>type</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="UnmannedAerialSystemTypeId"/>.</summary>
+public static class UnmannedAerialSystemTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this UnmannedAerialSystemTypeId value) => value switch
+    {
+        (UnmannedAerialSystemTypeId)0 => "Unknown/Undeclared",
+        (UnmannedAerialSystemTypeId)1 => "Airplane",
+        (UnmannedAerialSystemTypeId)2 => "Helicopter",
+        (UnmannedAerialSystemTypeId)3 => "Gyroplane",
+        (UnmannedAerialSystemTypeId)4 => "Hybrid Lift",
+        (UnmannedAerialSystemTypeId)5 => "Ornithopter",
+        (UnmannedAerialSystemTypeId)6 => "Glider",
+        (UnmannedAerialSystemTypeId)7 => "Kite",
+        (UnmannedAerialSystemTypeId)8 => "Free Balloon",
+        (UnmannedAerialSystemTypeId)9 => "Captive Balloon",
+        (UnmannedAerialSystemTypeId)10 => "Airship",
+        (UnmannedAerialSystemTypeId)11 => "Free Fall/Parachute",
+        (UnmannedAerialSystemTypeId)12 => "Rocket",
+        (UnmannedAerialSystemTypeId)13 => "Tethered Powered Aircraft",
+        (UnmannedAerialSystemTypeId)14 => "Ground Obstacle",
+        (UnmannedAerialSystemTypeId)99 => "Other",
+        _ => null,
+    };
 }

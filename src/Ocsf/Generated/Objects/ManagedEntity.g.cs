@@ -138,6 +138,18 @@ public class ManagedEntity : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public string? Version { get; set; }
+
+    /// <summary>
+    /// Sets <c>type_id</c> and the <c>type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="type"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetType(ManagedEntityTypeId typeId, string? type = null)
+    {
+        TypeId = typeId;
+        if ((type ?? typeId.Caption()) is { } label)
+            Type = label;
+    }
 }
 
 /// <summary>
@@ -182,4 +194,23 @@ public enum ManagedEntityTypeId
     /// The type is not mapped. See the <c>type</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ManagedEntityTypeId"/>.</summary>
+public static class ManagedEntityTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ManagedEntityTypeId value) => value switch
+    {
+        (ManagedEntityTypeId)0 => "Unknown",
+        (ManagedEntityTypeId)1 => "Device",
+        (ManagedEntityTypeId)2 => "User",
+        (ManagedEntityTypeId)3 => "Group",
+        (ManagedEntityTypeId)4 => "Organization",
+        (ManagedEntityTypeId)5 => "Policy",
+        (ManagedEntityTypeId)6 => "Email",
+        (ManagedEntityTypeId)7 => "Network Zone",
+        (ManagedEntityTypeId)99 => "Other",
+        _ => null,
+    };
 }

@@ -49,6 +49,18 @@ public class Reputation : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
     public ReputationScoreId? ScoreId { get; set; }
+
+    /// <summary>
+    /// Sets <c>score_id</c> and the <c>score</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="score"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetScore(ReputationScoreId scoreId, string? score = null)
+    {
+        ScoreId = scoreId;
+        if ((score ?? scoreId.Caption()) is { } label)
+            Score = label;
+    }
 }
 
 /// <summary>
@@ -105,4 +117,26 @@ public enum ReputationScoreId
     /// The reputation score is not mapped. See the <c>rep_score</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ReputationScoreId"/>.</summary>
+public static class ReputationScoreIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ReputationScoreId value) => value switch
+    {
+        (ReputationScoreId)0 => "Unknown",
+        (ReputationScoreId)1 => "Very Safe",
+        (ReputationScoreId)2 => "Safe",
+        (ReputationScoreId)3 => "Probably Safe",
+        (ReputationScoreId)4 => "Leans Safe",
+        (ReputationScoreId)5 => "May not be Safe",
+        (ReputationScoreId)6 => "Exercise Caution",
+        (ReputationScoreId)7 => "Suspicious/Risky",
+        (ReputationScoreId)8 => "Possibly Malicious",
+        (ReputationScoreId)9 => "Probably Malicious",
+        (ReputationScoreId)10 => "Malicious",
+        (ReputationScoreId)99 => "Other",
+        _ => null,
+    };
 }

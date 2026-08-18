@@ -187,6 +187,18 @@ public class Application : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public string? Version { get; set; }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(ApplicationRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
 }
 
 /// <summary>
@@ -204,4 +216,20 @@ public enum ApplicationRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ApplicationRiskLevelId"/>.</summary>
+public static class ApplicationRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ApplicationRiskLevelId value) => value switch
+    {
+        (ApplicationRiskLevelId)0 => "Info",
+        (ApplicationRiskLevelId)1 => "Low",
+        (ApplicationRiskLevelId)2 => "Medium",
+        (ApplicationRiskLevelId)3 => "High",
+        (ApplicationRiskLevelId)4 => "Critical",
+        (ApplicationRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }

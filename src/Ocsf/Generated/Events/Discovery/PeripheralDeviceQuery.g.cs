@@ -132,11 +132,103 @@ public class PeripheralDeviceQuery : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public PeripheralDeviceQueryStatusId? StatusId { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(PeripheralDeviceQueryActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(PeripheralDeviceQueryActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(PeripheralDeviceQueryActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(PeripheralDeviceQueryConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(PeripheralDeviceQueryDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>query_result_id</c> and the <c>query_result</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="queryResult"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetQueryResult(PeripheralDeviceQueryQueryResultId queryResultId, string? queryResult = null)
+    {
+        QueryResultId = queryResultId;
+        if ((queryResult ?? queryResultId.Caption()) is { } label)
+            QueryResult = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(PeripheralDeviceQueryRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(PeripheralDeviceQuerySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(PeripheralDeviceQueryStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -172,6 +264,22 @@ public enum PeripheralDeviceQueryActionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="PeripheralDeviceQueryActionId"/>.</summary>
+public static class PeripheralDeviceQueryActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this PeripheralDeviceQueryActionId value) => value switch
+    {
+        (PeripheralDeviceQueryActionId)0 => "Unknown",
+        (PeripheralDeviceQueryActionId)1 => "Allowed",
+        (PeripheralDeviceQueryActionId)2 => "Denied",
+        (PeripheralDeviceQueryActionId)3 => "Observed",
+        (PeripheralDeviceQueryActionId)4 => "Modified",
+        (PeripheralDeviceQueryActionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>activity_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>activity_name</c> attribute contains the source-specific label.
@@ -192,6 +300,19 @@ public enum PeripheralDeviceQueryActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="PeripheralDeviceQueryActivityId"/>.</summary>
+public static class PeripheralDeviceQueryActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this PeripheralDeviceQueryActivityId value) => value switch
+    {
+        (PeripheralDeviceQueryActivityId)0 => "Unknown",
+        (PeripheralDeviceQueryActivityId)1 => "Query",
+        (PeripheralDeviceQueryActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -209,6 +330,21 @@ public enum PeripheralDeviceQueryConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="PeripheralDeviceQueryConfidenceId"/>.</summary>
+public static class PeripheralDeviceQueryConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this PeripheralDeviceQueryConfidenceId value) => value switch
+    {
+        (PeripheralDeviceQueryConfidenceId)0 => "Unknown",
+        (PeripheralDeviceQueryConfidenceId)1 => "Low",
+        (PeripheralDeviceQueryConfidenceId)2 => "Medium",
+        (PeripheralDeviceQueryConfidenceId)3 => "High",
+        (PeripheralDeviceQueryConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -335,6 +471,45 @@ public enum PeripheralDeviceQueryDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="PeripheralDeviceQueryDispositionId"/>.</summary>
+public static class PeripheralDeviceQueryDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this PeripheralDeviceQueryDispositionId value) => value switch
+    {
+        (PeripheralDeviceQueryDispositionId)0 => "Unknown",
+        (PeripheralDeviceQueryDispositionId)1 => "Allowed",
+        (PeripheralDeviceQueryDispositionId)2 => "Blocked",
+        (PeripheralDeviceQueryDispositionId)3 => "Quarantined",
+        (PeripheralDeviceQueryDispositionId)4 => "Isolated",
+        (PeripheralDeviceQueryDispositionId)5 => "Deleted",
+        (PeripheralDeviceQueryDispositionId)6 => "Dropped",
+        (PeripheralDeviceQueryDispositionId)7 => "Custom Action",
+        (PeripheralDeviceQueryDispositionId)8 => "Approved",
+        (PeripheralDeviceQueryDispositionId)9 => "Restored",
+        (PeripheralDeviceQueryDispositionId)10 => "Exonerated",
+        (PeripheralDeviceQueryDispositionId)11 => "Corrected",
+        (PeripheralDeviceQueryDispositionId)12 => "Partially Corrected",
+        (PeripheralDeviceQueryDispositionId)13 => "Uncorrected",
+        (PeripheralDeviceQueryDispositionId)14 => "Delayed",
+        (PeripheralDeviceQueryDispositionId)15 => "Detected",
+        (PeripheralDeviceQueryDispositionId)16 => "No Action",
+        (PeripheralDeviceQueryDispositionId)17 => "Logged",
+        (PeripheralDeviceQueryDispositionId)18 => "Tagged",
+        (PeripheralDeviceQueryDispositionId)19 => "Alert",
+        (PeripheralDeviceQueryDispositionId)20 => "Count",
+        (PeripheralDeviceQueryDispositionId)21 => "Reset",
+        (PeripheralDeviceQueryDispositionId)22 => "Captcha",
+        (PeripheralDeviceQueryDispositionId)23 => "Challenge",
+        (PeripheralDeviceQueryDispositionId)24 => "Access Revoked",
+        (PeripheralDeviceQueryDispositionId)25 => "Rejected",
+        (PeripheralDeviceQueryDispositionId)26 => "Unauthorized",
+        (PeripheralDeviceQueryDispositionId)27 => "Error",
+        (PeripheralDeviceQueryDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>query_result_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>query_result</c> attribute contains the source-specific label.
@@ -371,6 +546,23 @@ public enum PeripheralDeviceQueryQueryResultId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="PeripheralDeviceQueryQueryResultId"/>.</summary>
+public static class PeripheralDeviceQueryQueryResultIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this PeripheralDeviceQueryQueryResultId value) => value switch
+    {
+        (PeripheralDeviceQueryQueryResultId)0 => "Unknown",
+        (PeripheralDeviceQueryQueryResultId)1 => "Exists",
+        (PeripheralDeviceQueryQueryResultId)2 => "Partial",
+        (PeripheralDeviceQueryQueryResultId)3 => "Does not exist",
+        (PeripheralDeviceQueryQueryResultId)4 => "Error",
+        (PeripheralDeviceQueryQueryResultId)5 => "Unsupported",
+        (PeripheralDeviceQueryQueryResultId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -386,6 +578,22 @@ public enum PeripheralDeviceQueryRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="PeripheralDeviceQueryRiskLevelId"/>.</summary>
+public static class PeripheralDeviceQueryRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this PeripheralDeviceQueryRiskLevelId value) => value switch
+    {
+        (PeripheralDeviceQueryRiskLevelId)0 => "Info",
+        (PeripheralDeviceQueryRiskLevelId)1 => "Low",
+        (PeripheralDeviceQueryRiskLevelId)2 => "Medium",
+        (PeripheralDeviceQueryRiskLevelId)3 => "High",
+        (PeripheralDeviceQueryRiskLevelId)4 => "Critical",
+        (PeripheralDeviceQueryRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -428,6 +636,24 @@ public enum PeripheralDeviceQuerySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="PeripheralDeviceQuerySeverityId"/>.</summary>
+public static class PeripheralDeviceQuerySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this PeripheralDeviceQuerySeverityId value) => value switch
+    {
+        (PeripheralDeviceQuerySeverityId)0 => "Unknown",
+        (PeripheralDeviceQuerySeverityId)1 => "Informational",
+        (PeripheralDeviceQuerySeverityId)2 => "Low",
+        (PeripheralDeviceQuerySeverityId)3 => "Medium",
+        (PeripheralDeviceQuerySeverityId)4 => "High",
+        (PeripheralDeviceQuerySeverityId)5 => "Critical",
+        (PeripheralDeviceQuerySeverityId)6 => "Fatal",
+        (PeripheralDeviceQuerySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -450,4 +676,18 @@ public enum PeripheralDeviceQueryStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="PeripheralDeviceQueryStatusId"/>.</summary>
+public static class PeripheralDeviceQueryStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this PeripheralDeviceQueryStatusId value) => value switch
+    {
+        (PeripheralDeviceQueryStatusId)0 => "Unknown",
+        (PeripheralDeviceQueryStatusId)1 => "Success",
+        (PeripheralDeviceQueryStatusId)2 => "Failure",
+        (PeripheralDeviceQueryStatusId)99 => "Other",
+        _ => null,
+    };
 }

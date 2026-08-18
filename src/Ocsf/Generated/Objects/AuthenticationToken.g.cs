@@ -142,6 +142,18 @@ public class AuthenticationToken : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public string? Zone { get; set; }
+
+    /// <summary>
+    /// Sets <c>type_id</c> and the <c>type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="type"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetType(AuthenticationTokenTypeId typeId, string? type = null)
+    {
+        TypeId = typeId;
+        if ((type ?? typeId.Caption()) is { } label)
+            Type = label;
+    }
 }
 
 /// <summary>
@@ -186,4 +198,23 @@ public enum AuthenticationTokenTypeId
     /// The type is not mapped. See the <c>type</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="AuthenticationTokenTypeId"/>.</summary>
+public static class AuthenticationTokenTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AuthenticationTokenTypeId value) => value switch
+    {
+        (AuthenticationTokenTypeId)0 => "Unknown",
+        (AuthenticationTokenTypeId)1 => "Ticket Granting Ticket",
+        (AuthenticationTokenTypeId)2 => "Service Ticket",
+        (AuthenticationTokenTypeId)3 => "Identity Token",
+        (AuthenticationTokenTypeId)4 => "Refresh Token",
+        (AuthenticationTokenTypeId)5 => "SAML Assertion",
+        (AuthenticationTokenTypeId)6 => "Client Token",
+        (AuthenticationTokenTypeId)7 => "API Token",
+        (AuthenticationTokenTypeId)99 => "Other",
+        _ => null,
+    };
 }

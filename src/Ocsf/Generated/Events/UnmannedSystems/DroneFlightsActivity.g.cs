@@ -214,11 +214,103 @@ public class DroneFlightsActivity : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Required)]
     public Objects.User? UnmannedSystemOperator { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(DroneFlightsActivityActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(DroneFlightsActivityActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(DroneFlightsActivityActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>auth_protocol_id</c> and the <c>auth_protocol</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="authProtocol"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAuthProtocol(DroneFlightsActivityAuthProtocolId authProtocolId, string? authProtocol = null)
+    {
+        AuthProtocolId = authProtocolId;
+        if ((authProtocol ?? authProtocolId.Caption()) is { } label)
+            AuthProtocol = label;
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(DroneFlightsActivityConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(DroneFlightsActivityDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(DroneFlightsActivityRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(DroneFlightsActivitySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(DroneFlightsActivityStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -254,6 +346,22 @@ public enum DroneFlightsActivityActionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="DroneFlightsActivityActionId"/>.</summary>
+public static class DroneFlightsActivityActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DroneFlightsActivityActionId value) => value switch
+    {
+        (DroneFlightsActivityActionId)0 => "Unknown",
+        (DroneFlightsActivityActionId)1 => "Allowed",
+        (DroneFlightsActivityActionId)2 => "Denied",
+        (DroneFlightsActivityActionId)3 => "Observed",
+        (DroneFlightsActivityActionId)4 => "Modified",
+        (DroneFlightsActivityActionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>activity_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>activity_name</c> attribute contains the source-specific label.
@@ -276,6 +384,20 @@ public enum DroneFlightsActivityActivityId
     /// The event activity is not mapped. See the <c>activity_name</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="DroneFlightsActivityActivityId"/>.</summary>
+public static class DroneFlightsActivityActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DroneFlightsActivityActivityId value) => value switch
+    {
+        (DroneFlightsActivityActivityId)0 => "Unknown",
+        (DroneFlightsActivityActivityId)1 => "Capture",
+        (DroneFlightsActivityActivityId)2 => "Record",
+        (DroneFlightsActivityActivityId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -306,6 +428,30 @@ public enum DroneFlightsActivityAuthProtocolId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="DroneFlightsActivityAuthProtocolId"/>.</summary>
+public static class DroneFlightsActivityAuthProtocolIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DroneFlightsActivityAuthProtocolId value) => value switch
+    {
+        (DroneFlightsActivityAuthProtocolId)0 => "Unknown",
+        (DroneFlightsActivityAuthProtocolId)1 => "None",
+        (DroneFlightsActivityAuthProtocolId)2 => "UAS ID Signature",
+        (DroneFlightsActivityAuthProtocolId)3 => "Operator ID Signature",
+        (DroneFlightsActivityAuthProtocolId)4 => "Message Set Signature",
+        (DroneFlightsActivityAuthProtocolId)5 => "Authentication Provided by Network Remote ID",
+        (DroneFlightsActivityAuthProtocolId)6 => "Specific Authentication Method",
+        (DroneFlightsActivityAuthProtocolId)7 => "Reserved",
+        (DroneFlightsActivityAuthProtocolId)8 => "Private User",
+        (DroneFlightsActivityAuthProtocolId)9 => "EAP",
+        (DroneFlightsActivityAuthProtocolId)10 => "RADIUS",
+        (DroneFlightsActivityAuthProtocolId)11 => "Basic Authentication",
+        (DroneFlightsActivityAuthProtocolId)12 => "LDAP",
+        (DroneFlightsActivityAuthProtocolId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -323,6 +469,21 @@ public enum DroneFlightsActivityConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="DroneFlightsActivityConfidenceId"/>.</summary>
+public static class DroneFlightsActivityConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DroneFlightsActivityConfidenceId value) => value switch
+    {
+        (DroneFlightsActivityConfidenceId)0 => "Unknown",
+        (DroneFlightsActivityConfidenceId)1 => "Low",
+        (DroneFlightsActivityConfidenceId)2 => "Medium",
+        (DroneFlightsActivityConfidenceId)3 => "High",
+        (DroneFlightsActivityConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -449,6 +610,45 @@ public enum DroneFlightsActivityDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="DroneFlightsActivityDispositionId"/>.</summary>
+public static class DroneFlightsActivityDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DroneFlightsActivityDispositionId value) => value switch
+    {
+        (DroneFlightsActivityDispositionId)0 => "Unknown",
+        (DroneFlightsActivityDispositionId)1 => "Allowed",
+        (DroneFlightsActivityDispositionId)2 => "Blocked",
+        (DroneFlightsActivityDispositionId)3 => "Quarantined",
+        (DroneFlightsActivityDispositionId)4 => "Isolated",
+        (DroneFlightsActivityDispositionId)5 => "Deleted",
+        (DroneFlightsActivityDispositionId)6 => "Dropped",
+        (DroneFlightsActivityDispositionId)7 => "Custom Action",
+        (DroneFlightsActivityDispositionId)8 => "Approved",
+        (DroneFlightsActivityDispositionId)9 => "Restored",
+        (DroneFlightsActivityDispositionId)10 => "Exonerated",
+        (DroneFlightsActivityDispositionId)11 => "Corrected",
+        (DroneFlightsActivityDispositionId)12 => "Partially Corrected",
+        (DroneFlightsActivityDispositionId)13 => "Uncorrected",
+        (DroneFlightsActivityDispositionId)14 => "Delayed",
+        (DroneFlightsActivityDispositionId)15 => "Detected",
+        (DroneFlightsActivityDispositionId)16 => "No Action",
+        (DroneFlightsActivityDispositionId)17 => "Logged",
+        (DroneFlightsActivityDispositionId)18 => "Tagged",
+        (DroneFlightsActivityDispositionId)19 => "Alert",
+        (DroneFlightsActivityDispositionId)20 => "Count",
+        (DroneFlightsActivityDispositionId)21 => "Reset",
+        (DroneFlightsActivityDispositionId)22 => "Captcha",
+        (DroneFlightsActivityDispositionId)23 => "Challenge",
+        (DroneFlightsActivityDispositionId)24 => "Access Revoked",
+        (DroneFlightsActivityDispositionId)25 => "Rejected",
+        (DroneFlightsActivityDispositionId)26 => "Unauthorized",
+        (DroneFlightsActivityDispositionId)27 => "Error",
+        (DroneFlightsActivityDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -464,6 +664,22 @@ public enum DroneFlightsActivityRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="DroneFlightsActivityRiskLevelId"/>.</summary>
+public static class DroneFlightsActivityRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DroneFlightsActivityRiskLevelId value) => value switch
+    {
+        (DroneFlightsActivityRiskLevelId)0 => "Info",
+        (DroneFlightsActivityRiskLevelId)1 => "Low",
+        (DroneFlightsActivityRiskLevelId)2 => "Medium",
+        (DroneFlightsActivityRiskLevelId)3 => "High",
+        (DroneFlightsActivityRiskLevelId)4 => "Critical",
+        (DroneFlightsActivityRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -506,6 +722,24 @@ public enum DroneFlightsActivitySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="DroneFlightsActivitySeverityId"/>.</summary>
+public static class DroneFlightsActivitySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DroneFlightsActivitySeverityId value) => value switch
+    {
+        (DroneFlightsActivitySeverityId)0 => "Unknown",
+        (DroneFlightsActivitySeverityId)1 => "Informational",
+        (DroneFlightsActivitySeverityId)2 => "Low",
+        (DroneFlightsActivitySeverityId)3 => "Medium",
+        (DroneFlightsActivitySeverityId)4 => "High",
+        (DroneFlightsActivitySeverityId)5 => "Critical",
+        (DroneFlightsActivitySeverityId)6 => "Fatal",
+        (DroneFlightsActivitySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -544,4 +778,22 @@ public enum DroneFlightsActivityStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="DroneFlightsActivityStatusId"/>.</summary>
+public static class DroneFlightsActivityStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DroneFlightsActivityStatusId value) => value switch
+    {
+        (DroneFlightsActivityStatusId)0 => "Unknown",
+        (DroneFlightsActivityStatusId)1 => "Undeclared",
+        (DroneFlightsActivityStatusId)2 => "Ground",
+        (DroneFlightsActivityStatusId)3 => "Airborne",
+        (DroneFlightsActivityStatusId)4 => "Emergency",
+        (DroneFlightsActivityStatusId)5 => "Remote ID System Failure",
+        (DroneFlightsActivityStatusId)6 => "Reserved",
+        (DroneFlightsActivityStatusId)99 => "Other",
+        _ => null,
+    };
 }

@@ -572,6 +572,30 @@ public class Device : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public string? Zone { get; set; }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(DeviceRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>type_id</c> and the <c>type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="type"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetType(DeviceTypeId typeId, string? type = null)
+    {
+        TypeId = typeId;
+        if ((type ?? typeId.Caption()) is { } label)
+            Type = label;
+    }
 }
 
 /// <summary>
@@ -589,6 +613,22 @@ public enum DeviceRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="DeviceRiskLevelId"/>.</summary>
+public static class DeviceRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DeviceRiskLevelId value) => value switch
+    {
+        (DeviceRiskLevelId)0 => "Info",
+        (DeviceRiskLevelId)1 => "Low",
+        (DeviceRiskLevelId)2 => "Medium",
+        (DeviceRiskLevelId)3 => "High",
+        (DeviceRiskLevelId)4 => "Critical",
+        (DeviceRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -620,4 +660,31 @@ public enum DeviceTypeId
     /// The type is not mapped. See the <c>type</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="DeviceTypeId"/>.</summary>
+public static class DeviceTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DeviceTypeId value) => value switch
+    {
+        (DeviceTypeId)0 => "Unknown",
+        (DeviceTypeId)1 => "Server",
+        (DeviceTypeId)2 => "Desktop",
+        (DeviceTypeId)3 => "Laptop",
+        (DeviceTypeId)4 => "Tablet",
+        (DeviceTypeId)5 => "Mobile",
+        (DeviceTypeId)6 => "Virtual",
+        (DeviceTypeId)7 => "IOT",
+        (DeviceTypeId)8 => "Browser",
+        (DeviceTypeId)9 => "Firewall",
+        (DeviceTypeId)10 => "Switch",
+        (DeviceTypeId)11 => "Hub",
+        (DeviceTypeId)12 => "Router",
+        (DeviceTypeId)13 => "IDS",
+        (DeviceTypeId)14 => "IPS",
+        (DeviceTypeId)15 => "Load Balancer",
+        (DeviceTypeId)99 => "Other",
+        _ => null,
+    };
 }

@@ -148,11 +148,91 @@ public class ClipboardActivity : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public ClipboardActivityStatusId? StatusId { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(ClipboardActivityActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(ClipboardActivityActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(ClipboardActivityActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(ClipboardActivityConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(ClipboardActivityDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(ClipboardActivityRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(ClipboardActivitySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(ClipboardActivityStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -188,6 +268,22 @@ public enum ClipboardActivityActionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ClipboardActivityActionId"/>.</summary>
+public static class ClipboardActivityActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ClipboardActivityActionId value) => value switch
+    {
+        (ClipboardActivityActionId)0 => "Unknown",
+        (ClipboardActivityActionId)1 => "Allowed",
+        (ClipboardActivityActionId)2 => "Denied",
+        (ClipboardActivityActionId)3 => "Observed",
+        (ClipboardActivityActionId)4 => "Modified",
+        (ClipboardActivityActionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>activity_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>activity_name</c> attribute contains the source-specific label.
@@ -216,6 +312,21 @@ public enum ClipboardActivityActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ClipboardActivityActivityId"/>.</summary>
+public static class ClipboardActivityActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ClipboardActivityActivityId value) => value switch
+    {
+        (ClipboardActivityActivityId)0 => "Unknown",
+        (ClipboardActivityActivityId)1 => "Read",
+        (ClipboardActivityActivityId)2 => "Write",
+        (ClipboardActivityActivityId)3 => "Clear",
+        (ClipboardActivityActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -233,6 +344,21 @@ public enum ClipboardActivityConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ClipboardActivityConfidenceId"/>.</summary>
+public static class ClipboardActivityConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ClipboardActivityConfidenceId value) => value switch
+    {
+        (ClipboardActivityConfidenceId)0 => "Unknown",
+        (ClipboardActivityConfidenceId)1 => "Low",
+        (ClipboardActivityConfidenceId)2 => "Medium",
+        (ClipboardActivityConfidenceId)3 => "High",
+        (ClipboardActivityConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -359,6 +485,45 @@ public enum ClipboardActivityDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ClipboardActivityDispositionId"/>.</summary>
+public static class ClipboardActivityDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ClipboardActivityDispositionId value) => value switch
+    {
+        (ClipboardActivityDispositionId)0 => "Unknown",
+        (ClipboardActivityDispositionId)1 => "Allowed",
+        (ClipboardActivityDispositionId)2 => "Blocked",
+        (ClipboardActivityDispositionId)3 => "Quarantined",
+        (ClipboardActivityDispositionId)4 => "Isolated",
+        (ClipboardActivityDispositionId)5 => "Deleted",
+        (ClipboardActivityDispositionId)6 => "Dropped",
+        (ClipboardActivityDispositionId)7 => "Custom Action",
+        (ClipboardActivityDispositionId)8 => "Approved",
+        (ClipboardActivityDispositionId)9 => "Restored",
+        (ClipboardActivityDispositionId)10 => "Exonerated",
+        (ClipboardActivityDispositionId)11 => "Corrected",
+        (ClipboardActivityDispositionId)12 => "Partially Corrected",
+        (ClipboardActivityDispositionId)13 => "Uncorrected",
+        (ClipboardActivityDispositionId)14 => "Delayed",
+        (ClipboardActivityDispositionId)15 => "Detected",
+        (ClipboardActivityDispositionId)16 => "No Action",
+        (ClipboardActivityDispositionId)17 => "Logged",
+        (ClipboardActivityDispositionId)18 => "Tagged",
+        (ClipboardActivityDispositionId)19 => "Alert",
+        (ClipboardActivityDispositionId)20 => "Count",
+        (ClipboardActivityDispositionId)21 => "Reset",
+        (ClipboardActivityDispositionId)22 => "Captcha",
+        (ClipboardActivityDispositionId)23 => "Challenge",
+        (ClipboardActivityDispositionId)24 => "Access Revoked",
+        (ClipboardActivityDispositionId)25 => "Rejected",
+        (ClipboardActivityDispositionId)26 => "Unauthorized",
+        (ClipboardActivityDispositionId)27 => "Error",
+        (ClipboardActivityDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -374,6 +539,22 @@ public enum ClipboardActivityRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ClipboardActivityRiskLevelId"/>.</summary>
+public static class ClipboardActivityRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ClipboardActivityRiskLevelId value) => value switch
+    {
+        (ClipboardActivityRiskLevelId)0 => "Info",
+        (ClipboardActivityRiskLevelId)1 => "Low",
+        (ClipboardActivityRiskLevelId)2 => "Medium",
+        (ClipboardActivityRiskLevelId)3 => "High",
+        (ClipboardActivityRiskLevelId)4 => "Critical",
+        (ClipboardActivityRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -416,6 +597,24 @@ public enum ClipboardActivitySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ClipboardActivitySeverityId"/>.</summary>
+public static class ClipboardActivitySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ClipboardActivitySeverityId value) => value switch
+    {
+        (ClipboardActivitySeverityId)0 => "Unknown",
+        (ClipboardActivitySeverityId)1 => "Informational",
+        (ClipboardActivitySeverityId)2 => "Low",
+        (ClipboardActivitySeverityId)3 => "Medium",
+        (ClipboardActivitySeverityId)4 => "High",
+        (ClipboardActivitySeverityId)5 => "Critical",
+        (ClipboardActivitySeverityId)6 => "Fatal",
+        (ClipboardActivitySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -438,4 +637,18 @@ public enum ClipboardActivityStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ClipboardActivityStatusId"/>.</summary>
+public static class ClipboardActivityStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ClipboardActivityStatusId value) => value switch
+    {
+        (ClipboardActivityStatusId)0 => "Unknown",
+        (ClipboardActivityStatusId)1 => "Success",
+        (ClipboardActivityStatusId)2 => "Failure",
+        (ClipboardActivityStatusId)99 => "Other",
+        _ => null,
+    };
 }

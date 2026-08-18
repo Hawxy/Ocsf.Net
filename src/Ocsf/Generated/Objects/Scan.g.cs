@@ -58,6 +58,18 @@ public class Scan : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public long? UidNumeric { get; set; }
+
+    /// <summary>
+    /// Sets <c>type_id</c> and the <c>type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="type"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetType(ScanTypeId typeId, string? type = null)
+    {
+        TypeId = typeId;
+        if ((type ?? typeId.Caption()) is { } label)
+            Type = label;
+    }
 }
 
 /// <summary>
@@ -102,4 +114,23 @@ public enum ScanTypeId
     /// The scan type id is not mapped. See the <c>type</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ScanTypeId"/>.</summary>
+public static class ScanTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ScanTypeId value) => value switch
+    {
+        (ScanTypeId)0 => "Unknown",
+        (ScanTypeId)1 => "Manual",
+        (ScanTypeId)2 => "Scheduled",
+        (ScanTypeId)3 => "Updated Content",
+        (ScanTypeId)4 => "Quarantined Items",
+        (ScanTypeId)5 => "Attached Media",
+        (ScanTypeId)6 => "User Logon",
+        (ScanTypeId)7 => "ELAM",
+        (ScanTypeId)99 => "Other",
+        _ => null,
+    };
 }

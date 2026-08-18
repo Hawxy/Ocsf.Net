@@ -180,6 +180,29 @@ public class ValidatorRuleTests
     }
 
     [Test]
+    public async Task SetActivityWithOtherAndLabel_ProducesNoSiblingFinding()
+    {
+        var evt = new Ocsf.Events.Iam.Authentication
+        {
+            Time = new OcsfTimestamp(1618524549901),
+            SeverityId = Ocsf.Events.Iam.AuthenticationSeverityId.Informational,
+            Metadata = new Ocsf.Objects.Metadata
+            {
+                Version = "1.9.0",
+                Product = new Ocsf.Objects.Product { Name = "test", VendorName = "test" },
+            },
+            User = new Ocsf.Objects.User { Name = "j" },
+            DstEndpoint = new Ocsf.Objects.NetworkEndpoint { Ip = "10.0.0.1" },
+        };
+        evt.SetActivity(Ocsf.Events.Iam.AuthenticationActivityId.Other, "custom-logon");
+
+        var result = new OcsfValidator().Validate(evt);
+
+        await Assert.That(result.Findings.Select(f => f.RuleId)).DoesNotContain(Rules.EnumSiblingMissing);
+        await Assert.That(result.IsValid).IsTrue();
+    }
+
+    [Test]
     public async Task EnumSiblingCaptionMismatch_IsWarning()
     {
         var result = Validate(MinimalAuthentication(", \"activity_name\": \"Wrong Caption\""));
@@ -249,6 +272,15 @@ public class ValidatorRuleTests
     {
         var result = Validate(MinimalAuthentication(
             """, "observables": [{"name": "user.name", "type_id": 4}]"""));
+
+        await Assert.That(result.Errors.Select(f => f.RuleId)).DoesNotContain(Rules.ObservableNameUnresolved);
+    }
+
+    [Test]
+    public async Task JsonPathObservableReference_IsAccepted()
+    {
+        var result = Validate(MinimalAuthentication(
+            """, "observables": [{"name": "$.user.name", "type_id": 4}]"""));
 
         await Assert.That(result.Errors.Select(f => f.RuleId)).DoesNotContain(Rules.ObservableNameUnresolved);
     }

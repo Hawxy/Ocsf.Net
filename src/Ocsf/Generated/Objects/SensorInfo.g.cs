@@ -58,6 +58,18 @@ public class SensorInfo : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public long? UidNumeric { get; set; }
+
+    /// <summary>
+    /// Sets <c>sensor_layer_id</c> and the <c>sensor_layer</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="sensorLayer"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSensorLayer(SensorInfoSensorLayerId sensorLayerId, string? sensorLayer = null)
+    {
+        SensorLayerId = sensorLayerId;
+        if ((sensorLayer ?? sensorLayerId.Caption()) is { } label)
+            SensorLayer = label;
+    }
 }
 
 /// <summary>
@@ -102,4 +114,23 @@ public enum SensorInfoSensorLayerId
     /// The sensor layer type is not mapped. See the <c>sensor_layer</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="SensorInfoSensorLayerId"/>.</summary>
+public static class SensorInfoSensorLayerIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SensorInfoSensorLayerId value) => value switch
+    {
+        (SensorInfoSensorLayerId)0 => "Unknown",
+        (SensorInfoSensorLayerId)1 => "Network",
+        (SensorInfoSensorLayerId)2 => "Endpoint",
+        (SensorInfoSensorLayerId)3 => "Email",
+        (SensorInfoSensorLayerId)4 => "IAM",
+        (SensorInfoSensorLayerId)5 => "Proxy",
+        (SensorInfoSensorLayerId)6 => "Threat Intel",
+        (SensorInfoSensorLayerId)7 => "Application",
+        (SensorInfoSensorLayerId)99 => "Other",
+        _ => null,
+    };
 }

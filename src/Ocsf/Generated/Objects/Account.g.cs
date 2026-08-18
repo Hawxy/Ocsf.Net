@@ -98,6 +98,18 @@ public class Account : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public long? UidNumeric { get; set; }
+
+    /// <summary>
+    /// Sets <c>type_id</c> and the <c>type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="type"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetType(AccountTypeId typeId, string? type = null)
+    {
+        TypeId = typeId;
+        if ((type ?? typeId.Caption()) is { } label)
+            Type = label;
+    }
 }
 
 /// <summary>
@@ -138,4 +150,35 @@ public enum AccountTypeId
     /// The account type is not mapped.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="AccountTypeId"/>.</summary>
+public static class AccountTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AccountTypeId value) => value switch
+    {
+        (AccountTypeId)0 => "Unknown",
+        (AccountTypeId)1 => "LDAP Account",
+        (AccountTypeId)2 => "Windows Account",
+        (AccountTypeId)3 => "AWS IAM User",
+        (AccountTypeId)4 => "AWS IAM Role",
+        (AccountTypeId)5 => "GCP Account",
+        (AccountTypeId)6 => "Azure AD Account",
+        (AccountTypeId)7 => "Mac OS Account",
+        (AccountTypeId)8 => "Apple Account",
+        (AccountTypeId)9 => "Linux Account",
+        (AccountTypeId)10 => "AWS Account",
+        (AccountTypeId)11 => "GCP Project",
+        (AccountTypeId)12 => "OCI Compartment",
+        (AccountTypeId)13 => "Azure Subscription",
+        (AccountTypeId)14 => "Salesforce Account",
+        (AccountTypeId)15 => "Google Workspace",
+        (AccountTypeId)16 => "Servicenow Instance",
+        (AccountTypeId)17 => "M365 Tenant",
+        (AccountTypeId)18 => "Email Account",
+        (AccountTypeId)19 => "ActiveDirectory Account",
+        (AccountTypeId)99 => "Other",
+        _ => null,
+    };
 }

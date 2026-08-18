@@ -309,6 +309,30 @@ public class NetworkProxy : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public string? Zone { get; set; }
+
+    /// <summary>
+    /// Sets <c>network_scope_id</c> and the <c>network_scope</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="networkScope"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetNetworkScope(NetworkProxyNetworkScopeId networkScopeId, string? networkScope = null)
+    {
+        NetworkScopeId = networkScopeId;
+        if ((networkScope ?? networkScopeId.Caption()) is { } label)
+            NetworkScope = label;
+    }
+
+    /// <summary>
+    /// Sets <c>type_id</c> and the <c>type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="type"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetType(NetworkProxyTypeId typeId, string? type = null)
+    {
+        TypeId = typeId;
+        if ((type ?? typeId.Caption()) is { } label)
+            Type = label;
+    }
 }
 
 /// <summary>
@@ -333,6 +357,20 @@ public enum NetworkProxyNetworkScopeId
     /// The network scope is not mapped. See the <c>network_scope</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="NetworkProxyNetworkScopeId"/>.</summary>
+public static class NetworkProxyNetworkScopeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NetworkProxyNetworkScopeId value) => value switch
+    {
+        (NetworkProxyNetworkScopeId)0 => "Unknown",
+        (NetworkProxyNetworkScopeId)1 => "Internal",
+        (NetworkProxyNetworkScopeId)2 => "External",
+        (NetworkProxyNetworkScopeId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -364,4 +402,31 @@ public enum NetworkProxyTypeId
     /// The type is not mapped. See the <c>type</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="NetworkProxyTypeId"/>.</summary>
+public static class NetworkProxyTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NetworkProxyTypeId value) => value switch
+    {
+        (NetworkProxyTypeId)0 => "Unknown",
+        (NetworkProxyTypeId)1 => "Server",
+        (NetworkProxyTypeId)2 => "Desktop",
+        (NetworkProxyTypeId)3 => "Laptop",
+        (NetworkProxyTypeId)4 => "Tablet",
+        (NetworkProxyTypeId)5 => "Mobile",
+        (NetworkProxyTypeId)6 => "Virtual",
+        (NetworkProxyTypeId)7 => "IOT",
+        (NetworkProxyTypeId)8 => "Browser",
+        (NetworkProxyTypeId)9 => "Firewall",
+        (NetworkProxyTypeId)10 => "Switch",
+        (NetworkProxyTypeId)11 => "Hub",
+        (NetworkProxyTypeId)12 => "Router",
+        (NetworkProxyTypeId)13 => "IDS",
+        (NetworkProxyTypeId)14 => "IPS",
+        (NetworkProxyTypeId)15 => "Load Balancer",
+        (NetworkProxyTypeId)99 => "Other",
+        _ => null,
+    };
 }

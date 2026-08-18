@@ -132,11 +132,103 @@ public class FolderQuery : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public FolderQueryStatusId? StatusId { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(FolderQueryActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(FolderQueryActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(FolderQueryActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(FolderQueryConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(FolderQueryDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>query_result_id</c> and the <c>query_result</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="queryResult"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetQueryResult(FolderQueryQueryResultId queryResultId, string? queryResult = null)
+    {
+        QueryResultId = queryResultId;
+        if ((queryResult ?? queryResultId.Caption()) is { } label)
+            QueryResult = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(FolderQueryRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(FolderQuerySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(FolderQueryStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -172,6 +264,22 @@ public enum FolderQueryActionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="FolderQueryActionId"/>.</summary>
+public static class FolderQueryActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FolderQueryActionId value) => value switch
+    {
+        (FolderQueryActionId)0 => "Unknown",
+        (FolderQueryActionId)1 => "Allowed",
+        (FolderQueryActionId)2 => "Denied",
+        (FolderQueryActionId)3 => "Observed",
+        (FolderQueryActionId)4 => "Modified",
+        (FolderQueryActionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>activity_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>activity_name</c> attribute contains the source-specific label.
@@ -192,6 +300,19 @@ public enum FolderQueryActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="FolderQueryActivityId"/>.</summary>
+public static class FolderQueryActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FolderQueryActivityId value) => value switch
+    {
+        (FolderQueryActivityId)0 => "Unknown",
+        (FolderQueryActivityId)1 => "Query",
+        (FolderQueryActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -209,6 +330,21 @@ public enum FolderQueryConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="FolderQueryConfidenceId"/>.</summary>
+public static class FolderQueryConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FolderQueryConfidenceId value) => value switch
+    {
+        (FolderQueryConfidenceId)0 => "Unknown",
+        (FolderQueryConfidenceId)1 => "Low",
+        (FolderQueryConfidenceId)2 => "Medium",
+        (FolderQueryConfidenceId)3 => "High",
+        (FolderQueryConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -335,6 +471,45 @@ public enum FolderQueryDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="FolderQueryDispositionId"/>.</summary>
+public static class FolderQueryDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FolderQueryDispositionId value) => value switch
+    {
+        (FolderQueryDispositionId)0 => "Unknown",
+        (FolderQueryDispositionId)1 => "Allowed",
+        (FolderQueryDispositionId)2 => "Blocked",
+        (FolderQueryDispositionId)3 => "Quarantined",
+        (FolderQueryDispositionId)4 => "Isolated",
+        (FolderQueryDispositionId)5 => "Deleted",
+        (FolderQueryDispositionId)6 => "Dropped",
+        (FolderQueryDispositionId)7 => "Custom Action",
+        (FolderQueryDispositionId)8 => "Approved",
+        (FolderQueryDispositionId)9 => "Restored",
+        (FolderQueryDispositionId)10 => "Exonerated",
+        (FolderQueryDispositionId)11 => "Corrected",
+        (FolderQueryDispositionId)12 => "Partially Corrected",
+        (FolderQueryDispositionId)13 => "Uncorrected",
+        (FolderQueryDispositionId)14 => "Delayed",
+        (FolderQueryDispositionId)15 => "Detected",
+        (FolderQueryDispositionId)16 => "No Action",
+        (FolderQueryDispositionId)17 => "Logged",
+        (FolderQueryDispositionId)18 => "Tagged",
+        (FolderQueryDispositionId)19 => "Alert",
+        (FolderQueryDispositionId)20 => "Count",
+        (FolderQueryDispositionId)21 => "Reset",
+        (FolderQueryDispositionId)22 => "Captcha",
+        (FolderQueryDispositionId)23 => "Challenge",
+        (FolderQueryDispositionId)24 => "Access Revoked",
+        (FolderQueryDispositionId)25 => "Rejected",
+        (FolderQueryDispositionId)26 => "Unauthorized",
+        (FolderQueryDispositionId)27 => "Error",
+        (FolderQueryDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>query_result_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>query_result</c> attribute contains the source-specific label.
@@ -371,6 +546,23 @@ public enum FolderQueryQueryResultId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="FolderQueryQueryResultId"/>.</summary>
+public static class FolderQueryQueryResultIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FolderQueryQueryResultId value) => value switch
+    {
+        (FolderQueryQueryResultId)0 => "Unknown",
+        (FolderQueryQueryResultId)1 => "Exists",
+        (FolderQueryQueryResultId)2 => "Partial",
+        (FolderQueryQueryResultId)3 => "Does not exist",
+        (FolderQueryQueryResultId)4 => "Error",
+        (FolderQueryQueryResultId)5 => "Unsupported",
+        (FolderQueryQueryResultId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -386,6 +578,22 @@ public enum FolderQueryRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="FolderQueryRiskLevelId"/>.</summary>
+public static class FolderQueryRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FolderQueryRiskLevelId value) => value switch
+    {
+        (FolderQueryRiskLevelId)0 => "Info",
+        (FolderQueryRiskLevelId)1 => "Low",
+        (FolderQueryRiskLevelId)2 => "Medium",
+        (FolderQueryRiskLevelId)3 => "High",
+        (FolderQueryRiskLevelId)4 => "Critical",
+        (FolderQueryRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -428,6 +636,24 @@ public enum FolderQuerySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="FolderQuerySeverityId"/>.</summary>
+public static class FolderQuerySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FolderQuerySeverityId value) => value switch
+    {
+        (FolderQuerySeverityId)0 => "Unknown",
+        (FolderQuerySeverityId)1 => "Informational",
+        (FolderQuerySeverityId)2 => "Low",
+        (FolderQuerySeverityId)3 => "Medium",
+        (FolderQuerySeverityId)4 => "High",
+        (FolderQuerySeverityId)5 => "Critical",
+        (FolderQuerySeverityId)6 => "Fatal",
+        (FolderQuerySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -450,4 +676,18 @@ public enum FolderQueryStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="FolderQueryStatusId"/>.</summary>
+public static class FolderQueryStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FolderQueryStatusId value) => value switch
+    {
+        (FolderQueryStatusId)0 => "Unknown",
+        (FolderQueryStatusId)1 => "Success",
+        (FolderQueryStatusId)2 => "Failure",
+        (FolderQueryStatusId)99 => "Other",
+        _ => null,
+    };
 }

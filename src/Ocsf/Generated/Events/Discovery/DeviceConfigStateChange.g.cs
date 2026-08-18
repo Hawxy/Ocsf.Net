@@ -166,11 +166,127 @@ public class DeviceConfigStateChange : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public DeviceConfigStateChangeStatusId? StatusId { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(DeviceConfigStateChangeActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(DeviceConfigStateChangeActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(DeviceConfigStateChangeActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(DeviceConfigStateChangeConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(DeviceConfigStateChangeDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>prev_security_level_id</c> and the <c>prev_security_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="prevSecurityLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetPrevSecurityLevel(DeviceConfigStateChangePrevSecurityLevelId prevSecurityLevelId, string? prevSecurityLevel = null)
+    {
+        PrevSecurityLevelId = prevSecurityLevelId;
+        if ((prevSecurityLevel ?? prevSecurityLevelId.Caption()) is { } label)
+            PrevSecurityLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(DeviceConfigStateChangeRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>security_level_id</c> and the <c>security_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="securityLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSecurityLevel(DeviceConfigStateChangeSecurityLevelId securityLevelId, string? securityLevel = null)
+    {
+        SecurityLevelId = securityLevelId;
+        if ((securityLevel ?? securityLevelId.Caption()) is { } label)
+            SecurityLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(DeviceConfigStateChangeSeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>state_id</c> and the <c>state</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="state"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetState(DeviceConfigStateChangeStateId stateId, string? state = null)
+    {
+        StateId = stateId;
+        if ((state ?? stateId.Caption()) is { } label)
+            State = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(DeviceConfigStateChangeStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -206,6 +322,22 @@ public enum DeviceConfigStateChangeActionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="DeviceConfigStateChangeActionId"/>.</summary>
+public static class DeviceConfigStateChangeActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DeviceConfigStateChangeActionId value) => value switch
+    {
+        (DeviceConfigStateChangeActionId)0 => "Unknown",
+        (DeviceConfigStateChangeActionId)1 => "Allowed",
+        (DeviceConfigStateChangeActionId)2 => "Denied",
+        (DeviceConfigStateChangeActionId)3 => "Observed",
+        (DeviceConfigStateChangeActionId)4 => "Modified",
+        (DeviceConfigStateChangeActionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>activity_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>activity_name</c> attribute contains the source-specific label.
@@ -230,6 +362,20 @@ public enum DeviceConfigStateChangeActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="DeviceConfigStateChangeActivityId"/>.</summary>
+public static class DeviceConfigStateChangeActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DeviceConfigStateChangeActivityId value) => value switch
+    {
+        (DeviceConfigStateChangeActivityId)0 => "Unknown",
+        (DeviceConfigStateChangeActivityId)1 => "Log",
+        (DeviceConfigStateChangeActivityId)2 => "Collect",
+        (DeviceConfigStateChangeActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -247,6 +393,21 @@ public enum DeviceConfigStateChangeConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="DeviceConfigStateChangeConfidenceId"/>.</summary>
+public static class DeviceConfigStateChangeConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DeviceConfigStateChangeConfidenceId value) => value switch
+    {
+        (DeviceConfigStateChangeConfidenceId)0 => "Unknown",
+        (DeviceConfigStateChangeConfidenceId)1 => "Low",
+        (DeviceConfigStateChangeConfidenceId)2 => "Medium",
+        (DeviceConfigStateChangeConfidenceId)3 => "High",
+        (DeviceConfigStateChangeConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -373,6 +534,45 @@ public enum DeviceConfigStateChangeDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="DeviceConfigStateChangeDispositionId"/>.</summary>
+public static class DeviceConfigStateChangeDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DeviceConfigStateChangeDispositionId value) => value switch
+    {
+        (DeviceConfigStateChangeDispositionId)0 => "Unknown",
+        (DeviceConfigStateChangeDispositionId)1 => "Allowed",
+        (DeviceConfigStateChangeDispositionId)2 => "Blocked",
+        (DeviceConfigStateChangeDispositionId)3 => "Quarantined",
+        (DeviceConfigStateChangeDispositionId)4 => "Isolated",
+        (DeviceConfigStateChangeDispositionId)5 => "Deleted",
+        (DeviceConfigStateChangeDispositionId)6 => "Dropped",
+        (DeviceConfigStateChangeDispositionId)7 => "Custom Action",
+        (DeviceConfigStateChangeDispositionId)8 => "Approved",
+        (DeviceConfigStateChangeDispositionId)9 => "Restored",
+        (DeviceConfigStateChangeDispositionId)10 => "Exonerated",
+        (DeviceConfigStateChangeDispositionId)11 => "Corrected",
+        (DeviceConfigStateChangeDispositionId)12 => "Partially Corrected",
+        (DeviceConfigStateChangeDispositionId)13 => "Uncorrected",
+        (DeviceConfigStateChangeDispositionId)14 => "Delayed",
+        (DeviceConfigStateChangeDispositionId)15 => "Detected",
+        (DeviceConfigStateChangeDispositionId)16 => "No Action",
+        (DeviceConfigStateChangeDispositionId)17 => "Logged",
+        (DeviceConfigStateChangeDispositionId)18 => "Tagged",
+        (DeviceConfigStateChangeDispositionId)19 => "Alert",
+        (DeviceConfigStateChangeDispositionId)20 => "Count",
+        (DeviceConfigStateChangeDispositionId)21 => "Reset",
+        (DeviceConfigStateChangeDispositionId)22 => "Captcha",
+        (DeviceConfigStateChangeDispositionId)23 => "Challenge",
+        (DeviceConfigStateChangeDispositionId)24 => "Access Revoked",
+        (DeviceConfigStateChangeDispositionId)25 => "Rejected",
+        (DeviceConfigStateChangeDispositionId)26 => "Unauthorized",
+        (DeviceConfigStateChangeDispositionId)27 => "Error",
+        (DeviceConfigStateChangeDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>prev_security_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>prev_security_level</c> attribute contains the source-specific label.
@@ -387,6 +587,21 @@ public enum DeviceConfigStateChangePrevSecurityLevelId
     /// The security level is not mapped. See the <c>prev_security_level</c> attribute, which contains data source specific values.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="DeviceConfigStateChangePrevSecurityLevelId"/>.</summary>
+public static class DeviceConfigStateChangePrevSecurityLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DeviceConfigStateChangePrevSecurityLevelId value) => value switch
+    {
+        (DeviceConfigStateChangePrevSecurityLevelId)0 => "Unknown",
+        (DeviceConfigStateChangePrevSecurityLevelId)1 => "Secure",
+        (DeviceConfigStateChangePrevSecurityLevelId)2 => "At Risk",
+        (DeviceConfigStateChangePrevSecurityLevelId)3 => "Compromised",
+        (DeviceConfigStateChangePrevSecurityLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -406,6 +621,22 @@ public enum DeviceConfigStateChangeRiskLevelId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="DeviceConfigStateChangeRiskLevelId"/>.</summary>
+public static class DeviceConfigStateChangeRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DeviceConfigStateChangeRiskLevelId value) => value switch
+    {
+        (DeviceConfigStateChangeRiskLevelId)0 => "Info",
+        (DeviceConfigStateChangeRiskLevelId)1 => "Low",
+        (DeviceConfigStateChangeRiskLevelId)2 => "Medium",
+        (DeviceConfigStateChangeRiskLevelId)3 => "High",
+        (DeviceConfigStateChangeRiskLevelId)4 => "Critical",
+        (DeviceConfigStateChangeRiskLevelId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>security_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>security_level</c> attribute contains the source-specific label.
@@ -420,6 +651,21 @@ public enum DeviceConfigStateChangeSecurityLevelId
     /// The security level is not mapped. See the <c>security_level</c> attribute, which contains data source specific values.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="DeviceConfigStateChangeSecurityLevelId"/>.</summary>
+public static class DeviceConfigStateChangeSecurityLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DeviceConfigStateChangeSecurityLevelId value) => value switch
+    {
+        (DeviceConfigStateChangeSecurityLevelId)0 => "Unknown",
+        (DeviceConfigStateChangeSecurityLevelId)1 => "Secure",
+        (DeviceConfigStateChangeSecurityLevelId)2 => "At Risk",
+        (DeviceConfigStateChangeSecurityLevelId)3 => "Compromised",
+        (DeviceConfigStateChangeSecurityLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -462,6 +708,24 @@ public enum DeviceConfigStateChangeSeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="DeviceConfigStateChangeSeverityId"/>.</summary>
+public static class DeviceConfigStateChangeSeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DeviceConfigStateChangeSeverityId value) => value switch
+    {
+        (DeviceConfigStateChangeSeverityId)0 => "Unknown",
+        (DeviceConfigStateChangeSeverityId)1 => "Informational",
+        (DeviceConfigStateChangeSeverityId)2 => "Low",
+        (DeviceConfigStateChangeSeverityId)3 => "Medium",
+        (DeviceConfigStateChangeSeverityId)4 => "High",
+        (DeviceConfigStateChangeSeverityId)5 => "Critical",
+        (DeviceConfigStateChangeSeverityId)6 => "Fatal",
+        (DeviceConfigStateChangeSeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>state_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>state</c> attribute contains the source-specific label.
@@ -486,6 +750,20 @@ public enum DeviceConfigStateChangeStateId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="DeviceConfigStateChangeStateId"/>.</summary>
+public static class DeviceConfigStateChangeStateIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DeviceConfigStateChangeStateId value) => value switch
+    {
+        (DeviceConfigStateChangeStateId)0 => "Unknown",
+        (DeviceConfigStateChangeStateId)1 => "Disabled",
+        (DeviceConfigStateChangeStateId)2 => "Enabled",
+        (DeviceConfigStateChangeStateId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -508,4 +786,18 @@ public enum DeviceConfigStateChangeStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="DeviceConfigStateChangeStatusId"/>.</summary>
+public static class DeviceConfigStateChangeStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DeviceConfigStateChangeStatusId value) => value switch
+    {
+        (DeviceConfigStateChangeStatusId)0 => "Unknown",
+        (DeviceConfigStateChangeStatusId)1 => "Success",
+        (DeviceConfigStateChangeStatusId)2 => "Failure",
+        (DeviceConfigStateChangeStatusId)99 => "Other",
+        _ => null,
+    };
 }

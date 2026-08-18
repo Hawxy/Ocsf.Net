@@ -123,6 +123,42 @@ public class StartupItem : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public JsonElement? WinService { get; set; }
+
+    /// <summary>
+    /// Sets <c>run_state_id</c> and the <c>run_state</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="runState"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRunState(StartupItemRunStateId runStateId, string? runState = null)
+    {
+        RunStateId = runStateId;
+        if ((runState ?? runStateId.Caption()) is { } label)
+            RunState = label;
+    }
+
+    /// <summary>
+    /// Sets <c>start_type_id</c> and the <c>start_type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="startType"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStartType(StartupItemStartTypeId startTypeId, string? startType = null)
+    {
+        StartTypeId = startTypeId;
+        if ((startType ?? startTypeId.Caption()) is { } label)
+            StartType = label;
+    }
+
+    /// <summary>
+    /// Sets <c>type_id</c> and the <c>type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="type"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetType(StartupItemTypeId typeId, string? type = null)
+    {
+        TypeId = typeId;
+        if ((type ?? typeId.Caption()) is { } label)
+            Type = label;
+    }
 }
 
 /// <summary>
@@ -151,6 +187,21 @@ public enum StartupItemRunModeIds
     /// The run mode is not mapped. See the <c>run_modes</c> attribute, which contains data source specific values.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="StartupItemRunModeIds"/>.</summary>
+public static class StartupItemRunModeIdsExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this StartupItemRunModeIds value) => value switch
+    {
+        (StartupItemRunModeIds)0 => "Unknown",
+        (StartupItemRunModeIds)1 => "Interactive",
+        (StartupItemRunModeIds)2 => "Own Process",
+        (StartupItemRunModeIds)3 => "Shared Process",
+        (StartupItemRunModeIds)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -201,6 +252,26 @@ public enum StartupItemRunStateId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="StartupItemRunStateId"/>.</summary>
+public static class StartupItemRunStateIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this StartupItemRunStateId value) => value switch
+    {
+        (StartupItemRunStateId)0 => "Unknown",
+        (StartupItemRunStateId)1 => "Stopped",
+        (StartupItemRunStateId)2 => "Start Pending",
+        (StartupItemRunStateId)3 => "Stop Pending",
+        (StartupItemRunStateId)4 => "Running",
+        (StartupItemRunStateId)5 => "Continue Pending",
+        (StartupItemRunStateId)6 => "Pause Pending",
+        (StartupItemRunStateId)7 => "Paused",
+        (StartupItemRunStateId)8 => "Restart Pending",
+        (StartupItemRunStateId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>start_type_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>start_type</c> attribute contains the source-specific label.
@@ -249,6 +320,26 @@ public enum StartupItemStartTypeId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="StartupItemStartTypeId"/>.</summary>
+public static class StartupItemStartTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this StartupItemStartTypeId value) => value switch
+    {
+        (StartupItemStartTypeId)0 => "Unknown",
+        (StartupItemStartTypeId)1 => "Auto",
+        (StartupItemStartTypeId)2 => "Boot",
+        (StartupItemStartTypeId)3 => "On Demand",
+        (StartupItemStartTypeId)4 => "Disabled",
+        (StartupItemStartTypeId)5 => "All Logins",
+        (StartupItemStartTypeId)6 => "Specific User Login",
+        (StartupItemStartTypeId)7 => "Scheduled",
+        (StartupItemStartTypeId)8 => "System Changed",
+        (StartupItemStartTypeId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>type_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>type</c> attribute contains the source-specific label.
@@ -295,4 +386,24 @@ public enum StartupItemTypeId
     /// The startup item type is not mapped. See the <c>type</c> attribute, which contains data source specific values.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="StartupItemTypeId"/>.</summary>
+public static class StartupItemTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this StartupItemTypeId value) => value switch
+    {
+        (StartupItemTypeId)0 => "Unknown",
+        (StartupItemTypeId)1 => "Kernel Mode Driver",
+        (StartupItemTypeId)2 => "User Mode Driver",
+        (StartupItemTypeId)3 => "Service",
+        (StartupItemTypeId)4 => "User Mode Application",
+        (StartupItemTypeId)5 => "Autoload",
+        (StartupItemTypeId)6 => "System Extension",
+        (StartupItemTypeId)7 => "Kernel Extension",
+        (StartupItemTypeId)8 => "Scheduled Job, Task",
+        (StartupItemTypeId)99 => "Other",
+        _ => null,
+    };
 }

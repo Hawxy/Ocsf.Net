@@ -72,6 +72,18 @@ public class Ja4Fingerprint : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
     public string? Value { get; set; }
+
+    /// <summary>
+    /// Sets <c>type_id</c> and the <c>type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="type"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetType(Ja4FingerprintTypeId typeId, string? type = null)
+    {
+        TypeId = typeId;
+        if ((type ?? typeId.Caption()) is { } label)
+            Type = label;
+    }
 }
 
 /// <summary>
@@ -124,4 +136,25 @@ public enum Ja4FingerprintTypeId
     /// The type is not mapped. See the <c>type</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="Ja4FingerprintTypeId"/>.</summary>
+public static class Ja4FingerprintTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this Ja4FingerprintTypeId value) => value switch
+    {
+        (Ja4FingerprintTypeId)0 => "Unknown",
+        (Ja4FingerprintTypeId)1 => "JA4",
+        (Ja4FingerprintTypeId)2 => "JA4Server",
+        (Ja4FingerprintTypeId)3 => "JA4HTTP",
+        (Ja4FingerprintTypeId)4 => "JA4Latency",
+        (Ja4FingerprintTypeId)5 => "JA4X509",
+        (Ja4FingerprintTypeId)6 => "JA4SSH",
+        (Ja4FingerprintTypeId)7 => "JA4TCP",
+        (Ja4FingerprintTypeId)8 => "JA4TCPServer",
+        (Ja4FingerprintTypeId)9 => "JA4TCPScan",
+        (Ja4FingerprintTypeId)99 => "Other",
+        _ => null,
+    };
 }

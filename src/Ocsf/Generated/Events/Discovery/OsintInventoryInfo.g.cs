@@ -95,11 +95,91 @@ public class OsintInventoryInfo : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public OsintInventoryInfoStatusId? StatusId { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(OsintInventoryInfoActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(OsintInventoryInfoActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(OsintInventoryInfoActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(OsintInventoryInfoConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(OsintInventoryInfoDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(OsintInventoryInfoRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(OsintInventoryInfoSeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(OsintInventoryInfoStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -135,6 +215,22 @@ public enum OsintInventoryInfoActionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="OsintInventoryInfoActionId"/>.</summary>
+public static class OsintInventoryInfoActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this OsintInventoryInfoActionId value) => value switch
+    {
+        (OsintInventoryInfoActionId)0 => "Unknown",
+        (OsintInventoryInfoActionId)1 => "Allowed",
+        (OsintInventoryInfoActionId)2 => "Denied",
+        (OsintInventoryInfoActionId)3 => "Observed",
+        (OsintInventoryInfoActionId)4 => "Modified",
+        (OsintInventoryInfoActionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>activity_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>activity_name</c> attribute contains the source-specific label.
@@ -159,6 +255,20 @@ public enum OsintInventoryInfoActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="OsintInventoryInfoActivityId"/>.</summary>
+public static class OsintInventoryInfoActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this OsintInventoryInfoActivityId value) => value switch
+    {
+        (OsintInventoryInfoActivityId)0 => "Unknown",
+        (OsintInventoryInfoActivityId)1 => "Log",
+        (OsintInventoryInfoActivityId)2 => "Collect",
+        (OsintInventoryInfoActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -176,6 +286,21 @@ public enum OsintInventoryInfoConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="OsintInventoryInfoConfidenceId"/>.</summary>
+public static class OsintInventoryInfoConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this OsintInventoryInfoConfidenceId value) => value switch
+    {
+        (OsintInventoryInfoConfidenceId)0 => "Unknown",
+        (OsintInventoryInfoConfidenceId)1 => "Low",
+        (OsintInventoryInfoConfidenceId)2 => "Medium",
+        (OsintInventoryInfoConfidenceId)3 => "High",
+        (OsintInventoryInfoConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -302,6 +427,45 @@ public enum OsintInventoryInfoDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="OsintInventoryInfoDispositionId"/>.</summary>
+public static class OsintInventoryInfoDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this OsintInventoryInfoDispositionId value) => value switch
+    {
+        (OsintInventoryInfoDispositionId)0 => "Unknown",
+        (OsintInventoryInfoDispositionId)1 => "Allowed",
+        (OsintInventoryInfoDispositionId)2 => "Blocked",
+        (OsintInventoryInfoDispositionId)3 => "Quarantined",
+        (OsintInventoryInfoDispositionId)4 => "Isolated",
+        (OsintInventoryInfoDispositionId)5 => "Deleted",
+        (OsintInventoryInfoDispositionId)6 => "Dropped",
+        (OsintInventoryInfoDispositionId)7 => "Custom Action",
+        (OsintInventoryInfoDispositionId)8 => "Approved",
+        (OsintInventoryInfoDispositionId)9 => "Restored",
+        (OsintInventoryInfoDispositionId)10 => "Exonerated",
+        (OsintInventoryInfoDispositionId)11 => "Corrected",
+        (OsintInventoryInfoDispositionId)12 => "Partially Corrected",
+        (OsintInventoryInfoDispositionId)13 => "Uncorrected",
+        (OsintInventoryInfoDispositionId)14 => "Delayed",
+        (OsintInventoryInfoDispositionId)15 => "Detected",
+        (OsintInventoryInfoDispositionId)16 => "No Action",
+        (OsintInventoryInfoDispositionId)17 => "Logged",
+        (OsintInventoryInfoDispositionId)18 => "Tagged",
+        (OsintInventoryInfoDispositionId)19 => "Alert",
+        (OsintInventoryInfoDispositionId)20 => "Count",
+        (OsintInventoryInfoDispositionId)21 => "Reset",
+        (OsintInventoryInfoDispositionId)22 => "Captcha",
+        (OsintInventoryInfoDispositionId)23 => "Challenge",
+        (OsintInventoryInfoDispositionId)24 => "Access Revoked",
+        (OsintInventoryInfoDispositionId)25 => "Rejected",
+        (OsintInventoryInfoDispositionId)26 => "Unauthorized",
+        (OsintInventoryInfoDispositionId)27 => "Error",
+        (OsintInventoryInfoDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -317,6 +481,22 @@ public enum OsintInventoryInfoRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="OsintInventoryInfoRiskLevelId"/>.</summary>
+public static class OsintInventoryInfoRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this OsintInventoryInfoRiskLevelId value) => value switch
+    {
+        (OsintInventoryInfoRiskLevelId)0 => "Info",
+        (OsintInventoryInfoRiskLevelId)1 => "Low",
+        (OsintInventoryInfoRiskLevelId)2 => "Medium",
+        (OsintInventoryInfoRiskLevelId)3 => "High",
+        (OsintInventoryInfoRiskLevelId)4 => "Critical",
+        (OsintInventoryInfoRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -359,6 +539,24 @@ public enum OsintInventoryInfoSeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="OsintInventoryInfoSeverityId"/>.</summary>
+public static class OsintInventoryInfoSeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this OsintInventoryInfoSeverityId value) => value switch
+    {
+        (OsintInventoryInfoSeverityId)0 => "Unknown",
+        (OsintInventoryInfoSeverityId)1 => "Informational",
+        (OsintInventoryInfoSeverityId)2 => "Low",
+        (OsintInventoryInfoSeverityId)3 => "Medium",
+        (OsintInventoryInfoSeverityId)4 => "High",
+        (OsintInventoryInfoSeverityId)5 => "Critical",
+        (OsintInventoryInfoSeverityId)6 => "Fatal",
+        (OsintInventoryInfoSeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -381,4 +579,18 @@ public enum OsintInventoryInfoStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="OsintInventoryInfoStatusId"/>.</summary>
+public static class OsintInventoryInfoStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this OsintInventoryInfoStatusId value) => value switch
+    {
+        (OsintInventoryInfoStatusId)0 => "Unknown",
+        (OsintInventoryInfoStatusId)1 => "Success",
+        (OsintInventoryInfoStatusId)2 => "Failure",
+        (OsintInventoryInfoStatusId)99 => "Other",
+        _ => null,
+    };
 }

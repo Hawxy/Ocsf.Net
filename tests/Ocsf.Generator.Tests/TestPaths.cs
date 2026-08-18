@@ -11,7 +11,7 @@ internal static class TestPaths
         var dir = new DirectoryInfo(AppContext.BaseDirectory);
         for (; dir is not null; dir = dir.Parent)
         {
-            if (dir.EnumerateFiles("ocsf.net.slnx").Any())
+            if (dir.EnumerateFiles("Ocsf.Net.slnx").Any())
                 return dir.FullName;
         }
         throw new InvalidOperationException("Repository root not found from " + AppContext.BaseDirectory);

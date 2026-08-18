@@ -451,11 +451,115 @@ public class DnsActivity : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public int? TransactionId { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(DnsActivityActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(DnsActivityActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(DnsActivityActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(DnsActivityConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(DnsActivityDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>observation_point_id</c> and the <c>observation_point</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="observationPoint"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetObservationPoint(DnsActivityObservationPointId observationPointId, string? observationPoint = null)
+    {
+        ObservationPointId = observationPointId;
+        if ((observationPoint ?? observationPointId.Caption()) is { } label)
+            ObservationPoint = label;
+    }
+
+    /// <summary>
+    /// Sets <c>rcode_id</c> and the <c>rcode</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="rcode"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRcode(DnsActivityRcodeId rcodeId, string? rcode = null)
+    {
+        RcodeId = rcodeId;
+        if ((rcode ?? rcodeId.Caption()) is { } label)
+            Rcode = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(DnsActivityRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(DnsActivitySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(DnsActivityStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -491,6 +595,22 @@ public enum DnsActivityActionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="DnsActivityActionId"/>.</summary>
+public static class DnsActivityActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DnsActivityActionId value) => value switch
+    {
+        (DnsActivityActionId)0 => "Unknown",
+        (DnsActivityActionId)1 => "Allowed",
+        (DnsActivityActionId)2 => "Denied",
+        (DnsActivityActionId)3 => "Observed",
+        (DnsActivityActionId)4 => "Modified",
+        (DnsActivityActionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>activity_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>activity_name</c> attribute contains the source-specific label.
@@ -519,6 +639,21 @@ public enum DnsActivityActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="DnsActivityActivityId"/>.</summary>
+public static class DnsActivityActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DnsActivityActivityId value) => value switch
+    {
+        (DnsActivityActivityId)0 => "Unknown",
+        (DnsActivityActivityId)1 => "Query",
+        (DnsActivityActivityId)2 => "Response",
+        (DnsActivityActivityId)6 => "Traffic",
+        (DnsActivityActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -536,6 +671,21 @@ public enum DnsActivityConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="DnsActivityConfidenceId"/>.</summary>
+public static class DnsActivityConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DnsActivityConfidenceId value) => value switch
+    {
+        (DnsActivityConfidenceId)0 => "Unknown",
+        (DnsActivityConfidenceId)1 => "Low",
+        (DnsActivityConfidenceId)2 => "Medium",
+        (DnsActivityConfidenceId)3 => "High",
+        (DnsActivityConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -662,6 +812,45 @@ public enum DnsActivityDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="DnsActivityDispositionId"/>.</summary>
+public static class DnsActivityDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DnsActivityDispositionId value) => value switch
+    {
+        (DnsActivityDispositionId)0 => "Unknown",
+        (DnsActivityDispositionId)1 => "Allowed",
+        (DnsActivityDispositionId)2 => "Blocked",
+        (DnsActivityDispositionId)3 => "Quarantined",
+        (DnsActivityDispositionId)4 => "Isolated",
+        (DnsActivityDispositionId)5 => "Deleted",
+        (DnsActivityDispositionId)6 => "Dropped",
+        (DnsActivityDispositionId)7 => "Custom Action",
+        (DnsActivityDispositionId)8 => "Approved",
+        (DnsActivityDispositionId)9 => "Restored",
+        (DnsActivityDispositionId)10 => "Exonerated",
+        (DnsActivityDispositionId)11 => "Corrected",
+        (DnsActivityDispositionId)12 => "Partially Corrected",
+        (DnsActivityDispositionId)13 => "Uncorrected",
+        (DnsActivityDispositionId)14 => "Delayed",
+        (DnsActivityDispositionId)15 => "Detected",
+        (DnsActivityDispositionId)16 => "No Action",
+        (DnsActivityDispositionId)17 => "Logged",
+        (DnsActivityDispositionId)18 => "Tagged",
+        (DnsActivityDispositionId)19 => "Alert",
+        (DnsActivityDispositionId)20 => "Count",
+        (DnsActivityDispositionId)21 => "Reset",
+        (DnsActivityDispositionId)22 => "Captcha",
+        (DnsActivityDispositionId)23 => "Challenge",
+        (DnsActivityDispositionId)24 => "Access Revoked",
+        (DnsActivityDispositionId)25 => "Rejected",
+        (DnsActivityDispositionId)26 => "Unauthorized",
+        (DnsActivityDispositionId)27 => "Error",
+        (DnsActivityDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>flag_ids</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>flags</c> attribute contains the source-specific label.
@@ -702,6 +891,24 @@ public enum DnsActivityFlagIds
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="DnsActivityFlagIds"/>.</summary>
+public static class DnsActivityFlagIdsExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DnsActivityFlagIds value) => value switch
+    {
+        (DnsActivityFlagIds)0 => "Unknown",
+        (DnsActivityFlagIds)1 => "Authoritative Answer",
+        (DnsActivityFlagIds)2 => "Truncated Response",
+        (DnsActivityFlagIds)3 => "Recursion Desired",
+        (DnsActivityFlagIds)4 => "Recursion Available",
+        (DnsActivityFlagIds)5 => "Authentic Data",
+        (DnsActivityFlagIds)6 => "Checking Disabled",
+        (DnsActivityFlagIds)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>observation_point_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>observation_point</c> attribute contains the source-specific label.
@@ -732,6 +939,22 @@ public enum DnsActivityObservationPointId
     /// The observation point is not mapped. See the <c>observation_point</c> attribute for a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="DnsActivityObservationPointId"/>.</summary>
+public static class DnsActivityObservationPointIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DnsActivityObservationPointId value) => value switch
+    {
+        (DnsActivityObservationPointId)0 => "Unknown",
+        (DnsActivityObservationPointId)1 => "Source",
+        (DnsActivityObservationPointId)2 => "Destination",
+        (DnsActivityObservationPointId)3 => "Neither",
+        (DnsActivityObservationPointId)4 => "Both",
+        (DnsActivityObservationPointId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -771,6 +994,24 @@ public enum DnsActivityOpcodeId
     /// The DNS Opcode is not defined by the RFC. See the <c>opcode</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="DnsActivityOpcodeId"/>.</summary>
+public static class DnsActivityOpcodeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DnsActivityOpcodeId value) => value switch
+    {
+        (DnsActivityOpcodeId)0 => "Query",
+        (DnsActivityOpcodeId)1 => "Inverse Query",
+        (DnsActivityOpcodeId)2 => "Status",
+        (DnsActivityOpcodeId)3 => "Reserved",
+        (DnsActivityOpcodeId)4 => "Notify",
+        (DnsActivityOpcodeId)5 => "Update",
+        (DnsActivityOpcodeId)6 => "DSO Message",
+        (DnsActivityOpcodeId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -873,6 +1114,39 @@ public enum DnsActivityRcodeId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="DnsActivityRcodeId"/>.</summary>
+public static class DnsActivityRcodeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DnsActivityRcodeId value) => value switch
+    {
+        (DnsActivityRcodeId)0 => "NoError",
+        (DnsActivityRcodeId)1 => "FormError",
+        (DnsActivityRcodeId)2 => "ServError",
+        (DnsActivityRcodeId)3 => "NXDomain",
+        (DnsActivityRcodeId)4 => "NotImp",
+        (DnsActivityRcodeId)5 => "Refused",
+        (DnsActivityRcodeId)6 => "YXDomain",
+        (DnsActivityRcodeId)7 => "YXRRSet",
+        (DnsActivityRcodeId)8 => "NXRRSet",
+        (DnsActivityRcodeId)9 => "NotAuth",
+        (DnsActivityRcodeId)10 => "NotZone",
+        (DnsActivityRcodeId)11 => "DSOTYPENI",
+        (DnsActivityRcodeId)16 => "BADVERS",
+        (DnsActivityRcodeId)17 => "BADKEY",
+        (DnsActivityRcodeId)18 => "BADTIME",
+        (DnsActivityRcodeId)19 => "BADMODE",
+        (DnsActivityRcodeId)20 => "BADNAME",
+        (DnsActivityRcodeId)21 => "BADALG",
+        (DnsActivityRcodeId)22 => "BADTRUNC",
+        (DnsActivityRcodeId)23 => "BADCOOKIE",
+        (DnsActivityRcodeId)24 => "Unassigned",
+        (DnsActivityRcodeId)25 => "Reserved",
+        (DnsActivityRcodeId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -888,6 +1162,22 @@ public enum DnsActivityRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="DnsActivityRiskLevelId"/>.</summary>
+public static class DnsActivityRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DnsActivityRiskLevelId value) => value switch
+    {
+        (DnsActivityRiskLevelId)0 => "Info",
+        (DnsActivityRiskLevelId)1 => "Low",
+        (DnsActivityRiskLevelId)2 => "Medium",
+        (DnsActivityRiskLevelId)3 => "High",
+        (DnsActivityRiskLevelId)4 => "Critical",
+        (DnsActivityRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -930,6 +1220,24 @@ public enum DnsActivitySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="DnsActivitySeverityId"/>.</summary>
+public static class DnsActivitySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DnsActivitySeverityId value) => value switch
+    {
+        (DnsActivitySeverityId)0 => "Unknown",
+        (DnsActivitySeverityId)1 => "Informational",
+        (DnsActivitySeverityId)2 => "Low",
+        (DnsActivitySeverityId)3 => "Medium",
+        (DnsActivitySeverityId)4 => "High",
+        (DnsActivitySeverityId)5 => "Critical",
+        (DnsActivitySeverityId)6 => "Fatal",
+        (DnsActivitySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -952,4 +1260,18 @@ public enum DnsActivityStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="DnsActivityStatusId"/>.</summary>
+public static class DnsActivityStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DnsActivityStatusId value) => value switch
+    {
+        (DnsActivityStatusId)0 => "Unknown",
+        (DnsActivityStatusId)1 => "Success",
+        (DnsActivityStatusId)2 => "Failure",
+        (DnsActivityStatusId)99 => "Other",
+        _ => null,
+    };
 }

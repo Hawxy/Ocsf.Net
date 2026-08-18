@@ -82,6 +82,30 @@ public class Ticket : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public string? Uid { get; set; }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(TicketStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
+    }
+
+    /// <summary>
+    /// Sets <c>type_id</c> and the <c>type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="type"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetType(TicketTypeId typeId, string? type = null)
+    {
+        TypeId = typeId;
+        if ((type ?? typeId.Caption()) is { } label)
+            Type = label;
+    }
 }
 
 /// <summary>
@@ -132,6 +156,26 @@ public enum TicketStatusId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="TicketStatusId"/>.</summary>
+public static class TicketStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this TicketStatusId value) => value switch
+    {
+        (TicketStatusId)0 => "Unknown",
+        (TicketStatusId)1 => "New",
+        (TicketStatusId)2 => "In Progress",
+        (TicketStatusId)3 => "Notified",
+        (TicketStatusId)4 => "On Hold",
+        (TicketStatusId)5 => "Resolved",
+        (TicketStatusId)6 => "Closed",
+        (TicketStatusId)7 => "Canceled",
+        (TicketStatusId)8 => "Reopened",
+        (TicketStatusId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>type_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>type</c> attribute contains the source-specific label.
@@ -148,4 +192,18 @@ public enum TicketTypeId
     /// The type is not mapped. See the <c>type</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="TicketTypeId"/>.</summary>
+public static class TicketTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this TicketTypeId value) => value switch
+    {
+        (TicketTypeId)0 => "Unknown",
+        (TicketTypeId)1 => "Internal",
+        (TicketTypeId)2 => "External",
+        (TicketTypeId)99 => "Other",
+        _ => null,
+    };
 }

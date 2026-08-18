@@ -104,11 +104,91 @@ public class UserInventory : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Required)]
     public Objects.User? User { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(UserInventoryActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(UserInventoryActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(UserInventoryActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(UserInventoryConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(UserInventoryDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(UserInventoryRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(UserInventorySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(UserInventoryStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -144,6 +224,22 @@ public enum UserInventoryActionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="UserInventoryActionId"/>.</summary>
+public static class UserInventoryActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this UserInventoryActionId value) => value switch
+    {
+        (UserInventoryActionId)0 => "Unknown",
+        (UserInventoryActionId)1 => "Allowed",
+        (UserInventoryActionId)2 => "Denied",
+        (UserInventoryActionId)3 => "Observed",
+        (UserInventoryActionId)4 => "Modified",
+        (UserInventoryActionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>activity_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>activity_name</c> attribute contains the source-specific label.
@@ -168,6 +264,20 @@ public enum UserInventoryActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="UserInventoryActivityId"/>.</summary>
+public static class UserInventoryActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this UserInventoryActivityId value) => value switch
+    {
+        (UserInventoryActivityId)0 => "Unknown",
+        (UserInventoryActivityId)1 => "Log",
+        (UserInventoryActivityId)2 => "Collect",
+        (UserInventoryActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -185,6 +295,21 @@ public enum UserInventoryConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="UserInventoryConfidenceId"/>.</summary>
+public static class UserInventoryConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this UserInventoryConfidenceId value) => value switch
+    {
+        (UserInventoryConfidenceId)0 => "Unknown",
+        (UserInventoryConfidenceId)1 => "Low",
+        (UserInventoryConfidenceId)2 => "Medium",
+        (UserInventoryConfidenceId)3 => "High",
+        (UserInventoryConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -311,6 +436,45 @@ public enum UserInventoryDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="UserInventoryDispositionId"/>.</summary>
+public static class UserInventoryDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this UserInventoryDispositionId value) => value switch
+    {
+        (UserInventoryDispositionId)0 => "Unknown",
+        (UserInventoryDispositionId)1 => "Allowed",
+        (UserInventoryDispositionId)2 => "Blocked",
+        (UserInventoryDispositionId)3 => "Quarantined",
+        (UserInventoryDispositionId)4 => "Isolated",
+        (UserInventoryDispositionId)5 => "Deleted",
+        (UserInventoryDispositionId)6 => "Dropped",
+        (UserInventoryDispositionId)7 => "Custom Action",
+        (UserInventoryDispositionId)8 => "Approved",
+        (UserInventoryDispositionId)9 => "Restored",
+        (UserInventoryDispositionId)10 => "Exonerated",
+        (UserInventoryDispositionId)11 => "Corrected",
+        (UserInventoryDispositionId)12 => "Partially Corrected",
+        (UserInventoryDispositionId)13 => "Uncorrected",
+        (UserInventoryDispositionId)14 => "Delayed",
+        (UserInventoryDispositionId)15 => "Detected",
+        (UserInventoryDispositionId)16 => "No Action",
+        (UserInventoryDispositionId)17 => "Logged",
+        (UserInventoryDispositionId)18 => "Tagged",
+        (UserInventoryDispositionId)19 => "Alert",
+        (UserInventoryDispositionId)20 => "Count",
+        (UserInventoryDispositionId)21 => "Reset",
+        (UserInventoryDispositionId)22 => "Captcha",
+        (UserInventoryDispositionId)23 => "Challenge",
+        (UserInventoryDispositionId)24 => "Access Revoked",
+        (UserInventoryDispositionId)25 => "Rejected",
+        (UserInventoryDispositionId)26 => "Unauthorized",
+        (UserInventoryDispositionId)27 => "Error",
+        (UserInventoryDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -326,6 +490,22 @@ public enum UserInventoryRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="UserInventoryRiskLevelId"/>.</summary>
+public static class UserInventoryRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this UserInventoryRiskLevelId value) => value switch
+    {
+        (UserInventoryRiskLevelId)0 => "Info",
+        (UserInventoryRiskLevelId)1 => "Low",
+        (UserInventoryRiskLevelId)2 => "Medium",
+        (UserInventoryRiskLevelId)3 => "High",
+        (UserInventoryRiskLevelId)4 => "Critical",
+        (UserInventoryRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -368,6 +548,24 @@ public enum UserInventorySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="UserInventorySeverityId"/>.</summary>
+public static class UserInventorySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this UserInventorySeverityId value) => value switch
+    {
+        (UserInventorySeverityId)0 => "Unknown",
+        (UserInventorySeverityId)1 => "Informational",
+        (UserInventorySeverityId)2 => "Low",
+        (UserInventorySeverityId)3 => "Medium",
+        (UserInventorySeverityId)4 => "High",
+        (UserInventorySeverityId)5 => "Critical",
+        (UserInventorySeverityId)6 => "Fatal",
+        (UserInventorySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -390,4 +588,18 @@ public enum UserInventoryStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="UserInventoryStatusId"/>.</summary>
+public static class UserInventoryStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this UserInventoryStatusId value) => value switch
+    {
+        (UserInventoryStatusId)0 => "Unknown",
+        (UserInventoryStatusId)1 => "Success",
+        (UserInventoryStatusId)2 => "Failure",
+        (UserInventoryStatusId)99 => "Other",
+        _ => null,
+    };
 }

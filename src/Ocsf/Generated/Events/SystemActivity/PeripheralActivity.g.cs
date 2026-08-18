@@ -140,11 +140,91 @@ public class PeripheralActivity : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public PeripheralActivityStatusId? StatusId { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(PeripheralActivityActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(PeripheralActivityActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(PeripheralActivityActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(PeripheralActivityConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(PeripheralActivityDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(PeripheralActivityRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(PeripheralActivitySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(PeripheralActivityStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -178,6 +258,22 @@ public enum PeripheralActivityActionId
     /// The action is not mapped. See the <c>action</c> attribute which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="PeripheralActivityActionId"/>.</summary>
+public static class PeripheralActivityActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this PeripheralActivityActionId value) => value switch
+    {
+        (PeripheralActivityActionId)0 => "Unknown",
+        (PeripheralActivityActionId)1 => "Allowed",
+        (PeripheralActivityActionId)2 => "Denied",
+        (PeripheralActivityActionId)3 => "Observed",
+        (PeripheralActivityActionId)4 => "Modified",
+        (PeripheralActivityActionId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -216,6 +312,23 @@ public enum PeripheralActivityActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="PeripheralActivityActivityId"/>.</summary>
+public static class PeripheralActivityActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this PeripheralActivityActivityId value) => value switch
+    {
+        (PeripheralActivityActivityId)0 => "Unknown",
+        (PeripheralActivityActivityId)1 => "Connect",
+        (PeripheralActivityActivityId)2 => "Disconnect",
+        (PeripheralActivityActivityId)3 => "Enable",
+        (PeripheralActivityActivityId)4 => "Disable",
+        (PeripheralActivityActivityId)5 => "Eject",
+        (PeripheralActivityActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -233,6 +346,21 @@ public enum PeripheralActivityConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="PeripheralActivityConfidenceId"/>.</summary>
+public static class PeripheralActivityConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this PeripheralActivityConfidenceId value) => value switch
+    {
+        (PeripheralActivityConfidenceId)0 => "Unknown",
+        (PeripheralActivityConfidenceId)1 => "Low",
+        (PeripheralActivityConfidenceId)2 => "Medium",
+        (PeripheralActivityConfidenceId)3 => "High",
+        (PeripheralActivityConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -359,6 +487,45 @@ public enum PeripheralActivityDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="PeripheralActivityDispositionId"/>.</summary>
+public static class PeripheralActivityDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this PeripheralActivityDispositionId value) => value switch
+    {
+        (PeripheralActivityDispositionId)0 => "Unknown",
+        (PeripheralActivityDispositionId)1 => "Allowed",
+        (PeripheralActivityDispositionId)2 => "Blocked",
+        (PeripheralActivityDispositionId)3 => "Quarantined",
+        (PeripheralActivityDispositionId)4 => "Isolated",
+        (PeripheralActivityDispositionId)5 => "Deleted",
+        (PeripheralActivityDispositionId)6 => "Dropped",
+        (PeripheralActivityDispositionId)7 => "Custom Action",
+        (PeripheralActivityDispositionId)8 => "Approved",
+        (PeripheralActivityDispositionId)9 => "Restored",
+        (PeripheralActivityDispositionId)10 => "Exonerated",
+        (PeripheralActivityDispositionId)11 => "Corrected",
+        (PeripheralActivityDispositionId)12 => "Partially Corrected",
+        (PeripheralActivityDispositionId)13 => "Uncorrected",
+        (PeripheralActivityDispositionId)14 => "Delayed",
+        (PeripheralActivityDispositionId)15 => "Detected",
+        (PeripheralActivityDispositionId)16 => "No Action",
+        (PeripheralActivityDispositionId)17 => "Logged",
+        (PeripheralActivityDispositionId)18 => "Tagged",
+        (PeripheralActivityDispositionId)19 => "Alert",
+        (PeripheralActivityDispositionId)20 => "Count",
+        (PeripheralActivityDispositionId)21 => "Reset",
+        (PeripheralActivityDispositionId)22 => "Captcha",
+        (PeripheralActivityDispositionId)23 => "Challenge",
+        (PeripheralActivityDispositionId)24 => "Access Revoked",
+        (PeripheralActivityDispositionId)25 => "Rejected",
+        (PeripheralActivityDispositionId)26 => "Unauthorized",
+        (PeripheralActivityDispositionId)27 => "Error",
+        (PeripheralActivityDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -374,6 +541,22 @@ public enum PeripheralActivityRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="PeripheralActivityRiskLevelId"/>.</summary>
+public static class PeripheralActivityRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this PeripheralActivityRiskLevelId value) => value switch
+    {
+        (PeripheralActivityRiskLevelId)0 => "Info",
+        (PeripheralActivityRiskLevelId)1 => "Low",
+        (PeripheralActivityRiskLevelId)2 => "Medium",
+        (PeripheralActivityRiskLevelId)3 => "High",
+        (PeripheralActivityRiskLevelId)4 => "Critical",
+        (PeripheralActivityRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -416,6 +599,24 @@ public enum PeripheralActivitySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="PeripheralActivitySeverityId"/>.</summary>
+public static class PeripheralActivitySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this PeripheralActivitySeverityId value) => value switch
+    {
+        (PeripheralActivitySeverityId)0 => "Unknown",
+        (PeripheralActivitySeverityId)1 => "Informational",
+        (PeripheralActivitySeverityId)2 => "Low",
+        (PeripheralActivitySeverityId)3 => "Medium",
+        (PeripheralActivitySeverityId)4 => "High",
+        (PeripheralActivitySeverityId)5 => "Critical",
+        (PeripheralActivitySeverityId)6 => "Fatal",
+        (PeripheralActivitySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -438,4 +639,18 @@ public enum PeripheralActivityStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="PeripheralActivityStatusId"/>.</summary>
+public static class PeripheralActivityStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this PeripheralActivityStatusId value) => value switch
+    {
+        (PeripheralActivityStatusId)0 => "Unknown",
+        (PeripheralActivityStatusId)1 => "Success",
+        (PeripheralActivityStatusId)2 => "Failure",
+        (PeripheralActivityStatusId)99 => "Other",
+        _ => null,
+    };
 }

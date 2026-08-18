@@ -92,6 +92,18 @@ public class AuthFactor : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public List<string>? SecurityQuestions { get; set; }
+
+    /// <summary>
+    /// Sets <c>factor_type_id</c> and the <c>factor_type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="factorType"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetFactorType(AuthFactorFactorTypeId factorTypeId, string? factorType = null)
+    {
+        FactorTypeId = factorTypeId;
+        if ((factorType ?? factorTypeId.Caption()) is { } label)
+            FactorType = label;
+    }
 }
 
 /// <summary>
@@ -146,4 +158,27 @@ public enum AuthFactorFactorTypeId
     /// </summary>
     Password = 11,
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="AuthFactorFactorTypeId"/>.</summary>
+public static class AuthFactorFactorTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AuthFactorFactorTypeId value) => value switch
+    {
+        (AuthFactorFactorTypeId)0 => "Unknown",
+        (AuthFactorFactorTypeId)1 => "SMS",
+        (AuthFactorFactorTypeId)2 => "Security Question",
+        (AuthFactorFactorTypeId)3 => "Phone Call",
+        (AuthFactorFactorTypeId)4 => "Biometric",
+        (AuthFactorFactorTypeId)5 => "Push Notification",
+        (AuthFactorFactorTypeId)6 => "Hardware Token",
+        (AuthFactorFactorTypeId)7 => "OTP",
+        (AuthFactorFactorTypeId)8 => "Email",
+        (AuthFactorFactorTypeId)9 => "U2F",
+        (AuthFactorFactorTypeId)10 => "WebAuthn",
+        (AuthFactorFactorTypeId)11 => "Password",
+        (AuthFactorFactorTypeId)99 => "Other",
+        _ => null,
+    };
 }

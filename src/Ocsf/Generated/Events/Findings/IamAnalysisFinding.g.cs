@@ -311,11 +311,127 @@ public class IamAnalysisFinding : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public IamAnalysisFindingVerdictId? VerdictId { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(IamAnalysisFindingActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(IamAnalysisFindingActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(IamAnalysisFindingActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(IamAnalysisFindingConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(IamAnalysisFindingDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>impact_id</c> and the <c>impact</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="impact"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetImpact(IamAnalysisFindingImpactId impactId, string? impact = null)
+    {
+        ImpactId = impactId;
+        if ((impact ?? impactId.Caption()) is { } label)
+            Impact = label;
+    }
+
+    /// <summary>
+    /// Sets <c>priority_id</c> and the <c>priority</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="priority"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetPriority(IamAnalysisFindingPriorityId priorityId, string? priority = null)
+    {
+        PriorityId = priorityId;
+        if ((priority ?? priorityId.Caption()) is { } label)
+            Priority = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(IamAnalysisFindingRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(IamAnalysisFindingSeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(IamAnalysisFindingStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
+    }
+
+    /// <summary>
+    /// Sets <c>verdict_id</c> and the <c>verdict</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="verdict"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetVerdict(IamAnalysisFindingVerdictId verdictId, string? verdict = null)
+    {
+        VerdictId = verdictId;
+        if ((verdict ?? verdictId.Caption()) is { } label)
+            Verdict = label;
     }
 }
 
@@ -351,6 +467,22 @@ public enum IamAnalysisFindingActionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="IamAnalysisFindingActionId"/>.</summary>
+public static class IamAnalysisFindingActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this IamAnalysisFindingActionId value) => value switch
+    {
+        (IamAnalysisFindingActionId)0 => "Unknown",
+        (IamAnalysisFindingActionId)1 => "Allowed",
+        (IamAnalysisFindingActionId)2 => "Denied",
+        (IamAnalysisFindingActionId)3 => "Observed",
+        (IamAnalysisFindingActionId)4 => "Modified",
+        (IamAnalysisFindingActionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>activity_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>activity_name</c> attribute contains the source-specific label.
@@ -379,6 +511,21 @@ public enum IamAnalysisFindingActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="IamAnalysisFindingActivityId"/>.</summary>
+public static class IamAnalysisFindingActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this IamAnalysisFindingActivityId value) => value switch
+    {
+        (IamAnalysisFindingActivityId)0 => "Unknown",
+        (IamAnalysisFindingActivityId)1 => "Create",
+        (IamAnalysisFindingActivityId)2 => "Update",
+        (IamAnalysisFindingActivityId)3 => "Close",
+        (IamAnalysisFindingActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -396,6 +543,21 @@ public enum IamAnalysisFindingConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="IamAnalysisFindingConfidenceId"/>.</summary>
+public static class IamAnalysisFindingConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this IamAnalysisFindingConfidenceId value) => value switch
+    {
+        (IamAnalysisFindingConfidenceId)0 => "Unknown",
+        (IamAnalysisFindingConfidenceId)1 => "Low",
+        (IamAnalysisFindingConfidenceId)2 => "Medium",
+        (IamAnalysisFindingConfidenceId)3 => "High",
+        (IamAnalysisFindingConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -522,6 +684,45 @@ public enum IamAnalysisFindingDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="IamAnalysisFindingDispositionId"/>.</summary>
+public static class IamAnalysisFindingDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this IamAnalysisFindingDispositionId value) => value switch
+    {
+        (IamAnalysisFindingDispositionId)0 => "Unknown",
+        (IamAnalysisFindingDispositionId)1 => "Allowed",
+        (IamAnalysisFindingDispositionId)2 => "Blocked",
+        (IamAnalysisFindingDispositionId)3 => "Quarantined",
+        (IamAnalysisFindingDispositionId)4 => "Isolated",
+        (IamAnalysisFindingDispositionId)5 => "Deleted",
+        (IamAnalysisFindingDispositionId)6 => "Dropped",
+        (IamAnalysisFindingDispositionId)7 => "Custom Action",
+        (IamAnalysisFindingDispositionId)8 => "Approved",
+        (IamAnalysisFindingDispositionId)9 => "Restored",
+        (IamAnalysisFindingDispositionId)10 => "Exonerated",
+        (IamAnalysisFindingDispositionId)11 => "Corrected",
+        (IamAnalysisFindingDispositionId)12 => "Partially Corrected",
+        (IamAnalysisFindingDispositionId)13 => "Uncorrected",
+        (IamAnalysisFindingDispositionId)14 => "Delayed",
+        (IamAnalysisFindingDispositionId)15 => "Detected",
+        (IamAnalysisFindingDispositionId)16 => "No Action",
+        (IamAnalysisFindingDispositionId)17 => "Logged",
+        (IamAnalysisFindingDispositionId)18 => "Tagged",
+        (IamAnalysisFindingDispositionId)19 => "Alert",
+        (IamAnalysisFindingDispositionId)20 => "Count",
+        (IamAnalysisFindingDispositionId)21 => "Reset",
+        (IamAnalysisFindingDispositionId)22 => "Captcha",
+        (IamAnalysisFindingDispositionId)23 => "Challenge",
+        (IamAnalysisFindingDispositionId)24 => "Access Revoked",
+        (IamAnalysisFindingDispositionId)25 => "Rejected",
+        (IamAnalysisFindingDispositionId)26 => "Unauthorized",
+        (IamAnalysisFindingDispositionId)27 => "Error",
+        (IamAnalysisFindingDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>impact_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>impact</c> attribute contains the source-specific label.
@@ -552,6 +753,22 @@ public enum IamAnalysisFindingImpactId
     /// The impact is not mapped. See the <c>impact</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="IamAnalysisFindingImpactId"/>.</summary>
+public static class IamAnalysisFindingImpactIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this IamAnalysisFindingImpactId value) => value switch
+    {
+        (IamAnalysisFindingImpactId)0 => "Unknown",
+        (IamAnalysisFindingImpactId)1 => "Low",
+        (IamAnalysisFindingImpactId)2 => "Medium",
+        (IamAnalysisFindingImpactId)3 => "High",
+        (IamAnalysisFindingImpactId)4 => "Critical",
+        (IamAnalysisFindingImpactId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -586,6 +803,22 @@ public enum IamAnalysisFindingPriorityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="IamAnalysisFindingPriorityId"/>.</summary>
+public static class IamAnalysisFindingPriorityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this IamAnalysisFindingPriorityId value) => value switch
+    {
+        (IamAnalysisFindingPriorityId)0 => "Unknown",
+        (IamAnalysisFindingPriorityId)1 => "Low",
+        (IamAnalysisFindingPriorityId)2 => "Medium",
+        (IamAnalysisFindingPriorityId)3 => "High",
+        (IamAnalysisFindingPriorityId)4 => "Critical",
+        (IamAnalysisFindingPriorityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -601,6 +834,22 @@ public enum IamAnalysisFindingRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="IamAnalysisFindingRiskLevelId"/>.</summary>
+public static class IamAnalysisFindingRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this IamAnalysisFindingRiskLevelId value) => value switch
+    {
+        (IamAnalysisFindingRiskLevelId)0 => "Info",
+        (IamAnalysisFindingRiskLevelId)1 => "Low",
+        (IamAnalysisFindingRiskLevelId)2 => "Medium",
+        (IamAnalysisFindingRiskLevelId)3 => "High",
+        (IamAnalysisFindingRiskLevelId)4 => "Critical",
+        (IamAnalysisFindingRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -643,6 +892,24 @@ public enum IamAnalysisFindingSeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="IamAnalysisFindingSeverityId"/>.</summary>
+public static class IamAnalysisFindingSeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this IamAnalysisFindingSeverityId value) => value switch
+    {
+        (IamAnalysisFindingSeverityId)0 => "Unknown",
+        (IamAnalysisFindingSeverityId)1 => "Informational",
+        (IamAnalysisFindingSeverityId)2 => "Low",
+        (IamAnalysisFindingSeverityId)3 => "Medium",
+        (IamAnalysisFindingSeverityId)4 => "High",
+        (IamAnalysisFindingSeverityId)5 => "Critical",
+        (IamAnalysisFindingSeverityId)6 => "Fatal",
+        (IamAnalysisFindingSeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -681,6 +948,24 @@ public enum IamAnalysisFindingStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="IamAnalysisFindingStatusId"/>.</summary>
+public static class IamAnalysisFindingStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this IamAnalysisFindingStatusId value) => value switch
+    {
+        (IamAnalysisFindingStatusId)0 => "Unknown",
+        (IamAnalysisFindingStatusId)1 => "New",
+        (IamAnalysisFindingStatusId)2 => "In Progress",
+        (IamAnalysisFindingStatusId)3 => "Suppressed",
+        (IamAnalysisFindingStatusId)4 => "Resolved",
+        (IamAnalysisFindingStatusId)5 => "Archived",
+        (IamAnalysisFindingStatusId)6 => "Deleted",
+        (IamAnalysisFindingStatusId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -737,4 +1022,26 @@ public enum IamAnalysisFindingVerdictId
     /// The type is not mapped. See the <c>type</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="IamAnalysisFindingVerdictId"/>.</summary>
+public static class IamAnalysisFindingVerdictIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this IamAnalysisFindingVerdictId value) => value switch
+    {
+        (IamAnalysisFindingVerdictId)0 => "Unknown",
+        (IamAnalysisFindingVerdictId)1 => "False Positive",
+        (IamAnalysisFindingVerdictId)2 => "True Positive",
+        (IamAnalysisFindingVerdictId)3 => "Disregard",
+        (IamAnalysisFindingVerdictId)4 => "Suspicious",
+        (IamAnalysisFindingVerdictId)5 => "Benign",
+        (IamAnalysisFindingVerdictId)6 => "Test",
+        (IamAnalysisFindingVerdictId)7 => "Insufficient Data",
+        (IamAnalysisFindingVerdictId)8 => "Security Risk",
+        (IamAnalysisFindingVerdictId)9 => "Managed Externally",
+        (IamAnalysisFindingVerdictId)10 => "Duplicate",
+        (IamAnalysisFindingVerdictId)99 => "Other",
+        _ => null,
+    };
 }

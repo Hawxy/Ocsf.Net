@@ -183,6 +183,18 @@ public class Advisory : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
     public string? Uid { get; set; }
+
+    /// <summary>
+    /// Sets <c>install_state_id</c> and the <c>install_state</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="installState"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetInstallState(AdvisoryInstallStateId installStateId, string? installState = null)
+    {
+        InstallStateId = installStateId;
+        if ((installState ?? installStateId.Caption()) is { } label)
+            InstallState = label;
+    }
 }
 
 /// <summary>
@@ -211,4 +223,19 @@ public enum AdvisoryInstallStateId
     /// The install state is not mapped. See the <c>install_state</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="AdvisoryInstallStateId"/>.</summary>
+public static class AdvisoryInstallStateIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AdvisoryInstallStateId value) => value switch
+    {
+        (AdvisoryInstallStateId)0 => "Unknown",
+        (AdvisoryInstallStateId)1 => "Installed",
+        (AdvisoryInstallStateId)2 => "Not Installed",
+        (AdvisoryInstallStateId)3 => "Installed Pending Reboot",
+        (AdvisoryInstallStateId)99 => "Other",
+        _ => null,
+    };
 }

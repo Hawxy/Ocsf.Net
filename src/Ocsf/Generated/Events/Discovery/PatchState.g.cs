@@ -104,11 +104,91 @@ public class PatchState : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public PatchStateStatusId? StatusId { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(PatchStateActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(PatchStateActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(PatchStateActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(PatchStateConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(PatchStateDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(PatchStateRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(PatchStateSeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(PatchStateStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -144,6 +224,22 @@ public enum PatchStateActionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="PatchStateActionId"/>.</summary>
+public static class PatchStateActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this PatchStateActionId value) => value switch
+    {
+        (PatchStateActionId)0 => "Unknown",
+        (PatchStateActionId)1 => "Allowed",
+        (PatchStateActionId)2 => "Denied",
+        (PatchStateActionId)3 => "Observed",
+        (PatchStateActionId)4 => "Modified",
+        (PatchStateActionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>activity_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>activity_name</c> attribute contains the source-specific label.
@@ -168,6 +264,20 @@ public enum PatchStateActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="PatchStateActivityId"/>.</summary>
+public static class PatchStateActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this PatchStateActivityId value) => value switch
+    {
+        (PatchStateActivityId)0 => "Unknown",
+        (PatchStateActivityId)1 => "Log",
+        (PatchStateActivityId)2 => "Collect",
+        (PatchStateActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -185,6 +295,21 @@ public enum PatchStateConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="PatchStateConfidenceId"/>.</summary>
+public static class PatchStateConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this PatchStateConfidenceId value) => value switch
+    {
+        (PatchStateConfidenceId)0 => "Unknown",
+        (PatchStateConfidenceId)1 => "Low",
+        (PatchStateConfidenceId)2 => "Medium",
+        (PatchStateConfidenceId)3 => "High",
+        (PatchStateConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -311,6 +436,45 @@ public enum PatchStateDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="PatchStateDispositionId"/>.</summary>
+public static class PatchStateDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this PatchStateDispositionId value) => value switch
+    {
+        (PatchStateDispositionId)0 => "Unknown",
+        (PatchStateDispositionId)1 => "Allowed",
+        (PatchStateDispositionId)2 => "Blocked",
+        (PatchStateDispositionId)3 => "Quarantined",
+        (PatchStateDispositionId)4 => "Isolated",
+        (PatchStateDispositionId)5 => "Deleted",
+        (PatchStateDispositionId)6 => "Dropped",
+        (PatchStateDispositionId)7 => "Custom Action",
+        (PatchStateDispositionId)8 => "Approved",
+        (PatchStateDispositionId)9 => "Restored",
+        (PatchStateDispositionId)10 => "Exonerated",
+        (PatchStateDispositionId)11 => "Corrected",
+        (PatchStateDispositionId)12 => "Partially Corrected",
+        (PatchStateDispositionId)13 => "Uncorrected",
+        (PatchStateDispositionId)14 => "Delayed",
+        (PatchStateDispositionId)15 => "Detected",
+        (PatchStateDispositionId)16 => "No Action",
+        (PatchStateDispositionId)17 => "Logged",
+        (PatchStateDispositionId)18 => "Tagged",
+        (PatchStateDispositionId)19 => "Alert",
+        (PatchStateDispositionId)20 => "Count",
+        (PatchStateDispositionId)21 => "Reset",
+        (PatchStateDispositionId)22 => "Captcha",
+        (PatchStateDispositionId)23 => "Challenge",
+        (PatchStateDispositionId)24 => "Access Revoked",
+        (PatchStateDispositionId)25 => "Rejected",
+        (PatchStateDispositionId)26 => "Unauthorized",
+        (PatchStateDispositionId)27 => "Error",
+        (PatchStateDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -326,6 +490,22 @@ public enum PatchStateRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="PatchStateRiskLevelId"/>.</summary>
+public static class PatchStateRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this PatchStateRiskLevelId value) => value switch
+    {
+        (PatchStateRiskLevelId)0 => "Info",
+        (PatchStateRiskLevelId)1 => "Low",
+        (PatchStateRiskLevelId)2 => "Medium",
+        (PatchStateRiskLevelId)3 => "High",
+        (PatchStateRiskLevelId)4 => "Critical",
+        (PatchStateRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -368,6 +548,24 @@ public enum PatchStateSeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="PatchStateSeverityId"/>.</summary>
+public static class PatchStateSeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this PatchStateSeverityId value) => value switch
+    {
+        (PatchStateSeverityId)0 => "Unknown",
+        (PatchStateSeverityId)1 => "Informational",
+        (PatchStateSeverityId)2 => "Low",
+        (PatchStateSeverityId)3 => "Medium",
+        (PatchStateSeverityId)4 => "High",
+        (PatchStateSeverityId)5 => "Critical",
+        (PatchStateSeverityId)6 => "Fatal",
+        (PatchStateSeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -390,4 +588,18 @@ public enum PatchStateStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="PatchStateStatusId"/>.</summary>
+public static class PatchStateStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this PatchStateStatusId value) => value switch
+    {
+        (PatchStateStatusId)0 => "Unknown",
+        (PatchStateStatusId)1 => "Success",
+        (PatchStateStatusId)2 => "Failure",
+        (PatchStateStatusId)99 => "Other",
+        _ => null,
+    };
 }

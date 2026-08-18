@@ -49,6 +49,18 @@ public class Tsig : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public string? KeyName { get; set; }
+
+    /// <summary>
+    /// Sets <c>error_id</c> and the <c>error</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="error"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetError(TsigErrorId errorId, string? error = null)
+    {
+        ErrorId = errorId;
+        if ((error ?? errorId.Caption()) is { } label)
+            Error = label;
+    }
 }
 
 /// <summary>
@@ -77,4 +89,19 @@ public enum TsigErrorId
     /// The TSIG error code is not listed. See the <c>error</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="TsigErrorId"/>.</summary>
+public static class TsigErrorIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this TsigErrorId value) => value switch
+    {
+        (TsigErrorId)0 => "NoError",
+        (TsigErrorId)16 => "BADSIG",
+        (TsigErrorId)17 => "BADKEY",
+        (TsigErrorId)18 => "BADTIME",
+        (TsigErrorId)99 => "Other",
+        _ => null,
+    };
 }

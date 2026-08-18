@@ -203,11 +203,103 @@ public class EventLogActvity : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public EventLogActvityStatusId? StatusId { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(EventLogActvityActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(EventLogActvityActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(EventLogActvityActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(EventLogActvityConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(EventLogActvityDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>log_type_id</c> and the <c>log_type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="logType"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetLogType(EventLogActvityLogTypeId logTypeId, string? logType = null)
+    {
+        LogTypeId = logTypeId;
+        if ((logType ?? logTypeId.Caption()) is { } label)
+            LogType = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(EventLogActvityRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(EventLogActvitySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(EventLogActvityStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -241,6 +333,22 @@ public enum EventLogActvityActionId
     /// The action is not mapped. See the <c>action</c> attribute which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="EventLogActvityActionId"/>.</summary>
+public static class EventLogActvityActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EventLogActvityActionId value) => value switch
+    {
+        (EventLogActvityActionId)0 => "Unknown",
+        (EventLogActvityActionId)1 => "Allowed",
+        (EventLogActvityActionId)2 => "Denied",
+        (EventLogActvityActionId)3 => "Observed",
+        (EventLogActvityActionId)4 => "Modified",
+        (EventLogActvityActionId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -299,6 +407,28 @@ public enum EventLogActvityActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="EventLogActvityActivityId"/>.</summary>
+public static class EventLogActvityActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EventLogActvityActivityId value) => value switch
+    {
+        (EventLogActvityActivityId)0 => "Unknown",
+        (EventLogActvityActivityId)1 => "Clear",
+        (EventLogActvityActivityId)2 => "Delete",
+        (EventLogActvityActivityId)3 => "Export",
+        (EventLogActvityActivityId)4 => "Archive",
+        (EventLogActvityActivityId)5 => "Rotate",
+        (EventLogActvityActivityId)6 => "Start",
+        (EventLogActvityActivityId)7 => "Stop",
+        (EventLogActvityActivityId)8 => "Restart",
+        (EventLogActvityActivityId)9 => "Enable",
+        (EventLogActvityActivityId)10 => "Disable",
+        (EventLogActvityActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -316,6 +446,21 @@ public enum EventLogActvityConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="EventLogActvityConfidenceId"/>.</summary>
+public static class EventLogActvityConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EventLogActvityConfidenceId value) => value switch
+    {
+        (EventLogActvityConfidenceId)0 => "Unknown",
+        (EventLogActvityConfidenceId)1 => "Low",
+        (EventLogActvityConfidenceId)2 => "Medium",
+        (EventLogActvityConfidenceId)3 => "High",
+        (EventLogActvityConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -442,6 +587,45 @@ public enum EventLogActvityDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="EventLogActvityDispositionId"/>.</summary>
+public static class EventLogActvityDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EventLogActvityDispositionId value) => value switch
+    {
+        (EventLogActvityDispositionId)0 => "Unknown",
+        (EventLogActvityDispositionId)1 => "Allowed",
+        (EventLogActvityDispositionId)2 => "Blocked",
+        (EventLogActvityDispositionId)3 => "Quarantined",
+        (EventLogActvityDispositionId)4 => "Isolated",
+        (EventLogActvityDispositionId)5 => "Deleted",
+        (EventLogActvityDispositionId)6 => "Dropped",
+        (EventLogActvityDispositionId)7 => "Custom Action",
+        (EventLogActvityDispositionId)8 => "Approved",
+        (EventLogActvityDispositionId)9 => "Restored",
+        (EventLogActvityDispositionId)10 => "Exonerated",
+        (EventLogActvityDispositionId)11 => "Corrected",
+        (EventLogActvityDispositionId)12 => "Partially Corrected",
+        (EventLogActvityDispositionId)13 => "Uncorrected",
+        (EventLogActvityDispositionId)14 => "Delayed",
+        (EventLogActvityDispositionId)15 => "Detected",
+        (EventLogActvityDispositionId)16 => "No Action",
+        (EventLogActvityDispositionId)17 => "Logged",
+        (EventLogActvityDispositionId)18 => "Tagged",
+        (EventLogActvityDispositionId)19 => "Alert",
+        (EventLogActvityDispositionId)20 => "Count",
+        (EventLogActvityDispositionId)21 => "Reset",
+        (EventLogActvityDispositionId)22 => "Captcha",
+        (EventLogActvityDispositionId)23 => "Challenge",
+        (EventLogActvityDispositionId)24 => "Access Revoked",
+        (EventLogActvityDispositionId)25 => "Rejected",
+        (EventLogActvityDispositionId)26 => "Unauthorized",
+        (EventLogActvityDispositionId)27 => "Error",
+        (EventLogActvityDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>log_type_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>log_type</c> attribute contains the source-specific label.
@@ -466,6 +650,20 @@ public enum EventLogActvityLogTypeId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="EventLogActvityLogTypeId"/>.</summary>
+public static class EventLogActvityLogTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EventLogActvityLogTypeId value) => value switch
+    {
+        (EventLogActvityLogTypeId)0 => "Unknown",
+        (EventLogActvityLogTypeId)1 => "OS",
+        (EventLogActvityLogTypeId)2 => "Application",
+        (EventLogActvityLogTypeId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -481,6 +679,22 @@ public enum EventLogActvityRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="EventLogActvityRiskLevelId"/>.</summary>
+public static class EventLogActvityRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EventLogActvityRiskLevelId value) => value switch
+    {
+        (EventLogActvityRiskLevelId)0 => "Info",
+        (EventLogActvityRiskLevelId)1 => "Low",
+        (EventLogActvityRiskLevelId)2 => "Medium",
+        (EventLogActvityRiskLevelId)3 => "High",
+        (EventLogActvityRiskLevelId)4 => "Critical",
+        (EventLogActvityRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -523,6 +737,24 @@ public enum EventLogActvitySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="EventLogActvitySeverityId"/>.</summary>
+public static class EventLogActvitySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EventLogActvitySeverityId value) => value switch
+    {
+        (EventLogActvitySeverityId)0 => "Unknown",
+        (EventLogActvitySeverityId)1 => "Informational",
+        (EventLogActvitySeverityId)2 => "Low",
+        (EventLogActvitySeverityId)3 => "Medium",
+        (EventLogActvitySeverityId)4 => "High",
+        (EventLogActvitySeverityId)5 => "Critical",
+        (EventLogActvitySeverityId)6 => "Fatal",
+        (EventLogActvitySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -545,4 +777,18 @@ public enum EventLogActvityStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="EventLogActvityStatusId"/>.</summary>
+public static class EventLogActvityStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EventLogActvityStatusId value) => value switch
+    {
+        (EventLogActvityStatusId)0 => "Unknown",
+        (EventLogActvityStatusId)1 => "Success",
+        (EventLogActvityStatusId)2 => "Failure",
+        (EventLogActvityStatusId)99 => "Other",
+        _ => null,
+    };
 }

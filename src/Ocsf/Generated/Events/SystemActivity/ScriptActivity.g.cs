@@ -140,11 +140,91 @@ public class ScriptActivity : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public ScriptActivityStatusId? StatusId { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(ScriptActivityActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(ScriptActivityActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(ScriptActivityActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(ScriptActivityConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(ScriptActivityDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(ScriptActivityRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(ScriptActivitySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(ScriptActivityStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -180,6 +260,22 @@ public enum ScriptActivityActionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ScriptActivityActionId"/>.</summary>
+public static class ScriptActivityActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ScriptActivityActionId value) => value switch
+    {
+        (ScriptActivityActionId)0 => "Unknown",
+        (ScriptActivityActionId)1 => "Allowed",
+        (ScriptActivityActionId)2 => "Denied",
+        (ScriptActivityActionId)3 => "Observed",
+        (ScriptActivityActionId)4 => "Modified",
+        (ScriptActivityActionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>activity_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>activity_name</c> attribute contains the source-specific label.
@@ -195,6 +291,19 @@ public enum ScriptActivityActivityId
     /// The event activity is not mapped. See the <c>activity_name</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ScriptActivityActivityId"/>.</summary>
+public static class ScriptActivityActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ScriptActivityActivityId value) => value switch
+    {
+        (ScriptActivityActivityId)0 => "Unknown",
+        (ScriptActivityActivityId)1 => "Execute",
+        (ScriptActivityActivityId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -214,6 +323,21 @@ public enum ScriptActivityConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ScriptActivityConfidenceId"/>.</summary>
+public static class ScriptActivityConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ScriptActivityConfidenceId value) => value switch
+    {
+        (ScriptActivityConfidenceId)0 => "Unknown",
+        (ScriptActivityConfidenceId)1 => "Low",
+        (ScriptActivityConfidenceId)2 => "Medium",
+        (ScriptActivityConfidenceId)3 => "High",
+        (ScriptActivityConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -340,6 +464,45 @@ public enum ScriptActivityDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ScriptActivityDispositionId"/>.</summary>
+public static class ScriptActivityDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ScriptActivityDispositionId value) => value switch
+    {
+        (ScriptActivityDispositionId)0 => "Unknown",
+        (ScriptActivityDispositionId)1 => "Allowed",
+        (ScriptActivityDispositionId)2 => "Blocked",
+        (ScriptActivityDispositionId)3 => "Quarantined",
+        (ScriptActivityDispositionId)4 => "Isolated",
+        (ScriptActivityDispositionId)5 => "Deleted",
+        (ScriptActivityDispositionId)6 => "Dropped",
+        (ScriptActivityDispositionId)7 => "Custom Action",
+        (ScriptActivityDispositionId)8 => "Approved",
+        (ScriptActivityDispositionId)9 => "Restored",
+        (ScriptActivityDispositionId)10 => "Exonerated",
+        (ScriptActivityDispositionId)11 => "Corrected",
+        (ScriptActivityDispositionId)12 => "Partially Corrected",
+        (ScriptActivityDispositionId)13 => "Uncorrected",
+        (ScriptActivityDispositionId)14 => "Delayed",
+        (ScriptActivityDispositionId)15 => "Detected",
+        (ScriptActivityDispositionId)16 => "No Action",
+        (ScriptActivityDispositionId)17 => "Logged",
+        (ScriptActivityDispositionId)18 => "Tagged",
+        (ScriptActivityDispositionId)19 => "Alert",
+        (ScriptActivityDispositionId)20 => "Count",
+        (ScriptActivityDispositionId)21 => "Reset",
+        (ScriptActivityDispositionId)22 => "Captcha",
+        (ScriptActivityDispositionId)23 => "Challenge",
+        (ScriptActivityDispositionId)24 => "Access Revoked",
+        (ScriptActivityDispositionId)25 => "Rejected",
+        (ScriptActivityDispositionId)26 => "Unauthorized",
+        (ScriptActivityDispositionId)27 => "Error",
+        (ScriptActivityDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -355,6 +518,22 @@ public enum ScriptActivityRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ScriptActivityRiskLevelId"/>.</summary>
+public static class ScriptActivityRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ScriptActivityRiskLevelId value) => value switch
+    {
+        (ScriptActivityRiskLevelId)0 => "Info",
+        (ScriptActivityRiskLevelId)1 => "Low",
+        (ScriptActivityRiskLevelId)2 => "Medium",
+        (ScriptActivityRiskLevelId)3 => "High",
+        (ScriptActivityRiskLevelId)4 => "Critical",
+        (ScriptActivityRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -397,6 +576,24 @@ public enum ScriptActivitySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ScriptActivitySeverityId"/>.</summary>
+public static class ScriptActivitySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ScriptActivitySeverityId value) => value switch
+    {
+        (ScriptActivitySeverityId)0 => "Unknown",
+        (ScriptActivitySeverityId)1 => "Informational",
+        (ScriptActivitySeverityId)2 => "Low",
+        (ScriptActivitySeverityId)3 => "Medium",
+        (ScriptActivitySeverityId)4 => "High",
+        (ScriptActivitySeverityId)5 => "Critical",
+        (ScriptActivitySeverityId)6 => "Fatal",
+        (ScriptActivitySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -419,4 +616,18 @@ public enum ScriptActivityStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ScriptActivityStatusId"/>.</summary>
+public static class ScriptActivityStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ScriptActivityStatusId value) => value switch
+    {
+        (ScriptActivityStatusId)0 => "Unknown",
+        (ScriptActivityStatusId)1 => "Success",
+        (ScriptActivityStatusId)2 => "Failure",
+        (ScriptActivityStatusId)99 => "Other",
+        _ => null,
+    };
 }

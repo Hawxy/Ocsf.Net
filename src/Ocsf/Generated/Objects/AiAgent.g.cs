@@ -93,6 +93,18 @@ public class AiAgent : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public string? Version { get; set; }
+
+    /// <summary>
+    /// Sets <c>type_id</c> and the <c>type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="type"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetType(AiAgentTypeId typeId, string? type = null)
+    {
+        TypeId = typeId;
+        if ((type ?? typeId.Caption()) is { } label)
+            Type = label;
+    }
 }
 
 /// <summary>
@@ -125,4 +137,20 @@ public enum AiAgentTypeId
     /// The agent framework is not listed. Use the <c>type</c> attribute to describe it.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="AiAgentTypeId"/>.</summary>
+public static class AiAgentTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AiAgentTypeId value) => value switch
+    {
+        (AiAgentTypeId)0 => "Unknown",
+        (AiAgentTypeId)1 => "Native",
+        (AiAgentTypeId)2 => "LangChain",
+        (AiAgentTypeId)3 => "AutoGen",
+        (AiAgentTypeId)4 => "CrewAI",
+        (AiAgentTypeId)99 => "Other",
+        _ => null,
+    };
 }

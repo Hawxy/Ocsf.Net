@@ -138,6 +138,18 @@ public class Idp : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public string? UrlString { get; set; }
+
+    /// <summary>
+    /// Sets <c>state_id</c> and the <c>state</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="state"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetState(IdpStateId stateId, string? state = null)
+    {
+        StateId = stateId;
+        if ((state ?? stateId.Caption()) is { } label)
+            State = label;
+    }
 }
 
 /// <summary>
@@ -170,4 +182,20 @@ public enum IdpStateId
     /// The configuration state of the Identity Provider is not mapped. See the <c>state</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="IdpStateId"/>.</summary>
+public static class IdpStateIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this IdpStateId value) => value switch
+    {
+        (IdpStateId)0 => "Unknown",
+        (IdpStateId)1 => "Active",
+        (IdpStateId)2 => "Suspended",
+        (IdpStateId)3 => "Deprecated",
+        (IdpStateId)4 => "Deleted",
+        (IdpStateId)99 => "Other",
+        _ => null,
+    };
 }

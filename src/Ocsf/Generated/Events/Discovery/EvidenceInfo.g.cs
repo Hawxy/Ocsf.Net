@@ -131,11 +131,103 @@ public class EvidenceInfo : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public EvidenceInfoStatusId? StatusId { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(EvidenceInfoActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(EvidenceInfoActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(EvidenceInfoActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(EvidenceInfoConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(EvidenceInfoDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>query_result_id</c> and the <c>query_result</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="queryResult"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetQueryResult(EvidenceInfoQueryResultId queryResultId, string? queryResult = null)
+    {
+        QueryResultId = queryResultId;
+        if ((queryResult ?? queryResultId.Caption()) is { } label)
+            QueryResult = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(EvidenceInfoRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(EvidenceInfoSeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(EvidenceInfoStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -171,6 +263,22 @@ public enum EvidenceInfoActionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="EvidenceInfoActionId"/>.</summary>
+public static class EvidenceInfoActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EvidenceInfoActionId value) => value switch
+    {
+        (EvidenceInfoActionId)0 => "Unknown",
+        (EvidenceInfoActionId)1 => "Allowed",
+        (EvidenceInfoActionId)2 => "Denied",
+        (EvidenceInfoActionId)3 => "Observed",
+        (EvidenceInfoActionId)4 => "Modified",
+        (EvidenceInfoActionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>activity_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>activity_name</c> attribute contains the source-specific label.
@@ -191,6 +299,19 @@ public enum EvidenceInfoActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="EvidenceInfoActivityId"/>.</summary>
+public static class EvidenceInfoActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EvidenceInfoActivityId value) => value switch
+    {
+        (EvidenceInfoActivityId)0 => "Unknown",
+        (EvidenceInfoActivityId)1 => "Query",
+        (EvidenceInfoActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -208,6 +329,21 @@ public enum EvidenceInfoConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="EvidenceInfoConfidenceId"/>.</summary>
+public static class EvidenceInfoConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EvidenceInfoConfidenceId value) => value switch
+    {
+        (EvidenceInfoConfidenceId)0 => "Unknown",
+        (EvidenceInfoConfidenceId)1 => "Low",
+        (EvidenceInfoConfidenceId)2 => "Medium",
+        (EvidenceInfoConfidenceId)3 => "High",
+        (EvidenceInfoConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -334,6 +470,45 @@ public enum EvidenceInfoDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="EvidenceInfoDispositionId"/>.</summary>
+public static class EvidenceInfoDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EvidenceInfoDispositionId value) => value switch
+    {
+        (EvidenceInfoDispositionId)0 => "Unknown",
+        (EvidenceInfoDispositionId)1 => "Allowed",
+        (EvidenceInfoDispositionId)2 => "Blocked",
+        (EvidenceInfoDispositionId)3 => "Quarantined",
+        (EvidenceInfoDispositionId)4 => "Isolated",
+        (EvidenceInfoDispositionId)5 => "Deleted",
+        (EvidenceInfoDispositionId)6 => "Dropped",
+        (EvidenceInfoDispositionId)7 => "Custom Action",
+        (EvidenceInfoDispositionId)8 => "Approved",
+        (EvidenceInfoDispositionId)9 => "Restored",
+        (EvidenceInfoDispositionId)10 => "Exonerated",
+        (EvidenceInfoDispositionId)11 => "Corrected",
+        (EvidenceInfoDispositionId)12 => "Partially Corrected",
+        (EvidenceInfoDispositionId)13 => "Uncorrected",
+        (EvidenceInfoDispositionId)14 => "Delayed",
+        (EvidenceInfoDispositionId)15 => "Detected",
+        (EvidenceInfoDispositionId)16 => "No Action",
+        (EvidenceInfoDispositionId)17 => "Logged",
+        (EvidenceInfoDispositionId)18 => "Tagged",
+        (EvidenceInfoDispositionId)19 => "Alert",
+        (EvidenceInfoDispositionId)20 => "Count",
+        (EvidenceInfoDispositionId)21 => "Reset",
+        (EvidenceInfoDispositionId)22 => "Captcha",
+        (EvidenceInfoDispositionId)23 => "Challenge",
+        (EvidenceInfoDispositionId)24 => "Access Revoked",
+        (EvidenceInfoDispositionId)25 => "Rejected",
+        (EvidenceInfoDispositionId)26 => "Unauthorized",
+        (EvidenceInfoDispositionId)27 => "Error",
+        (EvidenceInfoDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>query_result_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>query_result</c> attribute contains the source-specific label.
@@ -370,6 +545,23 @@ public enum EvidenceInfoQueryResultId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="EvidenceInfoQueryResultId"/>.</summary>
+public static class EvidenceInfoQueryResultIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EvidenceInfoQueryResultId value) => value switch
+    {
+        (EvidenceInfoQueryResultId)0 => "Unknown",
+        (EvidenceInfoQueryResultId)1 => "Exists",
+        (EvidenceInfoQueryResultId)2 => "Partial",
+        (EvidenceInfoQueryResultId)3 => "Does not exist",
+        (EvidenceInfoQueryResultId)4 => "Error",
+        (EvidenceInfoQueryResultId)5 => "Unsupported",
+        (EvidenceInfoQueryResultId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -385,6 +577,22 @@ public enum EvidenceInfoRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="EvidenceInfoRiskLevelId"/>.</summary>
+public static class EvidenceInfoRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EvidenceInfoRiskLevelId value) => value switch
+    {
+        (EvidenceInfoRiskLevelId)0 => "Info",
+        (EvidenceInfoRiskLevelId)1 => "Low",
+        (EvidenceInfoRiskLevelId)2 => "Medium",
+        (EvidenceInfoRiskLevelId)3 => "High",
+        (EvidenceInfoRiskLevelId)4 => "Critical",
+        (EvidenceInfoRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -427,6 +635,24 @@ public enum EvidenceInfoSeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="EvidenceInfoSeverityId"/>.</summary>
+public static class EvidenceInfoSeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EvidenceInfoSeverityId value) => value switch
+    {
+        (EvidenceInfoSeverityId)0 => "Unknown",
+        (EvidenceInfoSeverityId)1 => "Informational",
+        (EvidenceInfoSeverityId)2 => "Low",
+        (EvidenceInfoSeverityId)3 => "Medium",
+        (EvidenceInfoSeverityId)4 => "High",
+        (EvidenceInfoSeverityId)5 => "Critical",
+        (EvidenceInfoSeverityId)6 => "Fatal",
+        (EvidenceInfoSeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -449,4 +675,18 @@ public enum EvidenceInfoStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="EvidenceInfoStatusId"/>.</summary>
+public static class EvidenceInfoStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EvidenceInfoStatusId value) => value switch
+    {
+        (EvidenceInfoStatusId)0 => "Unknown",
+        (EvidenceInfoStatusId)1 => "Success",
+        (EvidenceInfoStatusId)2 => "Failure",
+        (EvidenceInfoStatusId)99 => "Other",
+        _ => null,
+    };
 }

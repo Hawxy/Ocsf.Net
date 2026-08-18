@@ -198,11 +198,91 @@ public class AirborneBroadcastActivity : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Required)]
     public Objects.User? UnmannedSystemOperator { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(AirborneBroadcastActivityActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(AirborneBroadcastActivityActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(AirborneBroadcastActivityActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(AirborneBroadcastActivityConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(AirborneBroadcastActivityDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(AirborneBroadcastActivityRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(AirborneBroadcastActivitySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(AirborneBroadcastActivityStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -238,6 +318,22 @@ public enum AirborneBroadcastActivityActionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="AirborneBroadcastActivityActionId"/>.</summary>
+public static class AirborneBroadcastActivityActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AirborneBroadcastActivityActionId value) => value switch
+    {
+        (AirborneBroadcastActivityActionId)0 => "Unknown",
+        (AirborneBroadcastActivityActionId)1 => "Allowed",
+        (AirborneBroadcastActivityActionId)2 => "Denied",
+        (AirborneBroadcastActivityActionId)3 => "Observed",
+        (AirborneBroadcastActivityActionId)4 => "Modified",
+        (AirborneBroadcastActivityActionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>activity_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>activity_name</c> attribute contains the source-specific label.
@@ -262,6 +358,20 @@ public enum AirborneBroadcastActivityActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="AirborneBroadcastActivityActivityId"/>.</summary>
+public static class AirborneBroadcastActivityActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AirborneBroadcastActivityActivityId value) => value switch
+    {
+        (AirborneBroadcastActivityActivityId)0 => "Unknown",
+        (AirborneBroadcastActivityActivityId)1 => "Capture",
+        (AirborneBroadcastActivityActivityId)2 => "Record",
+        (AirborneBroadcastActivityActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -279,6 +389,21 @@ public enum AirborneBroadcastActivityConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="AirborneBroadcastActivityConfidenceId"/>.</summary>
+public static class AirborneBroadcastActivityConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AirborneBroadcastActivityConfidenceId value) => value switch
+    {
+        (AirborneBroadcastActivityConfidenceId)0 => "Unknown",
+        (AirborneBroadcastActivityConfidenceId)1 => "Low",
+        (AirborneBroadcastActivityConfidenceId)2 => "Medium",
+        (AirborneBroadcastActivityConfidenceId)3 => "High",
+        (AirborneBroadcastActivityConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -405,6 +530,45 @@ public enum AirborneBroadcastActivityDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="AirborneBroadcastActivityDispositionId"/>.</summary>
+public static class AirborneBroadcastActivityDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AirborneBroadcastActivityDispositionId value) => value switch
+    {
+        (AirborneBroadcastActivityDispositionId)0 => "Unknown",
+        (AirborneBroadcastActivityDispositionId)1 => "Allowed",
+        (AirborneBroadcastActivityDispositionId)2 => "Blocked",
+        (AirborneBroadcastActivityDispositionId)3 => "Quarantined",
+        (AirborneBroadcastActivityDispositionId)4 => "Isolated",
+        (AirborneBroadcastActivityDispositionId)5 => "Deleted",
+        (AirborneBroadcastActivityDispositionId)6 => "Dropped",
+        (AirborneBroadcastActivityDispositionId)7 => "Custom Action",
+        (AirborneBroadcastActivityDispositionId)8 => "Approved",
+        (AirborneBroadcastActivityDispositionId)9 => "Restored",
+        (AirborneBroadcastActivityDispositionId)10 => "Exonerated",
+        (AirborneBroadcastActivityDispositionId)11 => "Corrected",
+        (AirborneBroadcastActivityDispositionId)12 => "Partially Corrected",
+        (AirborneBroadcastActivityDispositionId)13 => "Uncorrected",
+        (AirborneBroadcastActivityDispositionId)14 => "Delayed",
+        (AirborneBroadcastActivityDispositionId)15 => "Detected",
+        (AirborneBroadcastActivityDispositionId)16 => "No Action",
+        (AirborneBroadcastActivityDispositionId)17 => "Logged",
+        (AirborneBroadcastActivityDispositionId)18 => "Tagged",
+        (AirborneBroadcastActivityDispositionId)19 => "Alert",
+        (AirborneBroadcastActivityDispositionId)20 => "Count",
+        (AirborneBroadcastActivityDispositionId)21 => "Reset",
+        (AirborneBroadcastActivityDispositionId)22 => "Captcha",
+        (AirborneBroadcastActivityDispositionId)23 => "Challenge",
+        (AirborneBroadcastActivityDispositionId)24 => "Access Revoked",
+        (AirborneBroadcastActivityDispositionId)25 => "Rejected",
+        (AirborneBroadcastActivityDispositionId)26 => "Unauthorized",
+        (AirborneBroadcastActivityDispositionId)27 => "Error",
+        (AirborneBroadcastActivityDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -420,6 +584,22 @@ public enum AirborneBroadcastActivityRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="AirborneBroadcastActivityRiskLevelId"/>.</summary>
+public static class AirborneBroadcastActivityRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AirborneBroadcastActivityRiskLevelId value) => value switch
+    {
+        (AirborneBroadcastActivityRiskLevelId)0 => "Info",
+        (AirborneBroadcastActivityRiskLevelId)1 => "Low",
+        (AirborneBroadcastActivityRiskLevelId)2 => "Medium",
+        (AirborneBroadcastActivityRiskLevelId)3 => "High",
+        (AirborneBroadcastActivityRiskLevelId)4 => "Critical",
+        (AirborneBroadcastActivityRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -462,6 +642,24 @@ public enum AirborneBroadcastActivitySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="AirborneBroadcastActivitySeverityId"/>.</summary>
+public static class AirborneBroadcastActivitySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AirborneBroadcastActivitySeverityId value) => value switch
+    {
+        (AirborneBroadcastActivitySeverityId)0 => "Unknown",
+        (AirborneBroadcastActivitySeverityId)1 => "Informational",
+        (AirborneBroadcastActivitySeverityId)2 => "Low",
+        (AirborneBroadcastActivitySeverityId)3 => "Medium",
+        (AirborneBroadcastActivitySeverityId)4 => "High",
+        (AirborneBroadcastActivitySeverityId)5 => "Critical",
+        (AirborneBroadcastActivitySeverityId)6 => "Fatal",
+        (AirborneBroadcastActivitySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -484,4 +682,18 @@ public enum AirborneBroadcastActivityStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="AirborneBroadcastActivityStatusId"/>.</summary>
+public static class AirborneBroadcastActivityStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AirborneBroadcastActivityStatusId value) => value switch
+    {
+        (AirborneBroadcastActivityStatusId)0 => "Unknown",
+        (AirborneBroadcastActivityStatusId)1 => "Success",
+        (AirborneBroadcastActivityStatusId)2 => "Failure",
+        (AirborneBroadcastActivityStatusId)99 => "Other",
+        _ => null,
+    };
 }

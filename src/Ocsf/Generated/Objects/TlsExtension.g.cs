@@ -40,6 +40,18 @@ public class TlsExtension : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
     public TlsExtensionTypeId? TypeId { get; set; }
+
+    /// <summary>
+    /// Sets <c>type_id</c> and the <c>type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="type"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetType(TlsExtensionTypeId typeId, string? type = null)
+    {
+        TypeId = typeId;
+        if ((type ?? typeId.Caption()) is { } label)
+            Type = label;
+    }
 }
 
 /// <summary>
@@ -140,4 +152,37 @@ public enum TlsExtensionTypeId
     /// The type is not mapped. See the <c>type</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="TlsExtensionTypeId"/>.</summary>
+public static class TlsExtensionTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this TlsExtensionTypeId value) => value switch
+    {
+        (TlsExtensionTypeId)0 => "server_name",
+        (TlsExtensionTypeId)1 => "maximum_fragment_length",
+        (TlsExtensionTypeId)5 => "status_request",
+        (TlsExtensionTypeId)10 => "supported_groups",
+        (TlsExtensionTypeId)13 => "signature_algorithms",
+        (TlsExtensionTypeId)14 => "use_srtp",
+        (TlsExtensionTypeId)15 => "heartbeat",
+        (TlsExtensionTypeId)16 => "application_layer_protocol_negotiation",
+        (TlsExtensionTypeId)18 => "signed_certificate_timestamp",
+        (TlsExtensionTypeId)19 => "client_certificate_type",
+        (TlsExtensionTypeId)20 => "server_certificate_type",
+        (TlsExtensionTypeId)21 => "padding",
+        (TlsExtensionTypeId)41 => "pre_shared_key",
+        (TlsExtensionTypeId)42 => "early_data",
+        (TlsExtensionTypeId)43 => "supported_versions",
+        (TlsExtensionTypeId)44 => "cookie",
+        (TlsExtensionTypeId)45 => "psk_key_exchange_modes",
+        (TlsExtensionTypeId)47 => "certificate_authorities",
+        (TlsExtensionTypeId)48 => "oid_filters",
+        (TlsExtensionTypeId)49 => "post_handshake_auth",
+        (TlsExtensionTypeId)50 => "signature_algorithms_cert",
+        (TlsExtensionTypeId)51 => "key_share",
+        (TlsExtensionTypeId)99 => "Other",
+        _ => null,
+    };
 }

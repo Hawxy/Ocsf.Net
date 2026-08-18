@@ -32,6 +32,18 @@ public class VendorAttributes : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public VendorAttributesSeverityId? SeverityId { get; set; }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(VendorAttributesSeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
 }
 
 /// <summary>
@@ -72,4 +84,22 @@ public enum VendorAttributesSeverityId
     /// The event/finding severity is not mapped. See the <c>severity</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="VendorAttributesSeverityId"/>.</summary>
+public static class VendorAttributesSeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this VendorAttributesSeverityId value) => value switch
+    {
+        (VendorAttributesSeverityId)0 => "Unknown",
+        (VendorAttributesSeverityId)1 => "Informational",
+        (VendorAttributesSeverityId)2 => "Low",
+        (VendorAttributesSeverityId)3 => "Medium",
+        (VendorAttributesSeverityId)4 => "High",
+        (VendorAttributesSeverityId)5 => "Critical",
+        (VendorAttributesSeverityId)6 => "Fatal",
+        (VendorAttributesSeverityId)99 => "Other",
+        _ => null,
+    };
 }

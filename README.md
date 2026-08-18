@@ -1,14 +1,15 @@
-# ocsf.net
+# Ocsf.Net
 
-Strongly-typed .NET SDK for the [Open Cybersecurity Schema Framework (OCSF)](https://schema.ocsf.io/) **1.9.0**.
+Strongly-typed .NET SDK for the [Open Cybersecurity Schema Framework (OCSF)](https://schema.ocsf.io/).
+
+Current Schema Version: **1.9.0**
 
 | Package | Description |
 |---|---|
 | `Ocsf` | Generated C# classes for all 80 OCSF event classes and 190 objects, with System.Text.Json serialization and full NativeAOT/trimming support. |
 | `Ocsf.Validation` | Validates JSON events against the OCSF schema, mirroring the rules and severities of the schema server's `POST /api/v2/validate` endpoint. |
 
-Targets `net8.0` and `net10.0`. All serialization runs through a source-generated
-`JsonSerializerContext` — no reflection, AOT-safe by construction (`IsAotCompatible`).
+Targets `net8.0` and `net10.0`. Fully AOT Compatible.
 
 ## Producing events
 
@@ -30,6 +31,8 @@ var evt = new Authentication
     DstEndpoint = new NetworkEndpoint { Ip = "10.0.0.1" },
 };
 evt.SetActivity(AuthenticationActivityId.Logon);   // sets activity_id and recomputes type_uid
+// For source-specific values, pass the label required by the Other (99) rule:
+// evt.SetActivity(AuthenticationActivityId.Other, "custom-logon");
 
 string json = OcsfJson.Serialize(evt);
 ```
@@ -85,6 +88,16 @@ suppression.
 - **Enums**: integer-coded schema enums become C# enums per class/object
   (`AuthenticationActivityId`, `UserTypeId`, ...) since OCSF classes extend enum value sets
   individually. String-coded enums stay `string`.
+- **Sibling-aware setters**: every non-array enum attribute with a sibling label gets a
+  generated `Set*` helper (`SetStatus(id)`, `user.SetType(id)`, ...) that assigns the enum and
+  defaults the sibling label to the schema caption, per the spec's "both should be populated"
+  guidance; pass an explicit label for source-specific values, which the spec requires for
+  `Other (99)`. `SetActivity` additionally recomputes `type_uid` and `type_name`
+  (`"Class Caption: Activity Caption"`). Every enum also gets a `Caption()` extension.
+- **Producer responsibilities not automated** (kept manual so consumption stays lossless —
+  defaults injected at construction would be re-emitted when round-tripping partial events):
+  `metadata.version`, `Unknown (0)` defaults for unpopulatable required enums, and populating
+  the `observables` array (schema observable markers are a candidate for a future helper).
 - **Profiles** are pre-merged into classes by the schema export; profile-sourced properties
   are ordinary optional properties (provenance noted in the XML docs).
 - **Extensions** (`win/`, `linux/`) are not included in v1; attributes referencing extension

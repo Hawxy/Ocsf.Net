@@ -132,11 +132,103 @@ public class ProcessQuery : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public ProcessQueryStatusId? StatusId { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(ProcessQueryActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(ProcessQueryActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(ProcessQueryActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(ProcessQueryConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(ProcessQueryDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>query_result_id</c> and the <c>query_result</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="queryResult"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetQueryResult(ProcessQueryQueryResultId queryResultId, string? queryResult = null)
+    {
+        QueryResultId = queryResultId;
+        if ((queryResult ?? queryResultId.Caption()) is { } label)
+            QueryResult = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(ProcessQueryRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(ProcessQuerySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(ProcessQueryStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -172,6 +264,22 @@ public enum ProcessQueryActionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ProcessQueryActionId"/>.</summary>
+public static class ProcessQueryActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ProcessQueryActionId value) => value switch
+    {
+        (ProcessQueryActionId)0 => "Unknown",
+        (ProcessQueryActionId)1 => "Allowed",
+        (ProcessQueryActionId)2 => "Denied",
+        (ProcessQueryActionId)3 => "Observed",
+        (ProcessQueryActionId)4 => "Modified",
+        (ProcessQueryActionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>activity_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>activity_name</c> attribute contains the source-specific label.
@@ -192,6 +300,19 @@ public enum ProcessQueryActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ProcessQueryActivityId"/>.</summary>
+public static class ProcessQueryActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ProcessQueryActivityId value) => value switch
+    {
+        (ProcessQueryActivityId)0 => "Unknown",
+        (ProcessQueryActivityId)1 => "Query",
+        (ProcessQueryActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -209,6 +330,21 @@ public enum ProcessQueryConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ProcessQueryConfidenceId"/>.</summary>
+public static class ProcessQueryConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ProcessQueryConfidenceId value) => value switch
+    {
+        (ProcessQueryConfidenceId)0 => "Unknown",
+        (ProcessQueryConfidenceId)1 => "Low",
+        (ProcessQueryConfidenceId)2 => "Medium",
+        (ProcessQueryConfidenceId)3 => "High",
+        (ProcessQueryConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -335,6 +471,45 @@ public enum ProcessQueryDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ProcessQueryDispositionId"/>.</summary>
+public static class ProcessQueryDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ProcessQueryDispositionId value) => value switch
+    {
+        (ProcessQueryDispositionId)0 => "Unknown",
+        (ProcessQueryDispositionId)1 => "Allowed",
+        (ProcessQueryDispositionId)2 => "Blocked",
+        (ProcessQueryDispositionId)3 => "Quarantined",
+        (ProcessQueryDispositionId)4 => "Isolated",
+        (ProcessQueryDispositionId)5 => "Deleted",
+        (ProcessQueryDispositionId)6 => "Dropped",
+        (ProcessQueryDispositionId)7 => "Custom Action",
+        (ProcessQueryDispositionId)8 => "Approved",
+        (ProcessQueryDispositionId)9 => "Restored",
+        (ProcessQueryDispositionId)10 => "Exonerated",
+        (ProcessQueryDispositionId)11 => "Corrected",
+        (ProcessQueryDispositionId)12 => "Partially Corrected",
+        (ProcessQueryDispositionId)13 => "Uncorrected",
+        (ProcessQueryDispositionId)14 => "Delayed",
+        (ProcessQueryDispositionId)15 => "Detected",
+        (ProcessQueryDispositionId)16 => "No Action",
+        (ProcessQueryDispositionId)17 => "Logged",
+        (ProcessQueryDispositionId)18 => "Tagged",
+        (ProcessQueryDispositionId)19 => "Alert",
+        (ProcessQueryDispositionId)20 => "Count",
+        (ProcessQueryDispositionId)21 => "Reset",
+        (ProcessQueryDispositionId)22 => "Captcha",
+        (ProcessQueryDispositionId)23 => "Challenge",
+        (ProcessQueryDispositionId)24 => "Access Revoked",
+        (ProcessQueryDispositionId)25 => "Rejected",
+        (ProcessQueryDispositionId)26 => "Unauthorized",
+        (ProcessQueryDispositionId)27 => "Error",
+        (ProcessQueryDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>query_result_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>query_result</c> attribute contains the source-specific label.
@@ -371,6 +546,23 @@ public enum ProcessQueryQueryResultId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ProcessQueryQueryResultId"/>.</summary>
+public static class ProcessQueryQueryResultIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ProcessQueryQueryResultId value) => value switch
+    {
+        (ProcessQueryQueryResultId)0 => "Unknown",
+        (ProcessQueryQueryResultId)1 => "Exists",
+        (ProcessQueryQueryResultId)2 => "Partial",
+        (ProcessQueryQueryResultId)3 => "Does not exist",
+        (ProcessQueryQueryResultId)4 => "Error",
+        (ProcessQueryQueryResultId)5 => "Unsupported",
+        (ProcessQueryQueryResultId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -386,6 +578,22 @@ public enum ProcessQueryRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ProcessQueryRiskLevelId"/>.</summary>
+public static class ProcessQueryRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ProcessQueryRiskLevelId value) => value switch
+    {
+        (ProcessQueryRiskLevelId)0 => "Info",
+        (ProcessQueryRiskLevelId)1 => "Low",
+        (ProcessQueryRiskLevelId)2 => "Medium",
+        (ProcessQueryRiskLevelId)3 => "High",
+        (ProcessQueryRiskLevelId)4 => "Critical",
+        (ProcessQueryRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -428,6 +636,24 @@ public enum ProcessQuerySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ProcessQuerySeverityId"/>.</summary>
+public static class ProcessQuerySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ProcessQuerySeverityId value) => value switch
+    {
+        (ProcessQuerySeverityId)0 => "Unknown",
+        (ProcessQuerySeverityId)1 => "Informational",
+        (ProcessQuerySeverityId)2 => "Low",
+        (ProcessQuerySeverityId)3 => "Medium",
+        (ProcessQuerySeverityId)4 => "High",
+        (ProcessQuerySeverityId)5 => "Critical",
+        (ProcessQuerySeverityId)6 => "Fatal",
+        (ProcessQuerySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -450,4 +676,18 @@ public enum ProcessQueryStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ProcessQueryStatusId"/>.</summary>
+public static class ProcessQueryStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ProcessQueryStatusId value) => value switch
+    {
+        (ProcessQueryStatusId)0 => "Unknown",
+        (ProcessQueryStatusId)1 => "Success",
+        (ProcessQueryStatusId)2 => "Failure",
+        (ProcessQueryStatusId)99 => "Other",
+        _ => null,
+    };
 }

@@ -298,6 +298,18 @@ public class Evidences : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public JsonElement? WinService { get; set; }
+
+    /// <summary>
+    /// Sets <c>verdict_id</c> and the <c>verdict</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="verdict"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetVerdict(EvidencesVerdictId verdictId, string? verdict = null)
+    {
+        VerdictId = verdictId;
+        if ((verdict ?? verdictId.Caption()) is { } label)
+            Verdict = label;
+    }
 }
 
 /// <summary>
@@ -354,4 +366,26 @@ public enum EvidencesVerdictId
     /// The type is not mapped. See the <c>type</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="EvidencesVerdictId"/>.</summary>
+public static class EvidencesVerdictIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EvidencesVerdictId value) => value switch
+    {
+        (EvidencesVerdictId)0 => "Unknown",
+        (EvidencesVerdictId)1 => "False Positive",
+        (EvidencesVerdictId)2 => "True Positive",
+        (EvidencesVerdictId)3 => "Disregard",
+        (EvidencesVerdictId)4 => "Suspicious",
+        (EvidencesVerdictId)5 => "Benign",
+        (EvidencesVerdictId)6 => "Test",
+        (EvidencesVerdictId)7 => "Insufficient Data",
+        (EvidencesVerdictId)8 => "Security Risk",
+        (EvidencesVerdictId)9 => "Managed Externally",
+        (EvidencesVerdictId)10 => "Duplicate",
+        (EvidencesVerdictId)99 => "Other",
+        _ => null,
+    };
 }

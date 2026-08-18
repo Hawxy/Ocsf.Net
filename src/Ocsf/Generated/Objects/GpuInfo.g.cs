@@ -84,6 +84,30 @@ public class GpuInfo : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public int? VramSize { get; set; }
+
+    /// <summary>
+    /// Sets <c>bus_type_id</c> and the <c>bus_type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="busType"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetBusType(GpuInfoBusTypeId busTypeId, string? busType = null)
+    {
+        BusTypeId = busTypeId;
+        if ((busType ?? busTypeId.Caption()) is { } label)
+            BusType = label;
+    }
+
+    /// <summary>
+    /// Sets <c>vram_mode_id</c> and the <c>vram_mode</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="vramMode"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetVramMode(GpuInfoVramModeId vramModeId, string? vramMode = null)
+    {
+        VramModeId = vramModeId;
+        if ((vramMode ?? vramModeId.Caption()) is { } label)
+            VramMode = label;
+    }
 }
 
 /// <summary>
@@ -130,6 +154,25 @@ public enum GpuInfoBusTypeId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="GpuInfoBusTypeId"/>.</summary>
+public static class GpuInfoBusTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this GpuInfoBusTypeId value) => value switch
+    {
+        (GpuInfoBusTypeId)0 => "Unknown",
+        (GpuInfoBusTypeId)1 => "Onboard",
+        (GpuInfoBusTypeId)2 => "PCIe x16",
+        (GpuInfoBusTypeId)3 => "PCIe x8",
+        (GpuInfoBusTypeId)4 => "MXM Type A",
+        (GpuInfoBusTypeId)5 => "MXM Type B",
+        (GpuInfoBusTypeId)6 => "M.2",
+        (GpuInfoBusTypeId)7 => "CXL",
+        (GpuInfoBusTypeId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>vram_mode_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>vram_mode</c> attribute contains the source-specific label.
@@ -152,4 +195,18 @@ public enum GpuInfoVramModeId
     /// A VRAM mode not covered by the defined values; the exact value is reported by the event source.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="GpuInfoVramModeId"/>.</summary>
+public static class GpuInfoVramModeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this GpuInfoVramModeId value) => value switch
+    {
+        (GpuInfoVramModeId)0 => "Unknown",
+        (GpuInfoVramModeId)1 => "Shared",
+        (GpuInfoVramModeId)2 => "Dedicated",
+        (GpuInfoVramModeId)99 => "Other",
+        _ => null,
+    };
 }

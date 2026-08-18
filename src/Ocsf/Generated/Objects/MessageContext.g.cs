@@ -116,6 +116,18 @@ public class MessageContext : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public long? UidNumeric { get; set; }
+
+    /// <summary>
+    /// Sets <c>ai_role_id</c> and the <c>ai_role</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="aiRole"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAiRole(MessageContextAiRoleId aiRoleId, string? aiRole = null)
+    {
+        AiRoleId = aiRoleId;
+        if ((aiRole ?? aiRoleId.Caption()) is { } label)
+            AiRole = label;
+    }
 }
 
 /// <summary>
@@ -156,4 +168,22 @@ public enum MessageContextAiRoleId
     /// Other role type not covered above.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="MessageContextAiRoleId"/>.</summary>
+public static class MessageContextAiRoleIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this MessageContextAiRoleId value) => value switch
+    {
+        (MessageContextAiRoleId)0 => "Unknown",
+        (MessageContextAiRoleId)1 => "User",
+        (MessageContextAiRoleId)2 => "Assistant",
+        (MessageContextAiRoleId)3 => "Tool",
+        (MessageContextAiRoleId)4 => "Agent",
+        (MessageContextAiRoleId)5 => "Orchestrator",
+        (MessageContextAiRoleId)6 => "Retriever",
+        (MessageContextAiRoleId)99 => "Other",
+        _ => null,
+    };
 }

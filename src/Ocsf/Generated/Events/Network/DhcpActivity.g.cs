@@ -350,11 +350,103 @@ public class DhcpActivity : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public string? TransactionUid { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(DhcpActivityActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(DhcpActivityActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(DhcpActivityActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(DhcpActivityConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(DhcpActivityDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>observation_point_id</c> and the <c>observation_point</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="observationPoint"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetObservationPoint(DhcpActivityObservationPointId observationPointId, string? observationPoint = null)
+    {
+        ObservationPointId = observationPointId;
+        if ((observationPoint ?? observationPointId.Caption()) is { } label)
+            ObservationPoint = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(DhcpActivityRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(DhcpActivitySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(DhcpActivityStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -388,6 +480,22 @@ public enum DhcpActivityActionId
     /// The action is not mapped. See the <c>action</c> attribute which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="DhcpActivityActionId"/>.</summary>
+public static class DhcpActivityActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DhcpActivityActionId value) => value switch
+    {
+        (DhcpActivityActionId)0 => "Unknown",
+        (DhcpActivityActionId)1 => "Allowed",
+        (DhcpActivityActionId)2 => "Denied",
+        (DhcpActivityActionId)3 => "Observed",
+        (DhcpActivityActionId)4 => "Modified",
+        (DhcpActivityActionId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -442,6 +550,27 @@ public enum DhcpActivityActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="DhcpActivityActivityId"/>.</summary>
+public static class DhcpActivityActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DhcpActivityActivityId value) => value switch
+    {
+        (DhcpActivityActivityId)0 => "Unknown",
+        (DhcpActivityActivityId)1 => "Discover",
+        (DhcpActivityActivityId)2 => "Offer",
+        (DhcpActivityActivityId)3 => "Request",
+        (DhcpActivityActivityId)4 => "Decline",
+        (DhcpActivityActivityId)5 => "Ack",
+        (DhcpActivityActivityId)6 => "Nak",
+        (DhcpActivityActivityId)7 => "Release",
+        (DhcpActivityActivityId)8 => "Inform",
+        (DhcpActivityActivityId)9 => "Expire",
+        (DhcpActivityActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -459,6 +588,21 @@ public enum DhcpActivityConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="DhcpActivityConfidenceId"/>.</summary>
+public static class DhcpActivityConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DhcpActivityConfidenceId value) => value switch
+    {
+        (DhcpActivityConfidenceId)0 => "Unknown",
+        (DhcpActivityConfidenceId)1 => "Low",
+        (DhcpActivityConfidenceId)2 => "Medium",
+        (DhcpActivityConfidenceId)3 => "High",
+        (DhcpActivityConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -585,6 +729,45 @@ public enum DhcpActivityDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="DhcpActivityDispositionId"/>.</summary>
+public static class DhcpActivityDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DhcpActivityDispositionId value) => value switch
+    {
+        (DhcpActivityDispositionId)0 => "Unknown",
+        (DhcpActivityDispositionId)1 => "Allowed",
+        (DhcpActivityDispositionId)2 => "Blocked",
+        (DhcpActivityDispositionId)3 => "Quarantined",
+        (DhcpActivityDispositionId)4 => "Isolated",
+        (DhcpActivityDispositionId)5 => "Deleted",
+        (DhcpActivityDispositionId)6 => "Dropped",
+        (DhcpActivityDispositionId)7 => "Custom Action",
+        (DhcpActivityDispositionId)8 => "Approved",
+        (DhcpActivityDispositionId)9 => "Restored",
+        (DhcpActivityDispositionId)10 => "Exonerated",
+        (DhcpActivityDispositionId)11 => "Corrected",
+        (DhcpActivityDispositionId)12 => "Partially Corrected",
+        (DhcpActivityDispositionId)13 => "Uncorrected",
+        (DhcpActivityDispositionId)14 => "Delayed",
+        (DhcpActivityDispositionId)15 => "Detected",
+        (DhcpActivityDispositionId)16 => "No Action",
+        (DhcpActivityDispositionId)17 => "Logged",
+        (DhcpActivityDispositionId)18 => "Tagged",
+        (DhcpActivityDispositionId)19 => "Alert",
+        (DhcpActivityDispositionId)20 => "Count",
+        (DhcpActivityDispositionId)21 => "Reset",
+        (DhcpActivityDispositionId)22 => "Captcha",
+        (DhcpActivityDispositionId)23 => "Challenge",
+        (DhcpActivityDispositionId)24 => "Access Revoked",
+        (DhcpActivityDispositionId)25 => "Rejected",
+        (DhcpActivityDispositionId)26 => "Unauthorized",
+        (DhcpActivityDispositionId)27 => "Error",
+        (DhcpActivityDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>observation_point_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>observation_point</c> attribute contains the source-specific label.
@@ -617,6 +800,22 @@ public enum DhcpActivityObservationPointId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="DhcpActivityObservationPointId"/>.</summary>
+public static class DhcpActivityObservationPointIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DhcpActivityObservationPointId value) => value switch
+    {
+        (DhcpActivityObservationPointId)0 => "Unknown",
+        (DhcpActivityObservationPointId)1 => "Source",
+        (DhcpActivityObservationPointId)2 => "Destination",
+        (DhcpActivityObservationPointId)3 => "Neither",
+        (DhcpActivityObservationPointId)4 => "Both",
+        (DhcpActivityObservationPointId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -632,6 +831,22 @@ public enum DhcpActivityRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="DhcpActivityRiskLevelId"/>.</summary>
+public static class DhcpActivityRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DhcpActivityRiskLevelId value) => value switch
+    {
+        (DhcpActivityRiskLevelId)0 => "Info",
+        (DhcpActivityRiskLevelId)1 => "Low",
+        (DhcpActivityRiskLevelId)2 => "Medium",
+        (DhcpActivityRiskLevelId)3 => "High",
+        (DhcpActivityRiskLevelId)4 => "Critical",
+        (DhcpActivityRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -674,6 +889,24 @@ public enum DhcpActivitySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="DhcpActivitySeverityId"/>.</summary>
+public static class DhcpActivitySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DhcpActivitySeverityId value) => value switch
+    {
+        (DhcpActivitySeverityId)0 => "Unknown",
+        (DhcpActivitySeverityId)1 => "Informational",
+        (DhcpActivitySeverityId)2 => "Low",
+        (DhcpActivitySeverityId)3 => "Medium",
+        (DhcpActivitySeverityId)4 => "High",
+        (DhcpActivitySeverityId)5 => "Critical",
+        (DhcpActivitySeverityId)6 => "Fatal",
+        (DhcpActivitySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -696,4 +929,18 @@ public enum DhcpActivityStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="DhcpActivityStatusId"/>.</summary>
+public static class DhcpActivityStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DhcpActivityStatusId value) => value switch
+    {
+        (DhcpActivityStatusId)0 => "Unknown",
+        (DhcpActivityStatusId)1 => "Success",
+        (DhcpActivityStatusId)2 => "Failure",
+        (DhcpActivityStatusId)99 => "Other",
+        _ => null,
+    };
 }

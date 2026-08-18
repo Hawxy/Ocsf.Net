@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+using System.Collections.Frozen;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
@@ -9,20 +11,29 @@ namespace Ocsf.Validation;
 /// </summary>
 public sealed class OcsfValidator
 {
-    private static readonly Dictionary<string, Regex?> RegexCache = new(StringComparer.Ordinal);
+    private static readonly ConcurrentDictionary<string, Regex?> RegexCache = new(StringComparer.Ordinal);
+    private static readonly Version SchemaVersion = Version.Parse(OcsfSchemaRegistry.SchemaVersion);
+    private static readonly HashSet<string> NoProfiles = [];
 
     private readonly ValidationOptions _options;
+    private readonly FrozenSet<string> _ignoredRules;
 
     public OcsfValidator() : this(ValidationOptions.Default)
     {
     }
 
-    public OcsfValidator(ValidationOptions options) => _options = options;
+    public OcsfValidator(ValidationOptions options)
+    {
+        _options = options;
+        _ignoredRules = options.IgnoredRules.Count == 0
+            ? FrozenSet<string>.Empty
+            : options.IgnoredRules.ToFrozenSet(StringComparer.Ordinal);
+    }
 
     /// <summary>Validates a typed event by serializing it to JSON first.</summary>
     public ValidationResult Validate(OcsfEvent evt)
     {
-        using var document = JsonDocument.Parse(OcsfJson.Serialize(evt));
+        using var document = JsonSerializer.SerializeToDocument(evt, evt.GetType(), OcsfJsonContext.Default);
         return Validate(document.RootElement);
     }
 
@@ -72,22 +83,22 @@ public sealed class OcsfValidator
         ValidateVersion(element, findings);
         ValidateTypeUid(element, classUid, findings);
         ValidateObservables(element, cls, findings);
-        ValidateRecord(element, cls.Attributes, cls.Constraints, "", declaredProfiles, findings);
+        ValidateRecord(element, cls.Attributes, cls.AttributesByName, cls.Constraints, "", declaredProfiles, findings);
 
         return new ValidationResult(findings);
     }
 
     private HashSet<string> ReadDeclaredProfiles(JsonElement element, List<Finding> findings)
     {
-        var declared = new HashSet<string>(StringComparer.Ordinal);
         if (!element.TryGetProperty("metadata", out var metadata)
             || metadata.ValueKind != JsonValueKind.Object
             || !metadata.TryGetProperty("profiles", out var profiles)
             || profiles.ValueKind != JsonValueKind.Array)
         {
-            return declared;
+            return NoProfiles;
         }
 
+        var declared = new HashSet<string>(StringComparer.Ordinal);
         var index = 0;
         foreach (var profile in profiles.EnumerateArray())
         {
@@ -118,31 +129,32 @@ public sealed class OcsfValidator
 
         const string path = "metadata.version";
         var version = versionElement.GetString()!;
-        var core = version.Split('-', 2);
-        if (!Version.TryParse(core[0], out var parsed))
+        var dash = version.IndexOf('-');
+        var isPrerelease = dash >= 0;
+        if (!Version.TryParse(isPrerelease ? version.AsSpan(0, dash) : version, out var parsed))
         {
             Add(findings, Rules.VersionIncompatible, FindingSeverity.Error,
                 $"The event version '{version}' is not a valid semantic version.", path);
             return;
         }
 
-        var schema = Version.Parse(OcsfSchemaRegistry.SchemaVersion);
         if (parsed.Major == 0)
         {
             Add(findings, Rules.VersionIncompatible, FindingSeverity.Error,
                 $"The event version '{version}' is an initial development version and is incompatible with schema {OcsfSchemaRegistry.SchemaVersion}.", path);
         }
-        else if (core.Length > 1)
+        else if (isPrerelease)
         {
             Add(findings, Rules.VersionIncompatible, FindingSeverity.Error,
                 $"The event version '{version}' is a prerelease and is incompatible with schema {OcsfSchemaRegistry.SchemaVersion}.", path);
         }
-        else if (parsed.Major > schema.Major || (parsed.Major == schema.Major && parsed.Minor > schema.Minor))
+        else if (parsed.Major > SchemaVersion.Major
+            || (parsed.Major == SchemaVersion.Major && parsed.Minor > SchemaVersion.Minor))
         {
             Add(findings, Rules.VersionIncompatible, FindingSeverity.Error,
                 $"The event version '{version}' is newer than schema {OcsfSchemaRegistry.SchemaVersion}; validation may produce false results.", path);
         }
-        else if (parsed.Major < schema.Major || parsed.Minor < schema.Minor)
+        else if (parsed.Major < SchemaVersion.Major || parsed.Minor < SchemaVersion.Minor)
         {
             Add(findings, Rules.VersionOlderThanSchema, FindingSeverity.Warning,
                 $"The event version '{version}' is older than schema {OcsfSchemaRegistry.SchemaVersion}.", path);
@@ -198,7 +210,11 @@ public sealed class OcsfValidator
 
     private static bool ResolvesToAttribute(ClassSpec cls, string path)
     {
-        IReadOnlyList<AttributeSpec> current = cls.Attributes;
+        // Producers may use JSONPath-style references (e.g. "$.resources[1].uid").
+        if (path.StartsWith("$.", StringComparison.Ordinal))
+            path = path[2..];
+
+        var attrsByName = cls.AttributesByName;
         var segments = path.Split('.');
         for (var i = 0; i < segments.Length; i++)
         {
@@ -207,15 +223,14 @@ public sealed class OcsfValidator
             if (bracket >= 0)
                 segment = segment[..bracket];
 
-            var spec = current.FirstOrDefault(a => a.Name == segment);
-            if (spec is null)
+            if (!attrsByName.TryGetValue(segment, out var spec))
                 return false;
             if (i == segments.Length - 1)
                 return true;
 
             if (spec.ObjectType is null || !OcsfSchemaRegistry.Objects.TryGetValue(spec.ObjectType, out var objectSpec))
                 return false;
-            current = objectSpec.Attributes;
+            attrsByName = objectSpec.AttributesByName;
         }
         return true;
     }
@@ -223,82 +238,90 @@ public sealed class OcsfValidator
     private void ValidateRecord(
         JsonElement element,
         IReadOnlyList<AttributeSpec> attributes,
+        FrozenDictionary<string, AttributeSpec> attributesByName,
         IReadOnlyList<SchemaConstraint> constraints,
-        string path,
+        string parentPath,
         HashSet<string> declaredProfiles,
         List<Finding> findings)
     {
-        // The effective attribute set excludes attributes of profiles the event
-        // did not declare in metadata.profiles.
-        var effective = new Dictionary<string, AttributeSpec>(StringComparer.Ordinal);
-        foreach (var attr in attributes)
-        {
-            if (attr.Profile is null || declaredProfiles.Contains(attr.Profile))
-                effective[attr.Name] = attr;
-        }
+        // Names present with a non-null value, collected during the property walk so the
+        // requirement and constraint passes below never rescan the JSON object.
+        HashSet<string>? present = null;
 
         foreach (var property in element.EnumerateObject())
         {
-            var attrPath = Combine(path, property.Name);
-            if (!effective.TryGetValue(property.Name, out var spec))
+            var name = property.Name;
+            var attrPath = new AttrPath(parentPath, name);
+            var isNull = property.Value.ValueKind == JsonValueKind.Null;
+            if (!isNull)
+                (present ??= new HashSet<string>(StringComparer.Ordinal)).Add(name);
+
+            // Attributes of profiles the event did not declare in metadata.profiles
+            // are outside the effective schema and count as unknown.
+            if (!attributesByName.TryGetValue(name, out var spec)
+                || (spec.Profile is not null && !declaredProfiles.Contains(spec.Profile)))
             {
                 Add(findings, Rules.AttributeUnknown, FindingSeverity.Error,
-                    $"The attribute {property.Name} is not defined here in the schema.", attrPath);
+                    $"The attribute {name} is not defined here in the schema.", attrPath);
                 continue;
             }
 
-            if (property.Value.ValueKind == JsonValueKind.Null)
+            if (isNull)
                 continue; // Treated as absent; requirement checks below handle it.
 
             if (spec.DeprecatedSince is not null)
             {
                 Add(findings, Rules.AttributeDeprecated, FindingSeverity.Warning,
-                    $"The attribute {property.Name} is deprecated.", attrPath, spec.DeprecatedSince);
+                    $"The attribute {name} is deprecated.", attrPath, spec.DeprecatedSince);
             }
 
             ValidateValue(spec, property.Value, attrPath, declaredProfiles, findings);
             ValidateEnumSibling(spec, element, property.Value, attrPath, findings);
         }
 
-        foreach (var attr in effective.Values)
+        foreach (var attr in attributes)
         {
-            var present = element.TryGetProperty(attr.Name, out var value)
-                && value.ValueKind != JsonValueKind.Null;
-            if (present)
+            if (attr.Profile is not null && !declaredProfiles.Contains(attr.Profile))
+                continue;
+            if (present is not null && present.Contains(attr.Name))
                 continue;
 
             if (attr.Requirement == OcsfRequirement.Required)
             {
                 Add(findings, Rules.AttributeRequiredMissing, FindingSeverity.Error,
-                    $"The required attribute {attr.Name} is missing.", Combine(path, attr.Name));
+                    $"The required attribute {attr.Name} is missing.", new AttrPath(parentPath, attr.Name));
             }
             else if (attr.Requirement == OcsfRequirement.Recommended && _options.WarnOnMissingRecommended)
             {
                 Add(findings, Rules.AttributeRecommendedMissing, FindingSeverity.Warning,
-                    $"The recommended attribute {attr.Name} is missing.", Combine(path, attr.Name));
+                    $"The recommended attribute {attr.Name} is missing.", new AttrPath(parentPath, attr.Name));
             }
         }
 
         foreach (var constraint in constraints)
         {
-            var presentCount = constraint.Attributes.Count(name =>
-                element.TryGetProperty(name, out var value) && value.ValueKind != JsonValueKind.Null);
+            var presentCount = 0;
+            foreach (var name in constraint.Attributes)
+            {
+                if (present is not null && present.Contains(name))
+                    presentCount++;
+            }
 
             if (constraint.Kind == ConstraintKind.AtLeastOne && presentCount == 0)
             {
                 Add(findings, Rules.ConstraintAtLeastOneFailed, FindingSeverity.Error,
-                    $"At least one of [{string.Join(", ", constraint.Attributes)}] must be present.", path);
+                    $"At least one of [{string.Join(", ", constraint.Attributes)}] must be present.", parentPath);
             }
             else if (constraint.Kind == ConstraintKind.JustOne && presentCount != 1)
             {
                 Add(findings, Rules.ConstraintJustOneFailed, FindingSeverity.Error,
-                    $"Exactly one of [{string.Join(", ", constraint.Attributes)}] must be present, found {presentCount}.", path);
+                    $"Exactly one of [{string.Join(", ", constraint.Attributes)}] must be present, found {presentCount}.", parentPath);
             }
         }
     }
 
     private void ValidateValue(
-        AttributeSpec spec, JsonElement value, string path, HashSet<string> declaredProfiles, List<Finding> findings)
+        AttributeSpec spec, JsonElement value, in AttrPath path, HashSet<string> declaredProfiles, List<Finding> findings)
     {
         if (spec.IsArray)
         {
@@ -312,7 +335,7 @@ public sealed class OcsfValidator
             var index = 0;
             foreach (var item in value.EnumerateArray())
             {
-                ValidateSingleValue(spec, item, $"{path}[{index}]", declaredProfiles, findings);
+                ValidateSingleValue(spec, item, path.WithIndex(index), declaredProfiles, findings);
                 index++;
             }
             return;
@@ -322,7 +345,7 @@ public sealed class OcsfValidator
     }
 
     private void ValidateSingleValue(
-        AttributeSpec spec, JsonElement value, string path, HashSet<string> declaredProfiles, List<Finding> findings)
+        AttributeSpec spec, JsonElement value, in AttrPath path, HashSet<string> declaredProfiles, List<Finding> findings)
     {
         switch (spec.Kind)
         {
@@ -343,7 +366,8 @@ public sealed class OcsfValidator
                         Add(findings, Rules.ObjectDeprecated, FindingSeverity.Warning,
                             $"The object {objectSpec.Name} is deprecated.", path, objectSpec.DeprecatedSince);
                     }
-                    ValidateRecord(value, objectSpec.Attributes, objectSpec.Constraints, path, declaredProfiles, findings);
+                    ValidateRecord(value, objectSpec.Attributes, objectSpec.AttributesByName,
+                        objectSpec.Constraints, path.Resolve(), declaredProfiles, findings);
                 }
                 return;
 
@@ -359,7 +383,8 @@ public sealed class OcsfValidator
                     AddWrongType(findings, spec, value, path, "a string");
                     return;
                 }
-                ValidateStringConstraints(spec, value.GetString()!, path, findings);
+                if (spec.Constraint is not null)
+                    ValidateStringConstraints(spec, value.GetString()!, path, findings);
                 return;
 
             case AttrKind.Integer:
@@ -381,13 +406,9 @@ public sealed class OcsfValidator
         }
     }
 
-    private void ValidateStringConstraints(AttributeSpec spec, string value, string path, List<Finding> findings)
+    private void ValidateStringConstraints(AttributeSpec spec, string value, in AttrPath path, List<Finding> findings)
     {
-        if (spec.ScalarType is null
-            || !OcsfSchemaRegistry.Types.TryGetValue(spec.ScalarType, out var constraint))
-        {
-            return;
-        }
+        var constraint = spec.Constraint!;
 
         if (constraint.MaxLen is { } maxLen && value.Length > maxLen)
         {
@@ -408,13 +429,10 @@ public sealed class OcsfValidator
         }
     }
 
-    private void ValidateNumberConstraints(AttributeSpec spec, long value, string path, List<Finding> findings)
+    private void ValidateNumberConstraints(AttributeSpec spec, long value, in AttrPath path, List<Finding> findings)
     {
-        if (spec.ScalarType is null
-            || !OcsfSchemaRegistry.Types.TryGetValue(spec.ScalarType, out var constraint))
-        {
+        if (spec.Constraint is not { } constraint)
             return;
-        }
 
         if ((constraint.RangeMin is { } min && value < min) || (constraint.RangeMax is { } max && value > max))
         {
@@ -423,7 +441,7 @@ public sealed class OcsfValidator
         }
     }
 
-    private void ValidateEnumValue(AttributeSpec spec, long value, string path, List<Finding> findings)
+    private void ValidateEnumValue(AttributeSpec spec, long value, in AttrPath path, List<Finding> findings)
     {
         if (spec.EnumMembers is null)
             return;
@@ -441,7 +459,7 @@ public sealed class OcsfValidator
     }
 
     private void ValidateEnumSibling(
-        AttributeSpec spec, JsonElement parent, JsonElement value, string path, List<Finding> findings)
+        AttributeSpec spec, JsonElement parent, JsonElement value, in AttrPath path, List<Finding> findings)
     {
         if (spec.EnumMembers is null || spec.Sibling is null || spec.IsArray)
             return;
@@ -464,7 +482,7 @@ public sealed class OcsfValidator
 
         if (siblingPresent
             && spec.EnumMembers.TryGetValue(code, out var caption)
-            && !string.Equals(sibling.GetString(), caption, StringComparison.Ordinal))
+            && !sibling.ValueEquals(caption))
         {
             Add(findings, Rules.EnumSiblingMismatch, FindingSeverity.Warning,
                 $"The sibling attribute {spec.Sibling} value '{sibling.GetString()}' does not match the enum caption '{caption}'.", path);
@@ -472,40 +490,61 @@ public sealed class OcsfValidator
     }
 
     private void AddWrongType(
-        List<Finding> findings, AttributeSpec spec, JsonElement value, string path, string expected)
+        List<Finding> findings, AttributeSpec spec, JsonElement value, in AttrPath path, string expected)
     {
         Add(findings, Rules.AttributeWrongType, FindingSeverity.Error,
             $"The attribute {spec.Name} must be {expected}, found {value.ValueKind}.", path);
     }
 
-    private static string Combine(string path, string name) => path.Length == 0 ? name : $"{path}.{name}";
-
     private void Add(
-        List<Finding> findings, string ruleId, FindingSeverity severity, string message, string path,
+        List<Finding> findings, string ruleId, FindingSeverity severity, string message, in AttrPath path,
         string? since = null)
     {
-        if (_options.IgnoredRules.Contains(ruleId))
+        if (_ignoredRules.Count > 0 && _ignoredRules.Contains(ruleId))
             return;
-        findings.Add(new Finding(ruleId, severity, message, path) { Since = since });
+        findings.Add(new Finding(ruleId, severity, message, path.Resolve()) { Since = since });
     }
 
-    private static Regex? GetRegex(string pattern)
-    {
-        lock (RegexCache)
+    private static Regex? GetRegex(string pattern) =>
+        RegexCache.GetOrAdd(pattern, static p =>
         {
-            if (!RegexCache.TryGetValue(pattern, out var regex))
+            try
             {
-                try
-                {
-                    regex = new Regex(pattern, RegexOptions.None, TimeSpan.FromSeconds(1));
-                }
-                catch (ArgumentException)
-                {
-                    regex = null; // Schema-side regex bug; skip rather than fail events.
-                }
-                RegexCache[pattern] = regex;
+                return new Regex(p, RegexOptions.None, TimeSpan.FromSeconds(1));
             }
-            return regex;
+            catch (ArgumentException)
+            {
+                return null; // Schema-side regex bug; skip rather than fail events.
+            }
+        });
+
+    /// <summary>
+    /// A deferred attribute path: the string form is only built when a finding is emitted,
+    /// so validating a clean event does not allocate per visited attribute.
+    /// </summary>
+    private readonly struct AttrPath
+    {
+        private readonly string _parent;
+        private readonly string _name;
+        private readonly int _index;
+
+        public AttrPath(string parent, string name, int index = -1)
+        {
+            _parent = parent;
+            _name = name;
+            _index = index;
+        }
+
+        public static implicit operator AttrPath(string leaf) => new("", leaf);
+
+        public AttrPath WithIndex(int index) => new(_parent, _name, index);
+
+        public string Resolve()
+        {
+            var name = _index < 0 ? _name : $"{_name}[{_index}]";
+            if (name.Length == 0)
+                return _parent;
+            return _parent.Length == 0 ? name : $"{_parent}.{name}";
         }
     }
 }

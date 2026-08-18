@@ -138,11 +138,91 @@ public class NetworkRemediationActivity : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public NetworkRemediationActivityStatusId? StatusId { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(NetworkRemediationActivityActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(NetworkRemediationActivityActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(NetworkRemediationActivityActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(NetworkRemediationActivityConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(NetworkRemediationActivityDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(NetworkRemediationActivityRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(NetworkRemediationActivitySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(NetworkRemediationActivityStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -176,6 +256,22 @@ public enum NetworkRemediationActivityActionId
     /// The action is not mapped. See the <c>action</c> attribute which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="NetworkRemediationActivityActionId"/>.</summary>
+public static class NetworkRemediationActivityActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NetworkRemediationActivityActionId value) => value switch
+    {
+        (NetworkRemediationActivityActionId)0 => "Unknown",
+        (NetworkRemediationActivityActionId)1 => "Allowed",
+        (NetworkRemediationActivityActionId)2 => "Denied",
+        (NetworkRemediationActivityActionId)3 => "Observed",
+        (NetworkRemediationActivityActionId)4 => "Modified",
+        (NetworkRemediationActivityActionId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -218,6 +314,24 @@ public enum NetworkRemediationActivityActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="NetworkRemediationActivityActivityId"/>.</summary>
+public static class NetworkRemediationActivityActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NetworkRemediationActivityActivityId value) => value switch
+    {
+        (NetworkRemediationActivityActivityId)0 => "Unknown",
+        (NetworkRemediationActivityActivityId)1 => "Isolate",
+        (NetworkRemediationActivityActivityId)2 => "Evict",
+        (NetworkRemediationActivityActivityId)3 => "Restore",
+        (NetworkRemediationActivityActivityId)4 => "Harden",
+        (NetworkRemediationActivityActivityId)5 => "Detect",
+        (NetworkRemediationActivityActivityId)6 => "Deceive",
+        (NetworkRemediationActivityActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -235,6 +349,21 @@ public enum NetworkRemediationActivityConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="NetworkRemediationActivityConfidenceId"/>.</summary>
+public static class NetworkRemediationActivityConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NetworkRemediationActivityConfidenceId value) => value switch
+    {
+        (NetworkRemediationActivityConfidenceId)0 => "Unknown",
+        (NetworkRemediationActivityConfidenceId)1 => "Low",
+        (NetworkRemediationActivityConfidenceId)2 => "Medium",
+        (NetworkRemediationActivityConfidenceId)3 => "High",
+        (NetworkRemediationActivityConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -361,6 +490,45 @@ public enum NetworkRemediationActivityDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="NetworkRemediationActivityDispositionId"/>.</summary>
+public static class NetworkRemediationActivityDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NetworkRemediationActivityDispositionId value) => value switch
+    {
+        (NetworkRemediationActivityDispositionId)0 => "Unknown",
+        (NetworkRemediationActivityDispositionId)1 => "Allowed",
+        (NetworkRemediationActivityDispositionId)2 => "Blocked",
+        (NetworkRemediationActivityDispositionId)3 => "Quarantined",
+        (NetworkRemediationActivityDispositionId)4 => "Isolated",
+        (NetworkRemediationActivityDispositionId)5 => "Deleted",
+        (NetworkRemediationActivityDispositionId)6 => "Dropped",
+        (NetworkRemediationActivityDispositionId)7 => "Custom Action",
+        (NetworkRemediationActivityDispositionId)8 => "Approved",
+        (NetworkRemediationActivityDispositionId)9 => "Restored",
+        (NetworkRemediationActivityDispositionId)10 => "Exonerated",
+        (NetworkRemediationActivityDispositionId)11 => "Corrected",
+        (NetworkRemediationActivityDispositionId)12 => "Partially Corrected",
+        (NetworkRemediationActivityDispositionId)13 => "Uncorrected",
+        (NetworkRemediationActivityDispositionId)14 => "Delayed",
+        (NetworkRemediationActivityDispositionId)15 => "Detected",
+        (NetworkRemediationActivityDispositionId)16 => "No Action",
+        (NetworkRemediationActivityDispositionId)17 => "Logged",
+        (NetworkRemediationActivityDispositionId)18 => "Tagged",
+        (NetworkRemediationActivityDispositionId)19 => "Alert",
+        (NetworkRemediationActivityDispositionId)20 => "Count",
+        (NetworkRemediationActivityDispositionId)21 => "Reset",
+        (NetworkRemediationActivityDispositionId)22 => "Captcha",
+        (NetworkRemediationActivityDispositionId)23 => "Challenge",
+        (NetworkRemediationActivityDispositionId)24 => "Access Revoked",
+        (NetworkRemediationActivityDispositionId)25 => "Rejected",
+        (NetworkRemediationActivityDispositionId)26 => "Unauthorized",
+        (NetworkRemediationActivityDispositionId)27 => "Error",
+        (NetworkRemediationActivityDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -376,6 +544,22 @@ public enum NetworkRemediationActivityRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="NetworkRemediationActivityRiskLevelId"/>.</summary>
+public static class NetworkRemediationActivityRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NetworkRemediationActivityRiskLevelId value) => value switch
+    {
+        (NetworkRemediationActivityRiskLevelId)0 => "Info",
+        (NetworkRemediationActivityRiskLevelId)1 => "Low",
+        (NetworkRemediationActivityRiskLevelId)2 => "Medium",
+        (NetworkRemediationActivityRiskLevelId)3 => "High",
+        (NetworkRemediationActivityRiskLevelId)4 => "Critical",
+        (NetworkRemediationActivityRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -418,6 +602,24 @@ public enum NetworkRemediationActivitySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="NetworkRemediationActivitySeverityId"/>.</summary>
+public static class NetworkRemediationActivitySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NetworkRemediationActivitySeverityId value) => value switch
+    {
+        (NetworkRemediationActivitySeverityId)0 => "Unknown",
+        (NetworkRemediationActivitySeverityId)1 => "Informational",
+        (NetworkRemediationActivitySeverityId)2 => "Low",
+        (NetworkRemediationActivitySeverityId)3 => "Medium",
+        (NetworkRemediationActivitySeverityId)4 => "High",
+        (NetworkRemediationActivitySeverityId)5 => "Critical",
+        (NetworkRemediationActivitySeverityId)6 => "Fatal",
+        (NetworkRemediationActivitySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -456,4 +658,22 @@ public enum NetworkRemediationActivityStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="NetworkRemediationActivityStatusId"/>.</summary>
+public static class NetworkRemediationActivityStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NetworkRemediationActivityStatusId value) => value switch
+    {
+        (NetworkRemediationActivityStatusId)0 => "Unknown",
+        (NetworkRemediationActivityStatusId)1 => "Success",
+        (NetworkRemediationActivityStatusId)2 => "Failure",
+        (NetworkRemediationActivityStatusId)3 => "Does Not Exist",
+        (NetworkRemediationActivityStatusId)4 => "Partial",
+        (NetworkRemediationActivityStatusId)5 => "Unsupported",
+        (NetworkRemediationActivityStatusId)6 => "Error",
+        (NetworkRemediationActivityStatusId)99 => "Other",
+        _ => null,
+    };
 }

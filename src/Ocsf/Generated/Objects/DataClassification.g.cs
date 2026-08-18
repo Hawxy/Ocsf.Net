@@ -131,6 +131,42 @@ public class DataClassification : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public string? Uid { get; set; }
+
+    /// <summary>
+    /// Sets <c>category_id</c> and the <c>category</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="category"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetCategory(DataClassificationCategoryId categoryId, string? category = null)
+    {
+        CategoryId = categoryId;
+        if ((category ?? categoryId.Caption()) is { } label)
+            Category = label;
+    }
+
+    /// <summary>
+    /// Sets <c>confidentiality_id</c> and the <c>confidentiality</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidentiality"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidentiality(DataClassificationConfidentialityId confidentialityId, string? confidentiality = null)
+    {
+        ConfidentialityId = confidentialityId;
+        if ((confidentiality ?? confidentialityId.Caption()) is { } label)
+            Confidentiality = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(DataClassificationStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
+    }
 }
 
 /// <summary>
@@ -173,6 +209,24 @@ public enum DataClassificationCategoryId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="DataClassificationCategoryId"/>.</summary>
+public static class DataClassificationCategoryIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DataClassificationCategoryId value) => value switch
+    {
+        (DataClassificationCategoryId)0 => "Unknown",
+        (DataClassificationCategoryId)1 => "Personal",
+        (DataClassificationCategoryId)2 => "Governmental",
+        (DataClassificationCategoryId)3 => "Financial",
+        (DataClassificationCategoryId)4 => "Business",
+        (DataClassificationCategoryId)5 => "Military and Law Enforcement",
+        (DataClassificationCategoryId)6 => "Security",
+        (DataClassificationCategoryId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidentiality_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidentiality</c> attribute contains the source-specific label.
@@ -193,6 +247,24 @@ public enum DataClassificationConfidentialityId
     /// The confidentiality is not mapped. See the <c>confidentiality</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="DataClassificationConfidentialityId"/>.</summary>
+public static class DataClassificationConfidentialityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DataClassificationConfidentialityId value) => value switch
+    {
+        (DataClassificationConfidentialityId)0 => "Unknown",
+        (DataClassificationConfidentialityId)1 => "Not Confidential",
+        (DataClassificationConfidentialityId)2 => "Confidential",
+        (DataClassificationConfidentialityId)3 => "Secret",
+        (DataClassificationConfidentialityId)4 => "Top Secret",
+        (DataClassificationConfidentialityId)5 => "Private",
+        (DataClassificationConfidentialityId)6 => "Restricted",
+        (DataClassificationConfidentialityId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -221,4 +293,19 @@ public enum DataClassificationStatusId
     /// The classification job type id is not mapped.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="DataClassificationStatusId"/>.</summary>
+public static class DataClassificationStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DataClassificationStatusId value) => value switch
+    {
+        (DataClassificationStatusId)0 => "Unknown",
+        (DataClassificationStatusId)1 => "Complete",
+        (DataClassificationStatusId)2 => "Partial",
+        (DataClassificationStatusId)3 => "Fail",
+        (DataClassificationStatusId)99 => "Other",
+        _ => null,
+    };
 }

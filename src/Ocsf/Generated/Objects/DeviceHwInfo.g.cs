@@ -218,3 +218,18 @@ public enum DeviceHwInfoCpuArchitectureId
     /// </summary>
     Other = 99,
 }
+
+/// <summary>Schema caption lookup for <see cref="DeviceHwInfoCpuArchitectureId"/>.</summary>
+public static class DeviceHwInfoCpuArchitectureIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DeviceHwInfoCpuArchitectureId value) => value switch
+    {
+        (DeviceHwInfoCpuArchitectureId)0 => "Unknown",
+        (DeviceHwInfoCpuArchitectureId)1 => "x86",
+        (DeviceHwInfoCpuArchitectureId)2 => "ARM",
+        (DeviceHwInfoCpuArchitectureId)3 => "RISC-V",
+        (DeviceHwInfoCpuArchitectureId)99 => "Other",
+        _ => null,
+    };
+}

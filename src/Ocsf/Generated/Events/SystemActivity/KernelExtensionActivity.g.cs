@@ -140,11 +140,91 @@ public class KernelExtensionActivity : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public KernelExtensionActivityStatusId? StatusId { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(KernelExtensionActivityActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(KernelExtensionActivityActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(KernelExtensionActivityActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(KernelExtensionActivityConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(KernelExtensionActivityDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(KernelExtensionActivityRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(KernelExtensionActivitySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(KernelExtensionActivityStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -180,6 +260,22 @@ public enum KernelExtensionActivityActionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="KernelExtensionActivityActionId"/>.</summary>
+public static class KernelExtensionActivityActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this KernelExtensionActivityActionId value) => value switch
+    {
+        (KernelExtensionActivityActionId)0 => "Unknown",
+        (KernelExtensionActivityActionId)1 => "Allowed",
+        (KernelExtensionActivityActionId)2 => "Denied",
+        (KernelExtensionActivityActionId)3 => "Observed",
+        (KernelExtensionActivityActionId)4 => "Modified",
+        (KernelExtensionActivityActionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>activity_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>activity_name</c> attribute contains the source-specific label.
@@ -204,6 +300,20 @@ public enum KernelExtensionActivityActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="KernelExtensionActivityActivityId"/>.</summary>
+public static class KernelExtensionActivityActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this KernelExtensionActivityActivityId value) => value switch
+    {
+        (KernelExtensionActivityActivityId)0 => "Unknown",
+        (KernelExtensionActivityActivityId)1 => "Load",
+        (KernelExtensionActivityActivityId)2 => "Unload",
+        (KernelExtensionActivityActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -221,6 +331,21 @@ public enum KernelExtensionActivityConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="KernelExtensionActivityConfidenceId"/>.</summary>
+public static class KernelExtensionActivityConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this KernelExtensionActivityConfidenceId value) => value switch
+    {
+        (KernelExtensionActivityConfidenceId)0 => "Unknown",
+        (KernelExtensionActivityConfidenceId)1 => "Low",
+        (KernelExtensionActivityConfidenceId)2 => "Medium",
+        (KernelExtensionActivityConfidenceId)3 => "High",
+        (KernelExtensionActivityConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -347,6 +472,45 @@ public enum KernelExtensionActivityDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="KernelExtensionActivityDispositionId"/>.</summary>
+public static class KernelExtensionActivityDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this KernelExtensionActivityDispositionId value) => value switch
+    {
+        (KernelExtensionActivityDispositionId)0 => "Unknown",
+        (KernelExtensionActivityDispositionId)1 => "Allowed",
+        (KernelExtensionActivityDispositionId)2 => "Blocked",
+        (KernelExtensionActivityDispositionId)3 => "Quarantined",
+        (KernelExtensionActivityDispositionId)4 => "Isolated",
+        (KernelExtensionActivityDispositionId)5 => "Deleted",
+        (KernelExtensionActivityDispositionId)6 => "Dropped",
+        (KernelExtensionActivityDispositionId)7 => "Custom Action",
+        (KernelExtensionActivityDispositionId)8 => "Approved",
+        (KernelExtensionActivityDispositionId)9 => "Restored",
+        (KernelExtensionActivityDispositionId)10 => "Exonerated",
+        (KernelExtensionActivityDispositionId)11 => "Corrected",
+        (KernelExtensionActivityDispositionId)12 => "Partially Corrected",
+        (KernelExtensionActivityDispositionId)13 => "Uncorrected",
+        (KernelExtensionActivityDispositionId)14 => "Delayed",
+        (KernelExtensionActivityDispositionId)15 => "Detected",
+        (KernelExtensionActivityDispositionId)16 => "No Action",
+        (KernelExtensionActivityDispositionId)17 => "Logged",
+        (KernelExtensionActivityDispositionId)18 => "Tagged",
+        (KernelExtensionActivityDispositionId)19 => "Alert",
+        (KernelExtensionActivityDispositionId)20 => "Count",
+        (KernelExtensionActivityDispositionId)21 => "Reset",
+        (KernelExtensionActivityDispositionId)22 => "Captcha",
+        (KernelExtensionActivityDispositionId)23 => "Challenge",
+        (KernelExtensionActivityDispositionId)24 => "Access Revoked",
+        (KernelExtensionActivityDispositionId)25 => "Rejected",
+        (KernelExtensionActivityDispositionId)26 => "Unauthorized",
+        (KernelExtensionActivityDispositionId)27 => "Error",
+        (KernelExtensionActivityDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -362,6 +526,22 @@ public enum KernelExtensionActivityRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="KernelExtensionActivityRiskLevelId"/>.</summary>
+public static class KernelExtensionActivityRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this KernelExtensionActivityRiskLevelId value) => value switch
+    {
+        (KernelExtensionActivityRiskLevelId)0 => "Info",
+        (KernelExtensionActivityRiskLevelId)1 => "Low",
+        (KernelExtensionActivityRiskLevelId)2 => "Medium",
+        (KernelExtensionActivityRiskLevelId)3 => "High",
+        (KernelExtensionActivityRiskLevelId)4 => "Critical",
+        (KernelExtensionActivityRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -404,6 +584,24 @@ public enum KernelExtensionActivitySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="KernelExtensionActivitySeverityId"/>.</summary>
+public static class KernelExtensionActivitySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this KernelExtensionActivitySeverityId value) => value switch
+    {
+        (KernelExtensionActivitySeverityId)0 => "Unknown",
+        (KernelExtensionActivitySeverityId)1 => "Informational",
+        (KernelExtensionActivitySeverityId)2 => "Low",
+        (KernelExtensionActivitySeverityId)3 => "Medium",
+        (KernelExtensionActivitySeverityId)4 => "High",
+        (KernelExtensionActivitySeverityId)5 => "Critical",
+        (KernelExtensionActivitySeverityId)6 => "Fatal",
+        (KernelExtensionActivitySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -426,4 +624,18 @@ public enum KernelExtensionActivityStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="KernelExtensionActivityStatusId"/>.</summary>
+public static class KernelExtensionActivityStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this KernelExtensionActivityStatusId value) => value switch
+    {
+        (KernelExtensionActivityStatusId)0 => "Unknown",
+        (KernelExtensionActivityStatusId)1 => "Success",
+        (KernelExtensionActivityStatusId)2 => "Failure",
+        (KernelExtensionActivityStatusId)99 => "Other",
+        _ => null,
+    };
 }

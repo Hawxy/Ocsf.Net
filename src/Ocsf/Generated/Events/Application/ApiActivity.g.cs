@@ -185,11 +185,91 @@ public class ApiActivity : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public Objects.Trace? Trace { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(ApiActivityActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(ApiActivityActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(ApiActivityActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(ApiActivityConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(ApiActivityDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(ApiActivityRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(ApiActivitySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(ApiActivityStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -225,6 +305,22 @@ public enum ApiActivityActionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ApiActivityActionId"/>.</summary>
+public static class ApiActivityActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ApiActivityActionId value) => value switch
+    {
+        (ApiActivityActionId)0 => "Unknown",
+        (ApiActivityActionId)1 => "Allowed",
+        (ApiActivityActionId)2 => "Denied",
+        (ApiActivityActionId)3 => "Observed",
+        (ApiActivityActionId)4 => "Modified",
+        (ApiActivityActionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>activity_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>activity_name</c> attribute contains the source-specific label.
@@ -257,6 +353,22 @@ public enum ApiActivityActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ApiActivityActivityId"/>.</summary>
+public static class ApiActivityActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ApiActivityActivityId value) => value switch
+    {
+        (ApiActivityActivityId)0 => "Unknown",
+        (ApiActivityActivityId)1 => "Create",
+        (ApiActivityActivityId)2 => "Read",
+        (ApiActivityActivityId)3 => "Update",
+        (ApiActivityActivityId)4 => "Delete",
+        (ApiActivityActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -274,6 +386,21 @@ public enum ApiActivityConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ApiActivityConfidenceId"/>.</summary>
+public static class ApiActivityConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ApiActivityConfidenceId value) => value switch
+    {
+        (ApiActivityConfidenceId)0 => "Unknown",
+        (ApiActivityConfidenceId)1 => "Low",
+        (ApiActivityConfidenceId)2 => "Medium",
+        (ApiActivityConfidenceId)3 => "High",
+        (ApiActivityConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -400,6 +527,45 @@ public enum ApiActivityDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ApiActivityDispositionId"/>.</summary>
+public static class ApiActivityDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ApiActivityDispositionId value) => value switch
+    {
+        (ApiActivityDispositionId)0 => "Unknown",
+        (ApiActivityDispositionId)1 => "Allowed",
+        (ApiActivityDispositionId)2 => "Blocked",
+        (ApiActivityDispositionId)3 => "Quarantined",
+        (ApiActivityDispositionId)4 => "Isolated",
+        (ApiActivityDispositionId)5 => "Deleted",
+        (ApiActivityDispositionId)6 => "Dropped",
+        (ApiActivityDispositionId)7 => "Custom Action",
+        (ApiActivityDispositionId)8 => "Approved",
+        (ApiActivityDispositionId)9 => "Restored",
+        (ApiActivityDispositionId)10 => "Exonerated",
+        (ApiActivityDispositionId)11 => "Corrected",
+        (ApiActivityDispositionId)12 => "Partially Corrected",
+        (ApiActivityDispositionId)13 => "Uncorrected",
+        (ApiActivityDispositionId)14 => "Delayed",
+        (ApiActivityDispositionId)15 => "Detected",
+        (ApiActivityDispositionId)16 => "No Action",
+        (ApiActivityDispositionId)17 => "Logged",
+        (ApiActivityDispositionId)18 => "Tagged",
+        (ApiActivityDispositionId)19 => "Alert",
+        (ApiActivityDispositionId)20 => "Count",
+        (ApiActivityDispositionId)21 => "Reset",
+        (ApiActivityDispositionId)22 => "Captcha",
+        (ApiActivityDispositionId)23 => "Challenge",
+        (ApiActivityDispositionId)24 => "Access Revoked",
+        (ApiActivityDispositionId)25 => "Rejected",
+        (ApiActivityDispositionId)26 => "Unauthorized",
+        (ApiActivityDispositionId)27 => "Error",
+        (ApiActivityDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -415,6 +581,22 @@ public enum ApiActivityRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ApiActivityRiskLevelId"/>.</summary>
+public static class ApiActivityRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ApiActivityRiskLevelId value) => value switch
+    {
+        (ApiActivityRiskLevelId)0 => "Info",
+        (ApiActivityRiskLevelId)1 => "Low",
+        (ApiActivityRiskLevelId)2 => "Medium",
+        (ApiActivityRiskLevelId)3 => "High",
+        (ApiActivityRiskLevelId)4 => "Critical",
+        (ApiActivityRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -457,6 +639,24 @@ public enum ApiActivitySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ApiActivitySeverityId"/>.</summary>
+public static class ApiActivitySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ApiActivitySeverityId value) => value switch
+    {
+        (ApiActivitySeverityId)0 => "Unknown",
+        (ApiActivitySeverityId)1 => "Informational",
+        (ApiActivitySeverityId)2 => "Low",
+        (ApiActivitySeverityId)3 => "Medium",
+        (ApiActivitySeverityId)4 => "High",
+        (ApiActivitySeverityId)5 => "Critical",
+        (ApiActivitySeverityId)6 => "Fatal",
+        (ApiActivitySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -479,4 +679,18 @@ public enum ApiActivityStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ApiActivityStatusId"/>.</summary>
+public static class ApiActivityStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ApiActivityStatusId value) => value switch
+    {
+        (ApiActivityStatusId)0 => "Unknown",
+        (ApiActivityStatusId)1 => "Success",
+        (ApiActivityStatusId)2 => "Failure",
+        (ApiActivityStatusId)99 => "Other",
+        _ => null,
+    };
 }

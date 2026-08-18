@@ -107,6 +107,42 @@ public class DigitalSignature : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public DigitalSignatureStateId? StateId { get; set; }
+
+    /// <summary>
+    /// Sets <c>algorithm_id</c> and the <c>algorithm</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="algorithm"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAlgorithm(DigitalSignatureAlgorithmId algorithmId, string? algorithm = null)
+    {
+        AlgorithmId = algorithmId;
+        if ((algorithm ?? algorithmId.Caption()) is { } label)
+            Algorithm = label;
+    }
+
+    /// <summary>
+    /// Sets <c>serialization_id</c> and the <c>serialization</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="serialization"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSerialization(DigitalSignatureSerializationId serializationId, string? serialization = null)
+    {
+        SerializationId = serializationId;
+        if ((serialization ?? serializationId.Caption()) is { } label)
+            Serialization = label;
+    }
+
+    /// <summary>
+    /// Sets <c>state_id</c> and the <c>state</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="state"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetState(DigitalSignatureStateId stateId, string? state = null)
+    {
+        StateId = stateId;
+        if ((state ?? stateId.Caption()) is { } label)
+            State = label;
+    }
 }
 
 /// <summary>
@@ -149,6 +185,24 @@ public enum DigitalSignatureAlgorithmId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="DigitalSignatureAlgorithmId"/>.</summary>
+public static class DigitalSignatureAlgorithmIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DigitalSignatureAlgorithmId value) => value switch
+    {
+        (DigitalSignatureAlgorithmId)0 => "Unknown",
+        (DigitalSignatureAlgorithmId)1 => "DSA",
+        (DigitalSignatureAlgorithmId)2 => "RSA",
+        (DigitalSignatureAlgorithmId)3 => "ECDSA",
+        (DigitalSignatureAlgorithmId)4 => "Authenticode",
+        (DigitalSignatureAlgorithmId)5 => "Code Signing",
+        (DigitalSignatureAlgorithmId)6 => "App Package",
+        (DigitalSignatureAlgorithmId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>serialization_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>serialization</c> attribute contains the source-specific label.
@@ -189,6 +243,26 @@ public enum DigitalSignatureSerializationId
     /// </summary>
     AppPackage = 8,
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="DigitalSignatureSerializationId"/>.</summary>
+public static class DigitalSignatureSerializationIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DigitalSignatureSerializationId value) => value switch
+    {
+        (DigitalSignatureSerializationId)0 => "Unknown",
+        (DigitalSignatureSerializationId)1 => "Flat",
+        (DigitalSignatureSerializationId)2 => "JCS",
+        (DigitalSignatureSerializationId)3 => "JWS",
+        (DigitalSignatureSerializationId)4 => "COSE",
+        (DigitalSignatureSerializationId)5 => "DSSE",
+        (DigitalSignatureSerializationId)6 => "Authenticode",
+        (DigitalSignatureSerializationId)7 => "Code Signing",
+        (DigitalSignatureSerializationId)8 => "App Package",
+        (DigitalSignatureSerializationId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -245,4 +319,26 @@ public enum DigitalSignatureStateId
     /// The state is not mapped. See the <c>state</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="DigitalSignatureStateId"/>.</summary>
+public static class DigitalSignatureStateIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DigitalSignatureStateId value) => value switch
+    {
+        (DigitalSignatureStateId)0 => "Unknown",
+        (DigitalSignatureStateId)1 => "Valid",
+        (DigitalSignatureStateId)2 => "Expired",
+        (DigitalSignatureStateId)3 => "Revoked",
+        (DigitalSignatureStateId)4 => "Suspended",
+        (DigitalSignatureStateId)5 => "Pending",
+        (DigitalSignatureStateId)6 => "Untrusted",
+        (DigitalSignatureStateId)7 => "Distrusted",
+        (DigitalSignatureStateId)8 => "WrongUsage",
+        (DigitalSignatureStateId)9 => "Bad",
+        (DigitalSignatureStateId)10 => "Broken",
+        (DigitalSignatureStateId)99 => "Other",
+        _ => null,
+    };
 }

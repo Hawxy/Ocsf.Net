@@ -433,6 +433,42 @@ public class File : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public JsonElement? Xattributes { get; set; }
+
+    /// <summary>
+    /// Sets <c>confidentiality_id</c> and the <c>confidentiality</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidentiality"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidentiality(FileConfidentialityId confidentialityId, string? confidentiality = null)
+    {
+        ConfidentialityId = confidentialityId;
+        if ((confidentiality ?? confidentialityId.Caption()) is { } label)
+            Confidentiality = label;
+    }
+
+    /// <summary>
+    /// Sets <c>drive_type_id</c> and the <c>drive_type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="driveType"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDriveType(FileDriveTypeId driveTypeId, string? driveType = null)
+    {
+        DriveTypeId = driveTypeId;
+        if ((driveType ?? driveTypeId.Caption()) is { } label)
+            DriveType = label;
+    }
+
+    /// <summary>
+    /// Sets <c>type_id</c> and the <c>type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="type"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetType(FileTypeId typeId, string? type = null)
+    {
+        TypeId = typeId;
+        if ((type ?? typeId.Caption()) is { } label)
+            Type = label;
+    }
 }
 
 /// <summary>
@@ -455,6 +491,24 @@ public enum FileConfidentialityId
     /// The confidentiality is not mapped. See the <c>confidentiality</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="FileConfidentialityId"/>.</summary>
+public static class FileConfidentialityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FileConfidentialityId value) => value switch
+    {
+        (FileConfidentialityId)0 => "Unknown",
+        (FileConfidentialityId)1 => "Not Confidential",
+        (FileConfidentialityId)2 => "Confidential",
+        (FileConfidentialityId)3 => "Secret",
+        (FileConfidentialityId)4 => "Top Secret",
+        (FileConfidentialityId)5 => "Private",
+        (FileConfidentialityId)6 => "Restricted",
+        (FileConfidentialityId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -493,6 +547,23 @@ public enum FileDriveTypeId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="FileDriveTypeId"/>.</summary>
+public static class FileDriveTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FileDriveTypeId value) => value switch
+    {
+        (FileDriveTypeId)0 => "Unknown",
+        (FileDriveTypeId)1 => "Removable",
+        (FileDriveTypeId)2 => "Fixed",
+        (FileDriveTypeId)3 => "Remote",
+        (FileDriveTypeId)4 => "CD-ROM",
+        (FileDriveTypeId)5 => "RAM Disk",
+        (FileDriveTypeId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>type_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>type</c> attribute contains the source-specific label.
@@ -515,4 +586,24 @@ public enum FileTypeId
     /// The type is not mapped. See the <c>type</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="FileTypeId"/>.</summary>
+public static class FileTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FileTypeId value) => value switch
+    {
+        (FileTypeId)0 => "Unknown",
+        (FileTypeId)1 => "Regular File",
+        (FileTypeId)2 => "Folder",
+        (FileTypeId)3 => "Character Device",
+        (FileTypeId)4 => "Block Device",
+        (FileTypeId)5 => "Local Socket",
+        (FileTypeId)6 => "Named Pipe",
+        (FileTypeId)7 => "Symbolic Link",
+        (FileTypeId)8 => "Executable File",
+        (FileTypeId)99 => "Other",
+        _ => null,
+    };
 }

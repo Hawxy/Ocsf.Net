@@ -257,11 +257,103 @@ public class FileHosting : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public FileHostingStatusId? StatusId { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(FileHostingActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(FileHostingActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(FileHostingActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(FileHostingConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(FileHostingDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(FileHostingRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(FileHostingSeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>share_type_id</c> and the <c>share_type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="shareType"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetShareType(FileHostingShareTypeId shareTypeId, string? shareType = null)
+    {
+        ShareTypeId = shareTypeId;
+        if ((shareType ?? shareTypeId.Caption()) is { } label)
+            ShareType = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(FileHostingStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -295,6 +387,22 @@ public enum FileHostingActionId
     /// The action is not mapped. See the <c>action</c> attribute which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="FileHostingActionId"/>.</summary>
+public static class FileHostingActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FileHostingActionId value) => value switch
+    {
+        (FileHostingActionId)0 => "Unknown",
+        (FileHostingActionId)1 => "Allowed",
+        (FileHostingActionId)2 => "Denied",
+        (FileHostingActionId)3 => "Observed",
+        (FileHostingActionId)4 => "Modified",
+        (FileHostingActionId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -381,6 +489,35 @@ public enum FileHostingActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="FileHostingActivityId"/>.</summary>
+public static class FileHostingActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FileHostingActivityId value) => value switch
+    {
+        (FileHostingActivityId)0 => "Unknown",
+        (FileHostingActivityId)1 => "Upload",
+        (FileHostingActivityId)2 => "Download",
+        (FileHostingActivityId)3 => "Update",
+        (FileHostingActivityId)4 => "Delete",
+        (FileHostingActivityId)5 => "Rename",
+        (FileHostingActivityId)6 => "Copy",
+        (FileHostingActivityId)7 => "Move",
+        (FileHostingActivityId)8 => "Restore",
+        (FileHostingActivityId)9 => "Preview",
+        (FileHostingActivityId)10 => "Lock",
+        (FileHostingActivityId)11 => "Unlock",
+        (FileHostingActivityId)12 => "Share",
+        (FileHostingActivityId)13 => "Unshare",
+        (FileHostingActivityId)14 => "Open",
+        (FileHostingActivityId)15 => "Sync",
+        (FileHostingActivityId)16 => "Unsync",
+        (FileHostingActivityId)17 => "Access Check",
+        (FileHostingActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -398,6 +535,21 @@ public enum FileHostingConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="FileHostingConfidenceId"/>.</summary>
+public static class FileHostingConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FileHostingConfidenceId value) => value switch
+    {
+        (FileHostingConfidenceId)0 => "Unknown",
+        (FileHostingConfidenceId)1 => "Low",
+        (FileHostingConfidenceId)2 => "Medium",
+        (FileHostingConfidenceId)3 => "High",
+        (FileHostingConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -524,6 +676,45 @@ public enum FileHostingDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="FileHostingDispositionId"/>.</summary>
+public static class FileHostingDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FileHostingDispositionId value) => value switch
+    {
+        (FileHostingDispositionId)0 => "Unknown",
+        (FileHostingDispositionId)1 => "Allowed",
+        (FileHostingDispositionId)2 => "Blocked",
+        (FileHostingDispositionId)3 => "Quarantined",
+        (FileHostingDispositionId)4 => "Isolated",
+        (FileHostingDispositionId)5 => "Deleted",
+        (FileHostingDispositionId)6 => "Dropped",
+        (FileHostingDispositionId)7 => "Custom Action",
+        (FileHostingDispositionId)8 => "Approved",
+        (FileHostingDispositionId)9 => "Restored",
+        (FileHostingDispositionId)10 => "Exonerated",
+        (FileHostingDispositionId)11 => "Corrected",
+        (FileHostingDispositionId)12 => "Partially Corrected",
+        (FileHostingDispositionId)13 => "Uncorrected",
+        (FileHostingDispositionId)14 => "Delayed",
+        (FileHostingDispositionId)15 => "Detected",
+        (FileHostingDispositionId)16 => "No Action",
+        (FileHostingDispositionId)17 => "Logged",
+        (FileHostingDispositionId)18 => "Tagged",
+        (FileHostingDispositionId)19 => "Alert",
+        (FileHostingDispositionId)20 => "Count",
+        (FileHostingDispositionId)21 => "Reset",
+        (FileHostingDispositionId)22 => "Captcha",
+        (FileHostingDispositionId)23 => "Challenge",
+        (FileHostingDispositionId)24 => "Access Revoked",
+        (FileHostingDispositionId)25 => "Rejected",
+        (FileHostingDispositionId)26 => "Unauthorized",
+        (FileHostingDispositionId)27 => "Error",
+        (FileHostingDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -539,6 +730,22 @@ public enum FileHostingRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="FileHostingRiskLevelId"/>.</summary>
+public static class FileHostingRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FileHostingRiskLevelId value) => value switch
+    {
+        (FileHostingRiskLevelId)0 => "Info",
+        (FileHostingRiskLevelId)1 => "Low",
+        (FileHostingRiskLevelId)2 => "Medium",
+        (FileHostingRiskLevelId)3 => "High",
+        (FileHostingRiskLevelId)4 => "Critical",
+        (FileHostingRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -581,6 +788,24 @@ public enum FileHostingSeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="FileHostingSeverityId"/>.</summary>
+public static class FileHostingSeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FileHostingSeverityId value) => value switch
+    {
+        (FileHostingSeverityId)0 => "Unknown",
+        (FileHostingSeverityId)1 => "Informational",
+        (FileHostingSeverityId)2 => "Low",
+        (FileHostingSeverityId)3 => "Medium",
+        (FileHostingSeverityId)4 => "High",
+        (FileHostingSeverityId)5 => "Critical",
+        (FileHostingSeverityId)6 => "Fatal",
+        (FileHostingSeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>share_type_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>share_type</c> attribute contains the source-specific label.
@@ -598,6 +823,21 @@ public enum FileHostingShareTypeId
     /// The share type is not mapped. See the <c>share_type</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="FileHostingShareTypeId"/>.</summary>
+public static class FileHostingShareTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FileHostingShareTypeId value) => value switch
+    {
+        (FileHostingShareTypeId)0 => "Unknown",
+        (FileHostingShareTypeId)1 => "File",
+        (FileHostingShareTypeId)2 => "Pipe",
+        (FileHostingShareTypeId)3 => "Print",
+        (FileHostingShareTypeId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -622,4 +862,18 @@ public enum FileHostingStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="FileHostingStatusId"/>.</summary>
+public static class FileHostingStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FileHostingStatusId value) => value switch
+    {
+        (FileHostingStatusId)0 => "Unknown",
+        (FileHostingStatusId)1 => "Success",
+        (FileHostingStatusId)2 => "Failure",
+        (FileHostingStatusId)99 => "Other",
+        _ => null,
+    };
 }

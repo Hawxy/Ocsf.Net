@@ -101,6 +101,18 @@ public class JobTrigger : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public User? User { get; set; }
+
+    /// <summary>
+    /// Sets <c>type_id</c> and the <c>type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="type"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetType(JobTriggerTypeId typeId, string? type = null)
+    {
+        TypeId = typeId;
+        if ((type ?? typeId.Caption()) is { } label)
+            Type = label;
+    }
 }
 
 /// <summary>
@@ -129,4 +141,19 @@ public enum JobTriggerTypeId
     /// The job trigger is unmapped. See the <c>type</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="JobTriggerTypeId"/>.</summary>
+public static class JobTriggerTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this JobTriggerTypeId value) => value switch
+    {
+        (JobTriggerTypeId)0 => "Unknown",
+        (JobTriggerTypeId)1 => "Boot",
+        (JobTriggerTypeId)2 => "Schedule",
+        (JobTriggerTypeId)3 => "Event",
+        (JobTriggerTypeId)99 => "Other",
+        _ => null,
+    };
 }

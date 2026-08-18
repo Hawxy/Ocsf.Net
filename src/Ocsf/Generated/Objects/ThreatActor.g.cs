@@ -40,6 +40,18 @@ public class ThreatActor : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public ThreatActorTypeId? TypeId { get; set; }
+
+    /// <summary>
+    /// Sets <c>type_id</c> and the <c>type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="type"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetType(ThreatActorTypeId typeId, string? type = null)
+    {
+        TypeId = typeId;
+        if ((type ?? typeId.Caption()) is { } label)
+            Type = label;
+    }
 }
 
 /// <summary>
@@ -60,4 +72,20 @@ public enum ThreatActorTypeId
     /// The threat actor type is not mapped.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ThreatActorTypeId"/>.</summary>
+public static class ThreatActorTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ThreatActorTypeId value) => value switch
+    {
+        (ThreatActorTypeId)0 => "Unknown",
+        (ThreatActorTypeId)1 => "Nation-state",
+        (ThreatActorTypeId)2 => "Cybercriminal",
+        (ThreatActorTypeId)3 => "Hacktivists",
+        (ThreatActorTypeId)4 => "Insider",
+        (ThreatActorTypeId)99 => "Other",
+        _ => null,
+    };
 }

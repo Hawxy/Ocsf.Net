@@ -126,6 +126,42 @@ public class NetworkConnectionInfo : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public string? Uid { get; set; }
+
+    /// <summary>
+    /// Sets <c>boundary_id</c> and the <c>boundary</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="boundary"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetBoundary(NetworkConnectionInfoBoundaryId boundaryId, string? boundary = null)
+    {
+        BoundaryId = boundaryId;
+        if ((boundary ?? boundaryId.Caption()) is { } label)
+            Boundary = label;
+    }
+
+    /// <summary>
+    /// Sets <c>direction_id</c> and the <c>direction</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="direction"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDirection(NetworkConnectionInfoDirectionId directionId, string? direction = null)
+    {
+        DirectionId = directionId;
+        if ((direction ?? directionId.Caption()) is { } label)
+            Direction = label;
+    }
+
+    /// <summary>
+    /// Sets <c>protocol_ver_id</c> and the <c>protocol_ver</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="protocolVer"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetProtocolVer(NetworkConnectionInfoProtocolVerId protocolVerId, string? protocolVer = null)
+    {
+        ProtocolVerId = protocolVerId;
+        if ((protocolVer ?? protocolVerId.Caption()) is { } label)
+            ProtocolVer = label;
+    }
 }
 
 /// <summary>
@@ -188,6 +224,29 @@ public enum NetworkConnectionInfoBoundaryId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="NetworkConnectionInfoBoundaryId"/>.</summary>
+public static class NetworkConnectionInfoBoundaryIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NetworkConnectionInfoBoundaryId value) => value switch
+    {
+        (NetworkConnectionInfoBoundaryId)0 => "Unknown",
+        (NetworkConnectionInfoBoundaryId)1 => "Localhost",
+        (NetworkConnectionInfoBoundaryId)2 => "Internal",
+        (NetworkConnectionInfoBoundaryId)3 => "External",
+        (NetworkConnectionInfoBoundaryId)4 => "Same VPC",
+        (NetworkConnectionInfoBoundaryId)5 => "Internet/VPC Gateway",
+        (NetworkConnectionInfoBoundaryId)6 => "Virtual Private Gateway",
+        (NetworkConnectionInfoBoundaryId)7 => "Intra-region VPC",
+        (NetworkConnectionInfoBoundaryId)8 => "Inter-region VPC",
+        (NetworkConnectionInfoBoundaryId)9 => "Local Gateway",
+        (NetworkConnectionInfoBoundaryId)10 => "Gateway VPC",
+        (NetworkConnectionInfoBoundaryId)11 => "Internet Gateway",
+        (NetworkConnectionInfoBoundaryId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>direction_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>direction</c> attribute contains the source-specific label.
@@ -220,6 +279,22 @@ public enum NetworkConnectionInfoDirectionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="NetworkConnectionInfoDirectionId"/>.</summary>
+public static class NetworkConnectionInfoDirectionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NetworkConnectionInfoDirectionId value) => value switch
+    {
+        (NetworkConnectionInfoDirectionId)0 => "Unknown",
+        (NetworkConnectionInfoDirectionId)1 => "Inbound",
+        (NetworkConnectionInfoDirectionId)2 => "Outbound",
+        (NetworkConnectionInfoDirectionId)3 => "Lateral",
+        (NetworkConnectionInfoDirectionId)4 => "Local",
+        (NetworkConnectionInfoDirectionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>protocol_ver_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>protocol_ver</c> attribute contains the source-specific label.
@@ -236,4 +311,18 @@ public enum NetworkConnectionInfoProtocolVerId
     /// The protocol version is not mapped. See the <c>protocol_ver</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="NetworkConnectionInfoProtocolVerId"/>.</summary>
+public static class NetworkConnectionInfoProtocolVerIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this NetworkConnectionInfoProtocolVerId value) => value switch
+    {
+        (NetworkConnectionInfoProtocolVerId)0 => "Unknown",
+        (NetworkConnectionInfoProtocolVerId)4 => "Internet Protocol version 4 (IPv4)",
+        (NetworkConnectionInfoProtocolVerId)6 => "Internet Protocol version 6 (IPv6)",
+        (NetworkConnectionInfoProtocolVerId)99 => "Other",
+        _ => null,
+    };
 }

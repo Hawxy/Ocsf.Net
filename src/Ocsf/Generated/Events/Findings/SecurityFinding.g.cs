@@ -233,11 +233,115 @@ public class SecurityFinding : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Optional)]
     public List<Objects.Vulnerability>? Vulnerabilities { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(SecurityFindingActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(SecurityFindingActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(SecurityFindingActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(SecurityFindingConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(SecurityFindingDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>impact_id</c> and the <c>impact</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="impact"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetImpact(SecurityFindingImpactId impactId, string? impact = null)
+    {
+        ImpactId = impactId;
+        if ((impact ?? impactId.Caption()) is { } label)
+            Impact = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(SecurityFindingRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(SecurityFindingSeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>state_id</c> and the <c>state</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="state"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetState(SecurityFindingStateId stateId, string? state = null)
+    {
+        StateId = stateId;
+        if ((state ?? stateId.Caption()) is { } label)
+            State = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(SecurityFindingStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -273,6 +377,22 @@ public enum SecurityFindingActionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="SecurityFindingActionId"/>.</summary>
+public static class SecurityFindingActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SecurityFindingActionId value) => value switch
+    {
+        (SecurityFindingActionId)0 => "Unknown",
+        (SecurityFindingActionId)1 => "Allowed",
+        (SecurityFindingActionId)2 => "Denied",
+        (SecurityFindingActionId)3 => "Observed",
+        (SecurityFindingActionId)4 => "Modified",
+        (SecurityFindingActionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>activity_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>activity_name</c> attribute contains the source-specific label.
@@ -301,6 +421,21 @@ public enum SecurityFindingActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="SecurityFindingActivityId"/>.</summary>
+public static class SecurityFindingActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SecurityFindingActivityId value) => value switch
+    {
+        (SecurityFindingActivityId)0 => "Unknown",
+        (SecurityFindingActivityId)1 => "Create",
+        (SecurityFindingActivityId)2 => "Update",
+        (SecurityFindingActivityId)3 => "Close",
+        (SecurityFindingActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -318,6 +453,21 @@ public enum SecurityFindingConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="SecurityFindingConfidenceId"/>.</summary>
+public static class SecurityFindingConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SecurityFindingConfidenceId value) => value switch
+    {
+        (SecurityFindingConfidenceId)0 => "Unknown",
+        (SecurityFindingConfidenceId)1 => "Low",
+        (SecurityFindingConfidenceId)2 => "Medium",
+        (SecurityFindingConfidenceId)3 => "High",
+        (SecurityFindingConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -444,6 +594,45 @@ public enum SecurityFindingDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="SecurityFindingDispositionId"/>.</summary>
+public static class SecurityFindingDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SecurityFindingDispositionId value) => value switch
+    {
+        (SecurityFindingDispositionId)0 => "Unknown",
+        (SecurityFindingDispositionId)1 => "Allowed",
+        (SecurityFindingDispositionId)2 => "Blocked",
+        (SecurityFindingDispositionId)3 => "Quarantined",
+        (SecurityFindingDispositionId)4 => "Isolated",
+        (SecurityFindingDispositionId)5 => "Deleted",
+        (SecurityFindingDispositionId)6 => "Dropped",
+        (SecurityFindingDispositionId)7 => "Custom Action",
+        (SecurityFindingDispositionId)8 => "Approved",
+        (SecurityFindingDispositionId)9 => "Restored",
+        (SecurityFindingDispositionId)10 => "Exonerated",
+        (SecurityFindingDispositionId)11 => "Corrected",
+        (SecurityFindingDispositionId)12 => "Partially Corrected",
+        (SecurityFindingDispositionId)13 => "Uncorrected",
+        (SecurityFindingDispositionId)14 => "Delayed",
+        (SecurityFindingDispositionId)15 => "Detected",
+        (SecurityFindingDispositionId)16 => "No Action",
+        (SecurityFindingDispositionId)17 => "Logged",
+        (SecurityFindingDispositionId)18 => "Tagged",
+        (SecurityFindingDispositionId)19 => "Alert",
+        (SecurityFindingDispositionId)20 => "Count",
+        (SecurityFindingDispositionId)21 => "Reset",
+        (SecurityFindingDispositionId)22 => "Captcha",
+        (SecurityFindingDispositionId)23 => "Challenge",
+        (SecurityFindingDispositionId)24 => "Access Revoked",
+        (SecurityFindingDispositionId)25 => "Rejected",
+        (SecurityFindingDispositionId)26 => "Unauthorized",
+        (SecurityFindingDispositionId)27 => "Error",
+        (SecurityFindingDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>impact_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>impact</c> attribute contains the source-specific label.
@@ -476,6 +665,22 @@ public enum SecurityFindingImpactId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="SecurityFindingImpactId"/>.</summary>
+public static class SecurityFindingImpactIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SecurityFindingImpactId value) => value switch
+    {
+        (SecurityFindingImpactId)0 => "Unknown",
+        (SecurityFindingImpactId)1 => "Low",
+        (SecurityFindingImpactId)2 => "Medium",
+        (SecurityFindingImpactId)3 => "High",
+        (SecurityFindingImpactId)4 => "Critical",
+        (SecurityFindingImpactId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -491,6 +696,22 @@ public enum SecurityFindingRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="SecurityFindingRiskLevelId"/>.</summary>
+public static class SecurityFindingRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SecurityFindingRiskLevelId value) => value switch
+    {
+        (SecurityFindingRiskLevelId)0 => "Info",
+        (SecurityFindingRiskLevelId)1 => "Low",
+        (SecurityFindingRiskLevelId)2 => "Medium",
+        (SecurityFindingRiskLevelId)3 => "High",
+        (SecurityFindingRiskLevelId)4 => "Critical",
+        (SecurityFindingRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -533,6 +754,24 @@ public enum SecurityFindingSeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="SecurityFindingSeverityId"/>.</summary>
+public static class SecurityFindingSeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SecurityFindingSeverityId value) => value switch
+    {
+        (SecurityFindingSeverityId)0 => "Unknown",
+        (SecurityFindingSeverityId)1 => "Informational",
+        (SecurityFindingSeverityId)2 => "Low",
+        (SecurityFindingSeverityId)3 => "Medium",
+        (SecurityFindingSeverityId)4 => "High",
+        (SecurityFindingSeverityId)5 => "Critical",
+        (SecurityFindingSeverityId)6 => "Fatal",
+        (SecurityFindingSeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>state_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>state</c> attribute contains the source-specific label.
@@ -565,6 +804,22 @@ public enum SecurityFindingStateId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="SecurityFindingStateId"/>.</summary>
+public static class SecurityFindingStateIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SecurityFindingStateId value) => value switch
+    {
+        (SecurityFindingStateId)0 => "Unknown",
+        (SecurityFindingStateId)1 => "New",
+        (SecurityFindingStateId)2 => "In Progress",
+        (SecurityFindingStateId)3 => "Suppressed",
+        (SecurityFindingStateId)4 => "Resolved",
+        (SecurityFindingStateId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -587,4 +842,18 @@ public enum SecurityFindingStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="SecurityFindingStatusId"/>.</summary>
+public static class SecurityFindingStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SecurityFindingStatusId value) => value switch
+    {
+        (SecurityFindingStatusId)0 => "Unknown",
+        (SecurityFindingStatusId)1 => "Success",
+        (SecurityFindingStatusId)2 => "Failure",
+        (SecurityFindingStatusId)99 => "Other",
+        _ => null,
+    };
 }

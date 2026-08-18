@@ -75,6 +75,18 @@ public class JobAction : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public string? WorkingDirectory { get; set; }
+
+    /// <summary>
+    /// Sets <c>type_id</c> and the <c>type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="type"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetType(JobActionTypeId typeId, string? type = null)
+    {
+        TypeId = typeId;
+        if ((type ?? typeId.Caption()) is { } label)
+            Type = label;
+    }
 }
 
 /// <summary>
@@ -107,4 +119,20 @@ public enum JobActionTypeId
     /// The performed action is not mapped. See the <c>type</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="JobActionTypeId"/>.</summary>
+public static class JobActionTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this JobActionTypeId value) => value switch
+    {
+        (JobActionTypeId)0 => "Unknown",
+        (JobActionTypeId)1 => "COM Handler",
+        (JobActionTypeId)2 => "Execute",
+        (JobActionTypeId)3 => "E-mail",
+        (JobActionTypeId)4 => "Show Message",
+        (JobActionTypeId)99 => "Other",
+        _ => null,
+    };
 }

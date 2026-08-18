@@ -314,11 +314,127 @@ public class Authentication : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Required)]
     public Objects.User? User { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(AuthenticationActivityId activity)
+    /// <summary>
+    /// Sets <c>account_switch_type_id</c> and the <c>account_switch_type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="accountSwitchType"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAccountSwitchType(AuthenticationAccountSwitchTypeId accountSwitchTypeId, string? accountSwitchType = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        AccountSwitchTypeId = accountSwitchTypeId;
+        if ((accountSwitchType ?? accountSwitchTypeId.Caption()) is { } label)
+            AccountSwitchType = label;
+    }
+
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(AuthenticationActionId actionId, string? action = null)
+    {
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(AuthenticationActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>auth_protocol_id</c> and the <c>auth_protocol</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="authProtocol"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAuthProtocol(AuthenticationAuthProtocolId authProtocolId, string? authProtocol = null)
+    {
+        AuthProtocolId = authProtocolId;
+        if ((authProtocol ?? authProtocolId.Caption()) is { } label)
+            AuthProtocol = label;
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(AuthenticationConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(AuthenticationDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>logon_type_id</c> and the <c>logon_type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="logonType"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetLogonType(AuthenticationLogonTypeId logonTypeId, string? logonType = null)
+    {
+        LogonTypeId = logonTypeId;
+        if ((logonType ?? logonTypeId.Caption()) is { } label)
+            LogonType = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(AuthenticationRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(AuthenticationSeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(AuthenticationStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -344,6 +460,20 @@ public enum AuthenticationAccountSwitchTypeId
     /// The account switch type is not mapped. See the <c>account_switch_type</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="AuthenticationAccountSwitchTypeId"/>.</summary>
+public static class AuthenticationAccountSwitchTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AuthenticationAccountSwitchTypeId value) => value switch
+    {
+        (AuthenticationAccountSwitchTypeId)0 => "Unknown",
+        (AuthenticationAccountSwitchTypeId)1 => "Substitute User",
+        (AuthenticationAccountSwitchTypeId)2 => "Impersonate",
+        (AuthenticationAccountSwitchTypeId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -376,6 +506,22 @@ public enum AuthenticationActionId
     /// The action is not mapped. See the <c>action</c> attribute which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="AuthenticationActionId"/>.</summary>
+public static class AuthenticationActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AuthenticationActionId value) => value switch
+    {
+        (AuthenticationActionId)0 => "Unknown",
+        (AuthenticationActionId)1 => "Allowed",
+        (AuthenticationActionId)2 => "Denied",
+        (AuthenticationActionId)3 => "Observed",
+        (AuthenticationActionId)4 => "Modified",
+        (AuthenticationActionId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -422,6 +568,25 @@ public enum AuthenticationActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="AuthenticationActivityId"/>.</summary>
+public static class AuthenticationActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AuthenticationActivityId value) => value switch
+    {
+        (AuthenticationActivityId)0 => "Unknown",
+        (AuthenticationActivityId)1 => "Logon",
+        (AuthenticationActivityId)2 => "Logoff",
+        (AuthenticationActivityId)3 => "Authentication Ticket",
+        (AuthenticationActivityId)4 => "Service Ticket Request",
+        (AuthenticationActivityId)5 => "Service Ticket Renew",
+        (AuthenticationActivityId)6 => "Preauth",
+        (AuthenticationActivityId)7 => "Account Switch",
+        (AuthenticationActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>auth_protocol_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>auth_protocol</c> attribute contains the source-specific label.
@@ -450,6 +615,30 @@ public enum AuthenticationAuthProtocolId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="AuthenticationAuthProtocolId"/>.</summary>
+public static class AuthenticationAuthProtocolIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AuthenticationAuthProtocolId value) => value switch
+    {
+        (AuthenticationAuthProtocolId)0 => "Unknown",
+        (AuthenticationAuthProtocolId)1 => "NTLM",
+        (AuthenticationAuthProtocolId)2 => "Kerberos",
+        (AuthenticationAuthProtocolId)3 => "Digest",
+        (AuthenticationAuthProtocolId)4 => "OpenID",
+        (AuthenticationAuthProtocolId)5 => "SAML",
+        (AuthenticationAuthProtocolId)6 => "OAUTH 2.0",
+        (AuthenticationAuthProtocolId)7 => "PAP",
+        (AuthenticationAuthProtocolId)8 => "CHAP",
+        (AuthenticationAuthProtocolId)9 => "EAP",
+        (AuthenticationAuthProtocolId)10 => "RADIUS",
+        (AuthenticationAuthProtocolId)11 => "Basic Authentication",
+        (AuthenticationAuthProtocolId)12 => "LDAP",
+        (AuthenticationAuthProtocolId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -467,6 +656,21 @@ public enum AuthenticationConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="AuthenticationConfidenceId"/>.</summary>
+public static class AuthenticationConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AuthenticationConfidenceId value) => value switch
+    {
+        (AuthenticationConfidenceId)0 => "Unknown",
+        (AuthenticationConfidenceId)1 => "Low",
+        (AuthenticationConfidenceId)2 => "Medium",
+        (AuthenticationConfidenceId)3 => "High",
+        (AuthenticationConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -593,6 +797,45 @@ public enum AuthenticationDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="AuthenticationDispositionId"/>.</summary>
+public static class AuthenticationDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AuthenticationDispositionId value) => value switch
+    {
+        (AuthenticationDispositionId)0 => "Unknown",
+        (AuthenticationDispositionId)1 => "Allowed",
+        (AuthenticationDispositionId)2 => "Blocked",
+        (AuthenticationDispositionId)3 => "Quarantined",
+        (AuthenticationDispositionId)4 => "Isolated",
+        (AuthenticationDispositionId)5 => "Deleted",
+        (AuthenticationDispositionId)6 => "Dropped",
+        (AuthenticationDispositionId)7 => "Custom Action",
+        (AuthenticationDispositionId)8 => "Approved",
+        (AuthenticationDispositionId)9 => "Restored",
+        (AuthenticationDispositionId)10 => "Exonerated",
+        (AuthenticationDispositionId)11 => "Corrected",
+        (AuthenticationDispositionId)12 => "Partially Corrected",
+        (AuthenticationDispositionId)13 => "Uncorrected",
+        (AuthenticationDispositionId)14 => "Delayed",
+        (AuthenticationDispositionId)15 => "Detected",
+        (AuthenticationDispositionId)16 => "No Action",
+        (AuthenticationDispositionId)17 => "Logged",
+        (AuthenticationDispositionId)18 => "Tagged",
+        (AuthenticationDispositionId)19 => "Alert",
+        (AuthenticationDispositionId)20 => "Count",
+        (AuthenticationDispositionId)21 => "Reset",
+        (AuthenticationDispositionId)22 => "Captcha",
+        (AuthenticationDispositionId)23 => "Challenge",
+        (AuthenticationDispositionId)24 => "Access Revoked",
+        (AuthenticationDispositionId)25 => "Rejected",
+        (AuthenticationDispositionId)26 => "Unauthorized",
+        (AuthenticationDispositionId)27 => "Error",
+        (AuthenticationDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>logon_type_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>logon_type</c> attribute contains the source-specific label.
@@ -657,6 +900,30 @@ public enum AuthenticationLogonTypeId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="AuthenticationLogonTypeId"/>.</summary>
+public static class AuthenticationLogonTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AuthenticationLogonTypeId value) => value switch
+    {
+        (AuthenticationLogonTypeId)0 => "Unknown",
+        (AuthenticationLogonTypeId)1 => "System",
+        (AuthenticationLogonTypeId)2 => "Interactive",
+        (AuthenticationLogonTypeId)3 => "Network",
+        (AuthenticationLogonTypeId)4 => "Batch",
+        (AuthenticationLogonTypeId)5 => "OS Service",
+        (AuthenticationLogonTypeId)7 => "Unlock",
+        (AuthenticationLogonTypeId)8 => "Network Cleartext",
+        (AuthenticationLogonTypeId)9 => "New Credentials",
+        (AuthenticationLogonTypeId)10 => "Remote Interactive",
+        (AuthenticationLogonTypeId)11 => "Cached Interactive",
+        (AuthenticationLogonTypeId)12 => "Cached Remote Interactive",
+        (AuthenticationLogonTypeId)13 => "Cached Unlock",
+        (AuthenticationLogonTypeId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -672,6 +939,22 @@ public enum AuthenticationRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="AuthenticationRiskLevelId"/>.</summary>
+public static class AuthenticationRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AuthenticationRiskLevelId value) => value switch
+    {
+        (AuthenticationRiskLevelId)0 => "Info",
+        (AuthenticationRiskLevelId)1 => "Low",
+        (AuthenticationRiskLevelId)2 => "Medium",
+        (AuthenticationRiskLevelId)3 => "High",
+        (AuthenticationRiskLevelId)4 => "Critical",
+        (AuthenticationRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -714,6 +997,24 @@ public enum AuthenticationSeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="AuthenticationSeverityId"/>.</summary>
+public static class AuthenticationSeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AuthenticationSeverityId value) => value switch
+    {
+        (AuthenticationSeverityId)0 => "Unknown",
+        (AuthenticationSeverityId)1 => "Informational",
+        (AuthenticationSeverityId)2 => "Low",
+        (AuthenticationSeverityId)3 => "Medium",
+        (AuthenticationSeverityId)4 => "High",
+        (AuthenticationSeverityId)5 => "Critical",
+        (AuthenticationSeverityId)6 => "Fatal",
+        (AuthenticationSeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -736,4 +1037,18 @@ public enum AuthenticationStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="AuthenticationStatusId"/>.</summary>
+public static class AuthenticationStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AuthenticationStatusId value) => value switch
+    {
+        (AuthenticationStatusId)0 => "Unknown",
+        (AuthenticationStatusId)1 => "Success",
+        (AuthenticationStatusId)2 => "Failure",
+        (AuthenticationStatusId)99 => "Other",
+        _ => null,
+    };
 }

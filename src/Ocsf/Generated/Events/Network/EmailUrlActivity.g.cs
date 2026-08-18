@@ -115,11 +115,91 @@ public class EmailUrlActivity : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Required)]
     public Objects.Url? Url { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(EmailUrlActivityActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(EmailUrlActivityActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(EmailUrlActivityActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(EmailUrlActivityConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(EmailUrlActivityDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(EmailUrlActivityRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(EmailUrlActivitySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(EmailUrlActivityStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -155,6 +235,22 @@ public enum EmailUrlActivityActionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="EmailUrlActivityActionId"/>.</summary>
+public static class EmailUrlActivityActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EmailUrlActivityActionId value) => value switch
+    {
+        (EmailUrlActivityActionId)0 => "Unknown",
+        (EmailUrlActivityActionId)1 => "Allowed",
+        (EmailUrlActivityActionId)2 => "Denied",
+        (EmailUrlActivityActionId)3 => "Observed",
+        (EmailUrlActivityActionId)4 => "Modified",
+        (EmailUrlActivityActionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>activity_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>activity_name</c> attribute contains the source-specific label.
@@ -177,6 +273,21 @@ public enum EmailUrlActivityActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="EmailUrlActivityActivityId"/>.</summary>
+public static class EmailUrlActivityActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EmailUrlActivityActivityId value) => value switch
+    {
+        (EmailUrlActivityActivityId)0 => "Unknown",
+        (EmailUrlActivityActivityId)1 => "Send",
+        (EmailUrlActivityActivityId)2 => "Receive",
+        (EmailUrlActivityActivityId)3 => "Scan",
+        (EmailUrlActivityActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -194,6 +305,21 @@ public enum EmailUrlActivityConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="EmailUrlActivityConfidenceId"/>.</summary>
+public static class EmailUrlActivityConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EmailUrlActivityConfidenceId value) => value switch
+    {
+        (EmailUrlActivityConfidenceId)0 => "Unknown",
+        (EmailUrlActivityConfidenceId)1 => "Low",
+        (EmailUrlActivityConfidenceId)2 => "Medium",
+        (EmailUrlActivityConfidenceId)3 => "High",
+        (EmailUrlActivityConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -320,6 +446,45 @@ public enum EmailUrlActivityDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="EmailUrlActivityDispositionId"/>.</summary>
+public static class EmailUrlActivityDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EmailUrlActivityDispositionId value) => value switch
+    {
+        (EmailUrlActivityDispositionId)0 => "Unknown",
+        (EmailUrlActivityDispositionId)1 => "Allowed",
+        (EmailUrlActivityDispositionId)2 => "Blocked",
+        (EmailUrlActivityDispositionId)3 => "Quarantined",
+        (EmailUrlActivityDispositionId)4 => "Isolated",
+        (EmailUrlActivityDispositionId)5 => "Deleted",
+        (EmailUrlActivityDispositionId)6 => "Dropped",
+        (EmailUrlActivityDispositionId)7 => "Custom Action",
+        (EmailUrlActivityDispositionId)8 => "Approved",
+        (EmailUrlActivityDispositionId)9 => "Restored",
+        (EmailUrlActivityDispositionId)10 => "Exonerated",
+        (EmailUrlActivityDispositionId)11 => "Corrected",
+        (EmailUrlActivityDispositionId)12 => "Partially Corrected",
+        (EmailUrlActivityDispositionId)13 => "Uncorrected",
+        (EmailUrlActivityDispositionId)14 => "Delayed",
+        (EmailUrlActivityDispositionId)15 => "Detected",
+        (EmailUrlActivityDispositionId)16 => "No Action",
+        (EmailUrlActivityDispositionId)17 => "Logged",
+        (EmailUrlActivityDispositionId)18 => "Tagged",
+        (EmailUrlActivityDispositionId)19 => "Alert",
+        (EmailUrlActivityDispositionId)20 => "Count",
+        (EmailUrlActivityDispositionId)21 => "Reset",
+        (EmailUrlActivityDispositionId)22 => "Captcha",
+        (EmailUrlActivityDispositionId)23 => "Challenge",
+        (EmailUrlActivityDispositionId)24 => "Access Revoked",
+        (EmailUrlActivityDispositionId)25 => "Rejected",
+        (EmailUrlActivityDispositionId)26 => "Unauthorized",
+        (EmailUrlActivityDispositionId)27 => "Error",
+        (EmailUrlActivityDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -335,6 +500,22 @@ public enum EmailUrlActivityRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="EmailUrlActivityRiskLevelId"/>.</summary>
+public static class EmailUrlActivityRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EmailUrlActivityRiskLevelId value) => value switch
+    {
+        (EmailUrlActivityRiskLevelId)0 => "Info",
+        (EmailUrlActivityRiskLevelId)1 => "Low",
+        (EmailUrlActivityRiskLevelId)2 => "Medium",
+        (EmailUrlActivityRiskLevelId)3 => "High",
+        (EmailUrlActivityRiskLevelId)4 => "Critical",
+        (EmailUrlActivityRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -377,6 +558,24 @@ public enum EmailUrlActivitySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="EmailUrlActivitySeverityId"/>.</summary>
+public static class EmailUrlActivitySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EmailUrlActivitySeverityId value) => value switch
+    {
+        (EmailUrlActivitySeverityId)0 => "Unknown",
+        (EmailUrlActivitySeverityId)1 => "Informational",
+        (EmailUrlActivitySeverityId)2 => "Low",
+        (EmailUrlActivitySeverityId)3 => "Medium",
+        (EmailUrlActivitySeverityId)4 => "High",
+        (EmailUrlActivitySeverityId)5 => "Critical",
+        (EmailUrlActivitySeverityId)6 => "Fatal",
+        (EmailUrlActivitySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -399,4 +598,18 @@ public enum EmailUrlActivityStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="EmailUrlActivityStatusId"/>.</summary>
+public static class EmailUrlActivityStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EmailUrlActivityStatusId value) => value switch
+    {
+        (EmailUrlActivityStatusId)0 => "Unknown",
+        (EmailUrlActivityStatusId)1 => "Success",
+        (EmailUrlActivityStatusId)2 => "Failure",
+        (EmailUrlActivityStatusId)99 => "Other",
+        _ => null,
+    };
 }

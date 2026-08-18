@@ -32,6 +32,18 @@ public class KillChainPhase : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Required)]
     public KillChainPhasePhaseId? PhaseId { get; set; }
+
+    /// <summary>
+    /// Sets <c>phase_id</c> and the <c>phase</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="phase"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetPhase(KillChainPhasePhaseId phaseId, string? phase = null)
+    {
+        PhaseId = phaseId;
+        if ((phase ?? phaseId.Caption()) is { } label)
+            Phase = label;
+    }
 }
 
 /// <summary>
@@ -76,4 +88,23 @@ public enum KillChainPhasePhaseId
     /// The kill chain phase is not mapped. See the <c>phase</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="KillChainPhasePhaseId"/>.</summary>
+public static class KillChainPhasePhaseIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this KillChainPhasePhaseId value) => value switch
+    {
+        (KillChainPhasePhaseId)0 => "Unknown",
+        (KillChainPhasePhaseId)1 => "Reconnaissance",
+        (KillChainPhasePhaseId)2 => "Weaponization",
+        (KillChainPhasePhaseId)3 => "Delivery",
+        (KillChainPhasePhaseId)4 => "Exploitation",
+        (KillChainPhasePhaseId)5 => "Installation",
+        (KillChainPhasePhaseId)6 => "Command & Control",
+        (KillChainPhasePhaseId)7 => "Actions on Objectives",
+        (KillChainPhasePhaseId)99 => "Other",
+        _ => null,
+    };
 }

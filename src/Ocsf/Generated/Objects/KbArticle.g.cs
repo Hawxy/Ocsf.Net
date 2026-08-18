@@ -141,6 +141,18 @@ public class KbArticle : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public string? Uid { get; set; }
+
+    /// <summary>
+    /// Sets <c>install_state_id</c> and the <c>install_state</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="installState"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetInstallState(KbArticleInstallStateId installStateId, string? installState = null)
+    {
+        InstallStateId = installStateId;
+        if ((installState ?? installStateId.Caption()) is { } label)
+            InstallState = label;
+    }
 }
 
 /// <summary>
@@ -169,4 +181,19 @@ public enum KbArticleInstallStateId
     /// The install state is not mapped. See the <c>install_state</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="KbArticleInstallStateId"/>.</summary>
+public static class KbArticleInstallStateIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this KbArticleInstallStateId value) => value switch
+    {
+        (KbArticleInstallStateId)0 => "Unknown",
+        (KbArticleInstallStateId)1 => "Installed",
+        (KbArticleInstallStateId)2 => "Not Installed",
+        (KbArticleInstallStateId)3 => "Installed Pending Reboot",
+        (KbArticleInstallStateId)99 => "Other",
+        _ => null,
+    };
 }

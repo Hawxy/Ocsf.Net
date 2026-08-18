@@ -226,6 +226,18 @@ public class Endpoint : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public string? Zone { get; set; }
+
+    /// <summary>
+    /// Sets <c>type_id</c> and the <c>type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="type"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetType(EndpointTypeId typeId, string? type = null)
+    {
+        TypeId = typeId;
+        if ((type ?? typeId.Caption()) is { } label)
+            Type = label;
+    }
 }
 
 /// <summary>
@@ -257,4 +269,31 @@ public enum EndpointTypeId
     /// The type is not mapped. See the <c>type</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="EndpointTypeId"/>.</summary>
+public static class EndpointTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EndpointTypeId value) => value switch
+    {
+        (EndpointTypeId)0 => "Unknown",
+        (EndpointTypeId)1 => "Server",
+        (EndpointTypeId)2 => "Desktop",
+        (EndpointTypeId)3 => "Laptop",
+        (EndpointTypeId)4 => "Tablet",
+        (EndpointTypeId)5 => "Mobile",
+        (EndpointTypeId)6 => "Virtual",
+        (EndpointTypeId)7 => "IOT",
+        (EndpointTypeId)8 => "Browser",
+        (EndpointTypeId)9 => "Firewall",
+        (EndpointTypeId)10 => "Switch",
+        (EndpointTypeId)11 => "Hub",
+        (EndpointTypeId)12 => "Router",
+        (EndpointTypeId)13 => "IDS",
+        (EndpointTypeId)14 => "IPS",
+        (EndpointTypeId)15 => "Load Balancer",
+        (EndpointTypeId)99 => "Other",
+        _ => null,
+    };
 }

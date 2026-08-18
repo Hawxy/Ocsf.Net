@@ -158,11 +158,91 @@ public class CloudResourcesInventoryInfo : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public Objects.Table? Table { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(CloudResourcesInventoryInfoActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(CloudResourcesInventoryInfoActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(CloudResourcesInventoryInfoActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(CloudResourcesInventoryInfoConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(CloudResourcesInventoryInfoDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(CloudResourcesInventoryInfoRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(CloudResourcesInventoryInfoSeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(CloudResourcesInventoryInfoStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -198,6 +278,22 @@ public enum CloudResourcesInventoryInfoActionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="CloudResourcesInventoryInfoActionId"/>.</summary>
+public static class CloudResourcesInventoryInfoActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this CloudResourcesInventoryInfoActionId value) => value switch
+    {
+        (CloudResourcesInventoryInfoActionId)0 => "Unknown",
+        (CloudResourcesInventoryInfoActionId)1 => "Allowed",
+        (CloudResourcesInventoryInfoActionId)2 => "Denied",
+        (CloudResourcesInventoryInfoActionId)3 => "Observed",
+        (CloudResourcesInventoryInfoActionId)4 => "Modified",
+        (CloudResourcesInventoryInfoActionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>activity_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>activity_name</c> attribute contains the source-specific label.
@@ -222,6 +318,20 @@ public enum CloudResourcesInventoryInfoActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="CloudResourcesInventoryInfoActivityId"/>.</summary>
+public static class CloudResourcesInventoryInfoActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this CloudResourcesInventoryInfoActivityId value) => value switch
+    {
+        (CloudResourcesInventoryInfoActivityId)0 => "Unknown",
+        (CloudResourcesInventoryInfoActivityId)1 => "Log",
+        (CloudResourcesInventoryInfoActivityId)2 => "Collect",
+        (CloudResourcesInventoryInfoActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -239,6 +349,21 @@ public enum CloudResourcesInventoryInfoConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="CloudResourcesInventoryInfoConfidenceId"/>.</summary>
+public static class CloudResourcesInventoryInfoConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this CloudResourcesInventoryInfoConfidenceId value) => value switch
+    {
+        (CloudResourcesInventoryInfoConfidenceId)0 => "Unknown",
+        (CloudResourcesInventoryInfoConfidenceId)1 => "Low",
+        (CloudResourcesInventoryInfoConfidenceId)2 => "Medium",
+        (CloudResourcesInventoryInfoConfidenceId)3 => "High",
+        (CloudResourcesInventoryInfoConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -365,6 +490,45 @@ public enum CloudResourcesInventoryInfoDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="CloudResourcesInventoryInfoDispositionId"/>.</summary>
+public static class CloudResourcesInventoryInfoDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this CloudResourcesInventoryInfoDispositionId value) => value switch
+    {
+        (CloudResourcesInventoryInfoDispositionId)0 => "Unknown",
+        (CloudResourcesInventoryInfoDispositionId)1 => "Allowed",
+        (CloudResourcesInventoryInfoDispositionId)2 => "Blocked",
+        (CloudResourcesInventoryInfoDispositionId)3 => "Quarantined",
+        (CloudResourcesInventoryInfoDispositionId)4 => "Isolated",
+        (CloudResourcesInventoryInfoDispositionId)5 => "Deleted",
+        (CloudResourcesInventoryInfoDispositionId)6 => "Dropped",
+        (CloudResourcesInventoryInfoDispositionId)7 => "Custom Action",
+        (CloudResourcesInventoryInfoDispositionId)8 => "Approved",
+        (CloudResourcesInventoryInfoDispositionId)9 => "Restored",
+        (CloudResourcesInventoryInfoDispositionId)10 => "Exonerated",
+        (CloudResourcesInventoryInfoDispositionId)11 => "Corrected",
+        (CloudResourcesInventoryInfoDispositionId)12 => "Partially Corrected",
+        (CloudResourcesInventoryInfoDispositionId)13 => "Uncorrected",
+        (CloudResourcesInventoryInfoDispositionId)14 => "Delayed",
+        (CloudResourcesInventoryInfoDispositionId)15 => "Detected",
+        (CloudResourcesInventoryInfoDispositionId)16 => "No Action",
+        (CloudResourcesInventoryInfoDispositionId)17 => "Logged",
+        (CloudResourcesInventoryInfoDispositionId)18 => "Tagged",
+        (CloudResourcesInventoryInfoDispositionId)19 => "Alert",
+        (CloudResourcesInventoryInfoDispositionId)20 => "Count",
+        (CloudResourcesInventoryInfoDispositionId)21 => "Reset",
+        (CloudResourcesInventoryInfoDispositionId)22 => "Captcha",
+        (CloudResourcesInventoryInfoDispositionId)23 => "Challenge",
+        (CloudResourcesInventoryInfoDispositionId)24 => "Access Revoked",
+        (CloudResourcesInventoryInfoDispositionId)25 => "Rejected",
+        (CloudResourcesInventoryInfoDispositionId)26 => "Unauthorized",
+        (CloudResourcesInventoryInfoDispositionId)27 => "Error",
+        (CloudResourcesInventoryInfoDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -380,6 +544,22 @@ public enum CloudResourcesInventoryInfoRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="CloudResourcesInventoryInfoRiskLevelId"/>.</summary>
+public static class CloudResourcesInventoryInfoRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this CloudResourcesInventoryInfoRiskLevelId value) => value switch
+    {
+        (CloudResourcesInventoryInfoRiskLevelId)0 => "Info",
+        (CloudResourcesInventoryInfoRiskLevelId)1 => "Low",
+        (CloudResourcesInventoryInfoRiskLevelId)2 => "Medium",
+        (CloudResourcesInventoryInfoRiskLevelId)3 => "High",
+        (CloudResourcesInventoryInfoRiskLevelId)4 => "Critical",
+        (CloudResourcesInventoryInfoRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -422,6 +602,24 @@ public enum CloudResourcesInventoryInfoSeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="CloudResourcesInventoryInfoSeverityId"/>.</summary>
+public static class CloudResourcesInventoryInfoSeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this CloudResourcesInventoryInfoSeverityId value) => value switch
+    {
+        (CloudResourcesInventoryInfoSeverityId)0 => "Unknown",
+        (CloudResourcesInventoryInfoSeverityId)1 => "Informational",
+        (CloudResourcesInventoryInfoSeverityId)2 => "Low",
+        (CloudResourcesInventoryInfoSeverityId)3 => "Medium",
+        (CloudResourcesInventoryInfoSeverityId)4 => "High",
+        (CloudResourcesInventoryInfoSeverityId)5 => "Critical",
+        (CloudResourcesInventoryInfoSeverityId)6 => "Fatal",
+        (CloudResourcesInventoryInfoSeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -444,4 +642,18 @@ public enum CloudResourcesInventoryInfoStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="CloudResourcesInventoryInfoStatusId"/>.</summary>
+public static class CloudResourcesInventoryInfoStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this CloudResourcesInventoryInfoStatusId value) => value switch
+    {
+        (CloudResourcesInventoryInfoStatusId)0 => "Unknown",
+        (CloudResourcesInventoryInfoStatusId)1 => "Success",
+        (CloudResourcesInventoryInfoStatusId)2 => "Failure",
+        (CloudResourcesInventoryInfoStatusId)99 => "Other",
+        _ => null,
+    };
 }

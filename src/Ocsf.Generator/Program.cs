@@ -50,10 +50,10 @@ internal static class Program
         var dir = new DirectoryInfo(Directory.GetCurrentDirectory());
         for (; dir is not null; dir = dir.Parent)
         {
-            if (dir.EnumerateFiles("ocsf.net.slnx").Any())
+            if (dir.EnumerateFiles("Ocsf.Net.slnx").Any())
                 return dir.FullName;
         }
-        throw new InvalidOperationException("Repository root not found (no ocsf.net.slnx in any parent directory).");
+        throw new InvalidOperationException("Repository root not found (no Ocsf.Net.slnx in any parent directory).");
     }
 
     private static string DefaultSchemaPath() =>

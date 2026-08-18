@@ -132,11 +132,103 @@ public class ServiceQuery : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public ServiceQueryStatusId? StatusId { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(ServiceQueryActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(ServiceQueryActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(ServiceQueryActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(ServiceQueryConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(ServiceQueryDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>query_result_id</c> and the <c>query_result</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="queryResult"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetQueryResult(ServiceQueryQueryResultId queryResultId, string? queryResult = null)
+    {
+        QueryResultId = queryResultId;
+        if ((queryResult ?? queryResultId.Caption()) is { } label)
+            QueryResult = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(ServiceQueryRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(ServiceQuerySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(ServiceQueryStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -172,6 +264,22 @@ public enum ServiceQueryActionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ServiceQueryActionId"/>.</summary>
+public static class ServiceQueryActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ServiceQueryActionId value) => value switch
+    {
+        (ServiceQueryActionId)0 => "Unknown",
+        (ServiceQueryActionId)1 => "Allowed",
+        (ServiceQueryActionId)2 => "Denied",
+        (ServiceQueryActionId)3 => "Observed",
+        (ServiceQueryActionId)4 => "Modified",
+        (ServiceQueryActionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>activity_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>activity_name</c> attribute contains the source-specific label.
@@ -192,6 +300,19 @@ public enum ServiceQueryActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ServiceQueryActivityId"/>.</summary>
+public static class ServiceQueryActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ServiceQueryActivityId value) => value switch
+    {
+        (ServiceQueryActivityId)0 => "Unknown",
+        (ServiceQueryActivityId)1 => "Query",
+        (ServiceQueryActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -209,6 +330,21 @@ public enum ServiceQueryConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ServiceQueryConfidenceId"/>.</summary>
+public static class ServiceQueryConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ServiceQueryConfidenceId value) => value switch
+    {
+        (ServiceQueryConfidenceId)0 => "Unknown",
+        (ServiceQueryConfidenceId)1 => "Low",
+        (ServiceQueryConfidenceId)2 => "Medium",
+        (ServiceQueryConfidenceId)3 => "High",
+        (ServiceQueryConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -335,6 +471,45 @@ public enum ServiceQueryDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ServiceQueryDispositionId"/>.</summary>
+public static class ServiceQueryDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ServiceQueryDispositionId value) => value switch
+    {
+        (ServiceQueryDispositionId)0 => "Unknown",
+        (ServiceQueryDispositionId)1 => "Allowed",
+        (ServiceQueryDispositionId)2 => "Blocked",
+        (ServiceQueryDispositionId)3 => "Quarantined",
+        (ServiceQueryDispositionId)4 => "Isolated",
+        (ServiceQueryDispositionId)5 => "Deleted",
+        (ServiceQueryDispositionId)6 => "Dropped",
+        (ServiceQueryDispositionId)7 => "Custom Action",
+        (ServiceQueryDispositionId)8 => "Approved",
+        (ServiceQueryDispositionId)9 => "Restored",
+        (ServiceQueryDispositionId)10 => "Exonerated",
+        (ServiceQueryDispositionId)11 => "Corrected",
+        (ServiceQueryDispositionId)12 => "Partially Corrected",
+        (ServiceQueryDispositionId)13 => "Uncorrected",
+        (ServiceQueryDispositionId)14 => "Delayed",
+        (ServiceQueryDispositionId)15 => "Detected",
+        (ServiceQueryDispositionId)16 => "No Action",
+        (ServiceQueryDispositionId)17 => "Logged",
+        (ServiceQueryDispositionId)18 => "Tagged",
+        (ServiceQueryDispositionId)19 => "Alert",
+        (ServiceQueryDispositionId)20 => "Count",
+        (ServiceQueryDispositionId)21 => "Reset",
+        (ServiceQueryDispositionId)22 => "Captcha",
+        (ServiceQueryDispositionId)23 => "Challenge",
+        (ServiceQueryDispositionId)24 => "Access Revoked",
+        (ServiceQueryDispositionId)25 => "Rejected",
+        (ServiceQueryDispositionId)26 => "Unauthorized",
+        (ServiceQueryDispositionId)27 => "Error",
+        (ServiceQueryDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>query_result_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>query_result</c> attribute contains the source-specific label.
@@ -371,6 +546,23 @@ public enum ServiceQueryQueryResultId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ServiceQueryQueryResultId"/>.</summary>
+public static class ServiceQueryQueryResultIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ServiceQueryQueryResultId value) => value switch
+    {
+        (ServiceQueryQueryResultId)0 => "Unknown",
+        (ServiceQueryQueryResultId)1 => "Exists",
+        (ServiceQueryQueryResultId)2 => "Partial",
+        (ServiceQueryQueryResultId)3 => "Does not exist",
+        (ServiceQueryQueryResultId)4 => "Error",
+        (ServiceQueryQueryResultId)5 => "Unsupported",
+        (ServiceQueryQueryResultId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -386,6 +578,22 @@ public enum ServiceQueryRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ServiceQueryRiskLevelId"/>.</summary>
+public static class ServiceQueryRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ServiceQueryRiskLevelId value) => value switch
+    {
+        (ServiceQueryRiskLevelId)0 => "Info",
+        (ServiceQueryRiskLevelId)1 => "Low",
+        (ServiceQueryRiskLevelId)2 => "Medium",
+        (ServiceQueryRiskLevelId)3 => "High",
+        (ServiceQueryRiskLevelId)4 => "Critical",
+        (ServiceQueryRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -428,6 +636,24 @@ public enum ServiceQuerySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ServiceQuerySeverityId"/>.</summary>
+public static class ServiceQuerySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ServiceQuerySeverityId value) => value switch
+    {
+        (ServiceQuerySeverityId)0 => "Unknown",
+        (ServiceQuerySeverityId)1 => "Informational",
+        (ServiceQuerySeverityId)2 => "Low",
+        (ServiceQuerySeverityId)3 => "Medium",
+        (ServiceQuerySeverityId)4 => "High",
+        (ServiceQuerySeverityId)5 => "Critical",
+        (ServiceQuerySeverityId)6 => "Fatal",
+        (ServiceQuerySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -450,4 +676,18 @@ public enum ServiceQueryStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ServiceQueryStatusId"/>.</summary>
+public static class ServiceQueryStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ServiceQueryStatusId value) => value switch
+    {
+        (ServiceQueryStatusId)0 => "Unknown",
+        (ServiceQueryStatusId)1 => "Success",
+        (ServiceQueryStatusId)2 => "Failure",
+        (ServiceQueryStatusId)99 => "Other",
+        _ => null,
+    };
 }

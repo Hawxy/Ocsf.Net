@@ -73,6 +73,18 @@ public class CpuInfo : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public string? VendorName { get; set; }
+
+    /// <summary>
+    /// Sets <c>cpu_architecture_id</c> and the <c>cpu_architecture</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="cpuArchitecture"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetCpuArchitecture(CpuInfoCpuArchitectureId cpuArchitectureId, string? cpuArchitecture = null)
+    {
+        CpuArchitectureId = cpuArchitectureId;
+        if ((cpuArchitecture ?? cpuArchitectureId.Caption()) is { } label)
+            CpuArchitecture = label;
+    }
 }
 
 /// <summary>
@@ -101,4 +113,19 @@ public enum CpuInfoCpuArchitectureId
     /// The CPU architecture is not mapped. See the <c>cpu_architecture</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="CpuInfoCpuArchitectureId"/>.</summary>
+public static class CpuInfoCpuArchitectureIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this CpuInfoCpuArchitectureId value) => value switch
+    {
+        (CpuInfoCpuArchitectureId)0 => "Unknown",
+        (CpuInfoCpuArchitectureId)1 => "x86",
+        (CpuInfoCpuArchitectureId)2 => "ARM",
+        (CpuInfoCpuArchitectureId)3 => "RISC-V",
+        (CpuInfoCpuArchitectureId)99 => "Other",
+        _ => null,
+    };
 }

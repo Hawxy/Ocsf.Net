@@ -132,11 +132,103 @@ public class StartupItemQuery : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public StartupItemQueryStatusId? StatusId { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(StartupItemQueryActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(StartupItemQueryActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(StartupItemQueryActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(StartupItemQueryConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(StartupItemQueryDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>query_result_id</c> and the <c>query_result</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="queryResult"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetQueryResult(StartupItemQueryQueryResultId queryResultId, string? queryResult = null)
+    {
+        QueryResultId = queryResultId;
+        if ((queryResult ?? queryResultId.Caption()) is { } label)
+            QueryResult = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(StartupItemQueryRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(StartupItemQuerySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(StartupItemQueryStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -172,6 +264,22 @@ public enum StartupItemQueryActionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="StartupItemQueryActionId"/>.</summary>
+public static class StartupItemQueryActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this StartupItemQueryActionId value) => value switch
+    {
+        (StartupItemQueryActionId)0 => "Unknown",
+        (StartupItemQueryActionId)1 => "Allowed",
+        (StartupItemQueryActionId)2 => "Denied",
+        (StartupItemQueryActionId)3 => "Observed",
+        (StartupItemQueryActionId)4 => "Modified",
+        (StartupItemQueryActionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>activity_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>activity_name</c> attribute contains the source-specific label.
@@ -192,6 +300,19 @@ public enum StartupItemQueryActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="StartupItemQueryActivityId"/>.</summary>
+public static class StartupItemQueryActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this StartupItemQueryActivityId value) => value switch
+    {
+        (StartupItemQueryActivityId)0 => "Unknown",
+        (StartupItemQueryActivityId)1 => "Query",
+        (StartupItemQueryActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -209,6 +330,21 @@ public enum StartupItemQueryConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="StartupItemQueryConfidenceId"/>.</summary>
+public static class StartupItemQueryConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this StartupItemQueryConfidenceId value) => value switch
+    {
+        (StartupItemQueryConfidenceId)0 => "Unknown",
+        (StartupItemQueryConfidenceId)1 => "Low",
+        (StartupItemQueryConfidenceId)2 => "Medium",
+        (StartupItemQueryConfidenceId)3 => "High",
+        (StartupItemQueryConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -335,6 +471,45 @@ public enum StartupItemQueryDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="StartupItemQueryDispositionId"/>.</summary>
+public static class StartupItemQueryDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this StartupItemQueryDispositionId value) => value switch
+    {
+        (StartupItemQueryDispositionId)0 => "Unknown",
+        (StartupItemQueryDispositionId)1 => "Allowed",
+        (StartupItemQueryDispositionId)2 => "Blocked",
+        (StartupItemQueryDispositionId)3 => "Quarantined",
+        (StartupItemQueryDispositionId)4 => "Isolated",
+        (StartupItemQueryDispositionId)5 => "Deleted",
+        (StartupItemQueryDispositionId)6 => "Dropped",
+        (StartupItemQueryDispositionId)7 => "Custom Action",
+        (StartupItemQueryDispositionId)8 => "Approved",
+        (StartupItemQueryDispositionId)9 => "Restored",
+        (StartupItemQueryDispositionId)10 => "Exonerated",
+        (StartupItemQueryDispositionId)11 => "Corrected",
+        (StartupItemQueryDispositionId)12 => "Partially Corrected",
+        (StartupItemQueryDispositionId)13 => "Uncorrected",
+        (StartupItemQueryDispositionId)14 => "Delayed",
+        (StartupItemQueryDispositionId)15 => "Detected",
+        (StartupItemQueryDispositionId)16 => "No Action",
+        (StartupItemQueryDispositionId)17 => "Logged",
+        (StartupItemQueryDispositionId)18 => "Tagged",
+        (StartupItemQueryDispositionId)19 => "Alert",
+        (StartupItemQueryDispositionId)20 => "Count",
+        (StartupItemQueryDispositionId)21 => "Reset",
+        (StartupItemQueryDispositionId)22 => "Captcha",
+        (StartupItemQueryDispositionId)23 => "Challenge",
+        (StartupItemQueryDispositionId)24 => "Access Revoked",
+        (StartupItemQueryDispositionId)25 => "Rejected",
+        (StartupItemQueryDispositionId)26 => "Unauthorized",
+        (StartupItemQueryDispositionId)27 => "Error",
+        (StartupItemQueryDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>query_result_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>query_result</c> attribute contains the source-specific label.
@@ -371,6 +546,23 @@ public enum StartupItemQueryQueryResultId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="StartupItemQueryQueryResultId"/>.</summary>
+public static class StartupItemQueryQueryResultIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this StartupItemQueryQueryResultId value) => value switch
+    {
+        (StartupItemQueryQueryResultId)0 => "Unknown",
+        (StartupItemQueryQueryResultId)1 => "Exists",
+        (StartupItemQueryQueryResultId)2 => "Partial",
+        (StartupItemQueryQueryResultId)3 => "Does not exist",
+        (StartupItemQueryQueryResultId)4 => "Error",
+        (StartupItemQueryQueryResultId)5 => "Unsupported",
+        (StartupItemQueryQueryResultId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -386,6 +578,22 @@ public enum StartupItemQueryRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="StartupItemQueryRiskLevelId"/>.</summary>
+public static class StartupItemQueryRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this StartupItemQueryRiskLevelId value) => value switch
+    {
+        (StartupItemQueryRiskLevelId)0 => "Info",
+        (StartupItemQueryRiskLevelId)1 => "Low",
+        (StartupItemQueryRiskLevelId)2 => "Medium",
+        (StartupItemQueryRiskLevelId)3 => "High",
+        (StartupItemQueryRiskLevelId)4 => "Critical",
+        (StartupItemQueryRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -428,6 +636,24 @@ public enum StartupItemQuerySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="StartupItemQuerySeverityId"/>.</summary>
+public static class StartupItemQuerySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this StartupItemQuerySeverityId value) => value switch
+    {
+        (StartupItemQuerySeverityId)0 => "Unknown",
+        (StartupItemQuerySeverityId)1 => "Informational",
+        (StartupItemQuerySeverityId)2 => "Low",
+        (StartupItemQuerySeverityId)3 => "Medium",
+        (StartupItemQuerySeverityId)4 => "High",
+        (StartupItemQuerySeverityId)5 => "Critical",
+        (StartupItemQuerySeverityId)6 => "Fatal",
+        (StartupItemQuerySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -450,4 +676,18 @@ public enum StartupItemQueryStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="StartupItemQueryStatusId"/>.</summary>
+public static class StartupItemQueryStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this StartupItemQueryStatusId value) => value switch
+    {
+        (StartupItemQueryStatusId)0 => "Unknown",
+        (StartupItemQueryStatusId)1 => "Success",
+        (StartupItemQueryStatusId)2 => "Failure",
+        (StartupItemQueryStatusId)99 => "Other",
+        _ => null,
+    };
 }

@@ -132,11 +132,103 @@ public class SessionQuery : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public SessionQueryStatusId? StatusId { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(SessionQueryActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(SessionQueryActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(SessionQueryActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(SessionQueryConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(SessionQueryDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>query_result_id</c> and the <c>query_result</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="queryResult"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetQueryResult(SessionQueryQueryResultId queryResultId, string? queryResult = null)
+    {
+        QueryResultId = queryResultId;
+        if ((queryResult ?? queryResultId.Caption()) is { } label)
+            QueryResult = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(SessionQueryRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(SessionQuerySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(SessionQueryStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -172,6 +264,22 @@ public enum SessionQueryActionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="SessionQueryActionId"/>.</summary>
+public static class SessionQueryActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SessionQueryActionId value) => value switch
+    {
+        (SessionQueryActionId)0 => "Unknown",
+        (SessionQueryActionId)1 => "Allowed",
+        (SessionQueryActionId)2 => "Denied",
+        (SessionQueryActionId)3 => "Observed",
+        (SessionQueryActionId)4 => "Modified",
+        (SessionQueryActionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>activity_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>activity_name</c> attribute contains the source-specific label.
@@ -192,6 +300,19 @@ public enum SessionQueryActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="SessionQueryActivityId"/>.</summary>
+public static class SessionQueryActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SessionQueryActivityId value) => value switch
+    {
+        (SessionQueryActivityId)0 => "Unknown",
+        (SessionQueryActivityId)1 => "Query",
+        (SessionQueryActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -209,6 +330,21 @@ public enum SessionQueryConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="SessionQueryConfidenceId"/>.</summary>
+public static class SessionQueryConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SessionQueryConfidenceId value) => value switch
+    {
+        (SessionQueryConfidenceId)0 => "Unknown",
+        (SessionQueryConfidenceId)1 => "Low",
+        (SessionQueryConfidenceId)2 => "Medium",
+        (SessionQueryConfidenceId)3 => "High",
+        (SessionQueryConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -335,6 +471,45 @@ public enum SessionQueryDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="SessionQueryDispositionId"/>.</summary>
+public static class SessionQueryDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SessionQueryDispositionId value) => value switch
+    {
+        (SessionQueryDispositionId)0 => "Unknown",
+        (SessionQueryDispositionId)1 => "Allowed",
+        (SessionQueryDispositionId)2 => "Blocked",
+        (SessionQueryDispositionId)3 => "Quarantined",
+        (SessionQueryDispositionId)4 => "Isolated",
+        (SessionQueryDispositionId)5 => "Deleted",
+        (SessionQueryDispositionId)6 => "Dropped",
+        (SessionQueryDispositionId)7 => "Custom Action",
+        (SessionQueryDispositionId)8 => "Approved",
+        (SessionQueryDispositionId)9 => "Restored",
+        (SessionQueryDispositionId)10 => "Exonerated",
+        (SessionQueryDispositionId)11 => "Corrected",
+        (SessionQueryDispositionId)12 => "Partially Corrected",
+        (SessionQueryDispositionId)13 => "Uncorrected",
+        (SessionQueryDispositionId)14 => "Delayed",
+        (SessionQueryDispositionId)15 => "Detected",
+        (SessionQueryDispositionId)16 => "No Action",
+        (SessionQueryDispositionId)17 => "Logged",
+        (SessionQueryDispositionId)18 => "Tagged",
+        (SessionQueryDispositionId)19 => "Alert",
+        (SessionQueryDispositionId)20 => "Count",
+        (SessionQueryDispositionId)21 => "Reset",
+        (SessionQueryDispositionId)22 => "Captcha",
+        (SessionQueryDispositionId)23 => "Challenge",
+        (SessionQueryDispositionId)24 => "Access Revoked",
+        (SessionQueryDispositionId)25 => "Rejected",
+        (SessionQueryDispositionId)26 => "Unauthorized",
+        (SessionQueryDispositionId)27 => "Error",
+        (SessionQueryDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>query_result_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>query_result</c> attribute contains the source-specific label.
@@ -371,6 +546,23 @@ public enum SessionQueryQueryResultId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="SessionQueryQueryResultId"/>.</summary>
+public static class SessionQueryQueryResultIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SessionQueryQueryResultId value) => value switch
+    {
+        (SessionQueryQueryResultId)0 => "Unknown",
+        (SessionQueryQueryResultId)1 => "Exists",
+        (SessionQueryQueryResultId)2 => "Partial",
+        (SessionQueryQueryResultId)3 => "Does not exist",
+        (SessionQueryQueryResultId)4 => "Error",
+        (SessionQueryQueryResultId)5 => "Unsupported",
+        (SessionQueryQueryResultId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -386,6 +578,22 @@ public enum SessionQueryRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="SessionQueryRiskLevelId"/>.</summary>
+public static class SessionQueryRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SessionQueryRiskLevelId value) => value switch
+    {
+        (SessionQueryRiskLevelId)0 => "Info",
+        (SessionQueryRiskLevelId)1 => "Low",
+        (SessionQueryRiskLevelId)2 => "Medium",
+        (SessionQueryRiskLevelId)3 => "High",
+        (SessionQueryRiskLevelId)4 => "Critical",
+        (SessionQueryRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -428,6 +636,24 @@ public enum SessionQuerySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="SessionQuerySeverityId"/>.</summary>
+public static class SessionQuerySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SessionQuerySeverityId value) => value switch
+    {
+        (SessionQuerySeverityId)0 => "Unknown",
+        (SessionQuerySeverityId)1 => "Informational",
+        (SessionQuerySeverityId)2 => "Low",
+        (SessionQuerySeverityId)3 => "Medium",
+        (SessionQuerySeverityId)4 => "High",
+        (SessionQuerySeverityId)5 => "Critical",
+        (SessionQuerySeverityId)6 => "Fatal",
+        (SessionQuerySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -450,4 +676,18 @@ public enum SessionQueryStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="SessionQueryStatusId"/>.</summary>
+public static class SessionQueryStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SessionQueryStatusId value) => value switch
+    {
+        (SessionQueryStatusId)0 => "Unknown",
+        (SessionQueryStatusId)1 => "Success",
+        (SessionQueryStatusId)2 => "Failure",
+        (SessionQueryStatusId)99 => "Other",
+        _ => null,
+    };
 }

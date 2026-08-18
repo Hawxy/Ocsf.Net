@@ -121,6 +121,18 @@ public class Os : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public string? Version { get; set; }
+
+    /// <summary>
+    /// Sets <c>type_id</c> and the <c>type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="type"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetType(OsTypeId typeId, string? type = null)
+    {
+        TypeId = typeId;
+        if ((type ?? typeId.Caption()) is { } label)
+            Type = label;
+    }
 }
 
 /// <summary>
@@ -147,4 +159,26 @@ public enum OsTypeId
     Solaris = 400,
     AIX = 401,
     HPUX = 402,
+}
+
+/// <summary>Schema caption lookup for <see cref="OsTypeId"/>.</summary>
+public static class OsTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this OsTypeId value) => value switch
+    {
+        (OsTypeId)0 => "Unknown",
+        (OsTypeId)99 => "Other",
+        (OsTypeId)100 => "Windows",
+        (OsTypeId)101 => "Windows Mobile",
+        (OsTypeId)200 => "Linux",
+        (OsTypeId)201 => "Android",
+        (OsTypeId)300 => "macOS",
+        (OsTypeId)301 => "iOS",
+        (OsTypeId)302 => "iPadOS",
+        (OsTypeId)400 => "Solaris",
+        (OsTypeId)401 => "AIX",
+        (OsTypeId)402 => "HP-UX",
+        _ => null,
+    };
 }

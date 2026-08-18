@@ -131,11 +131,91 @@ public class ApplicationError : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public ApplicationErrorStatusId? StatusId { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(ApplicationErrorActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(ApplicationErrorActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(ApplicationErrorActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(ApplicationErrorConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(ApplicationErrorDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(ApplicationErrorRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(ApplicationErrorSeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(ApplicationErrorStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -171,6 +251,22 @@ public enum ApplicationErrorActionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ApplicationErrorActionId"/>.</summary>
+public static class ApplicationErrorActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ApplicationErrorActionId value) => value switch
+    {
+        (ApplicationErrorActionId)0 => "Unknown",
+        (ApplicationErrorActionId)1 => "Allowed",
+        (ApplicationErrorActionId)2 => "Denied",
+        (ApplicationErrorActionId)3 => "Observed",
+        (ApplicationErrorActionId)4 => "Modified",
+        (ApplicationErrorActionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>activity_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>activity_name</c> attribute contains the source-specific label.
@@ -195,6 +291,20 @@ public enum ApplicationErrorActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ApplicationErrorActivityId"/>.</summary>
+public static class ApplicationErrorActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ApplicationErrorActivityId value) => value switch
+    {
+        (ApplicationErrorActivityId)0 => "Unknown",
+        (ApplicationErrorActivityId)1 => "General Error",
+        (ApplicationErrorActivityId)2 => "Translation Error",
+        (ApplicationErrorActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -212,6 +322,21 @@ public enum ApplicationErrorConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ApplicationErrorConfidenceId"/>.</summary>
+public static class ApplicationErrorConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ApplicationErrorConfidenceId value) => value switch
+    {
+        (ApplicationErrorConfidenceId)0 => "Unknown",
+        (ApplicationErrorConfidenceId)1 => "Low",
+        (ApplicationErrorConfidenceId)2 => "Medium",
+        (ApplicationErrorConfidenceId)3 => "High",
+        (ApplicationErrorConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -338,6 +463,45 @@ public enum ApplicationErrorDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ApplicationErrorDispositionId"/>.</summary>
+public static class ApplicationErrorDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ApplicationErrorDispositionId value) => value switch
+    {
+        (ApplicationErrorDispositionId)0 => "Unknown",
+        (ApplicationErrorDispositionId)1 => "Allowed",
+        (ApplicationErrorDispositionId)2 => "Blocked",
+        (ApplicationErrorDispositionId)3 => "Quarantined",
+        (ApplicationErrorDispositionId)4 => "Isolated",
+        (ApplicationErrorDispositionId)5 => "Deleted",
+        (ApplicationErrorDispositionId)6 => "Dropped",
+        (ApplicationErrorDispositionId)7 => "Custom Action",
+        (ApplicationErrorDispositionId)8 => "Approved",
+        (ApplicationErrorDispositionId)9 => "Restored",
+        (ApplicationErrorDispositionId)10 => "Exonerated",
+        (ApplicationErrorDispositionId)11 => "Corrected",
+        (ApplicationErrorDispositionId)12 => "Partially Corrected",
+        (ApplicationErrorDispositionId)13 => "Uncorrected",
+        (ApplicationErrorDispositionId)14 => "Delayed",
+        (ApplicationErrorDispositionId)15 => "Detected",
+        (ApplicationErrorDispositionId)16 => "No Action",
+        (ApplicationErrorDispositionId)17 => "Logged",
+        (ApplicationErrorDispositionId)18 => "Tagged",
+        (ApplicationErrorDispositionId)19 => "Alert",
+        (ApplicationErrorDispositionId)20 => "Count",
+        (ApplicationErrorDispositionId)21 => "Reset",
+        (ApplicationErrorDispositionId)22 => "Captcha",
+        (ApplicationErrorDispositionId)23 => "Challenge",
+        (ApplicationErrorDispositionId)24 => "Access Revoked",
+        (ApplicationErrorDispositionId)25 => "Rejected",
+        (ApplicationErrorDispositionId)26 => "Unauthorized",
+        (ApplicationErrorDispositionId)27 => "Error",
+        (ApplicationErrorDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -353,6 +517,22 @@ public enum ApplicationErrorRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ApplicationErrorRiskLevelId"/>.</summary>
+public static class ApplicationErrorRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ApplicationErrorRiskLevelId value) => value switch
+    {
+        (ApplicationErrorRiskLevelId)0 => "Info",
+        (ApplicationErrorRiskLevelId)1 => "Low",
+        (ApplicationErrorRiskLevelId)2 => "Medium",
+        (ApplicationErrorRiskLevelId)3 => "High",
+        (ApplicationErrorRiskLevelId)4 => "Critical",
+        (ApplicationErrorRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -395,6 +575,24 @@ public enum ApplicationErrorSeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ApplicationErrorSeverityId"/>.</summary>
+public static class ApplicationErrorSeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ApplicationErrorSeverityId value) => value switch
+    {
+        (ApplicationErrorSeverityId)0 => "Unknown",
+        (ApplicationErrorSeverityId)1 => "Informational",
+        (ApplicationErrorSeverityId)2 => "Low",
+        (ApplicationErrorSeverityId)3 => "Medium",
+        (ApplicationErrorSeverityId)4 => "High",
+        (ApplicationErrorSeverityId)5 => "Critical",
+        (ApplicationErrorSeverityId)6 => "Fatal",
+        (ApplicationErrorSeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -417,4 +615,18 @@ public enum ApplicationErrorStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ApplicationErrorStatusId"/>.</summary>
+public static class ApplicationErrorStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ApplicationErrorStatusId value) => value switch
+    {
+        (ApplicationErrorStatusId)0 => "Unknown",
+        (ApplicationErrorStatusId)1 => "Success",
+        (ApplicationErrorStatusId)2 => "Failure",
+        (ApplicationErrorStatusId)99 => "Other",
+        _ => null,
+    };
 }

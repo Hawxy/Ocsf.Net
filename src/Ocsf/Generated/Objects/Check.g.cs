@@ -100,6 +100,30 @@ public class Check : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public string? Version { get; set; }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(CheckSeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(CheckStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
+    }
 }
 
 /// <summary>
@@ -142,6 +166,24 @@ public enum CheckSeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="CheckSeverityId"/>.</summary>
+public static class CheckSeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this CheckSeverityId value) => value switch
+    {
+        (CheckSeverityId)0 => "Unknown",
+        (CheckSeverityId)1 => "Informational",
+        (CheckSeverityId)2 => "Low",
+        (CheckSeverityId)3 => "Medium",
+        (CheckSeverityId)4 => "High",
+        (CheckSeverityId)5 => "Critical",
+        (CheckSeverityId)6 => "Fatal",
+        (CheckSeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -168,4 +210,19 @@ public enum CheckStatusId
     /// The event status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="CheckStatusId"/>.</summary>
+public static class CheckStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this CheckStatusId value) => value switch
+    {
+        (CheckStatusId)0 => "Unknown",
+        (CheckStatusId)1 => "Pass",
+        (CheckStatusId)2 => "Warning",
+        (CheckStatusId)3 => "Fail",
+        (CheckStatusId)99 => "Other",
+        _ => null,
+    };
 }

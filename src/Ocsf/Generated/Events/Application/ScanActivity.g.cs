@@ -248,11 +248,91 @@ public class ScanActivity : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public int? Total { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(ScanActivityActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(ScanActivityActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(ScanActivityActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(ScanActivityConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(ScanActivityDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(ScanActivityRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(ScanActivitySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(ScanActivityStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -286,6 +366,22 @@ public enum ScanActivityActionId
     /// The action is not mapped. See the <c>action</c> attribute which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ScanActivityActionId"/>.</summary>
+public static class ScanActivityActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ScanActivityActionId value) => value switch
+    {
+        (ScanActivityActionId)0 => "Unknown",
+        (ScanActivityActionId)1 => "Allowed",
+        (ScanActivityActionId)2 => "Denied",
+        (ScanActivityActionId)3 => "Observed",
+        (ScanActivityActionId)4 => "Modified",
+        (ScanActivityActionId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -344,6 +440,28 @@ public enum ScanActivityActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ScanActivityActivityId"/>.</summary>
+public static class ScanActivityActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ScanActivityActivityId value) => value switch
+    {
+        (ScanActivityActivityId)0 => "Unknown",
+        (ScanActivityActivityId)1 => "Started",
+        (ScanActivityActivityId)2 => "Completed",
+        (ScanActivityActivityId)3 => "Cancelled",
+        (ScanActivityActivityId)4 => "Duration Violation",
+        (ScanActivityActivityId)5 => "Pause Violation",
+        (ScanActivityActivityId)6 => "Error",
+        (ScanActivityActivityId)7 => "Paused",
+        (ScanActivityActivityId)8 => "Resumed",
+        (ScanActivityActivityId)9 => "Restarted",
+        (ScanActivityActivityId)10 => "Delayed",
+        (ScanActivityActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -361,6 +479,21 @@ public enum ScanActivityConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ScanActivityConfidenceId"/>.</summary>
+public static class ScanActivityConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ScanActivityConfidenceId value) => value switch
+    {
+        (ScanActivityConfidenceId)0 => "Unknown",
+        (ScanActivityConfidenceId)1 => "Low",
+        (ScanActivityConfidenceId)2 => "Medium",
+        (ScanActivityConfidenceId)3 => "High",
+        (ScanActivityConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -487,6 +620,45 @@ public enum ScanActivityDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ScanActivityDispositionId"/>.</summary>
+public static class ScanActivityDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ScanActivityDispositionId value) => value switch
+    {
+        (ScanActivityDispositionId)0 => "Unknown",
+        (ScanActivityDispositionId)1 => "Allowed",
+        (ScanActivityDispositionId)2 => "Blocked",
+        (ScanActivityDispositionId)3 => "Quarantined",
+        (ScanActivityDispositionId)4 => "Isolated",
+        (ScanActivityDispositionId)5 => "Deleted",
+        (ScanActivityDispositionId)6 => "Dropped",
+        (ScanActivityDispositionId)7 => "Custom Action",
+        (ScanActivityDispositionId)8 => "Approved",
+        (ScanActivityDispositionId)9 => "Restored",
+        (ScanActivityDispositionId)10 => "Exonerated",
+        (ScanActivityDispositionId)11 => "Corrected",
+        (ScanActivityDispositionId)12 => "Partially Corrected",
+        (ScanActivityDispositionId)13 => "Uncorrected",
+        (ScanActivityDispositionId)14 => "Delayed",
+        (ScanActivityDispositionId)15 => "Detected",
+        (ScanActivityDispositionId)16 => "No Action",
+        (ScanActivityDispositionId)17 => "Logged",
+        (ScanActivityDispositionId)18 => "Tagged",
+        (ScanActivityDispositionId)19 => "Alert",
+        (ScanActivityDispositionId)20 => "Count",
+        (ScanActivityDispositionId)21 => "Reset",
+        (ScanActivityDispositionId)22 => "Captcha",
+        (ScanActivityDispositionId)23 => "Challenge",
+        (ScanActivityDispositionId)24 => "Access Revoked",
+        (ScanActivityDispositionId)25 => "Rejected",
+        (ScanActivityDispositionId)26 => "Unauthorized",
+        (ScanActivityDispositionId)27 => "Error",
+        (ScanActivityDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -502,6 +674,22 @@ public enum ScanActivityRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ScanActivityRiskLevelId"/>.</summary>
+public static class ScanActivityRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ScanActivityRiskLevelId value) => value switch
+    {
+        (ScanActivityRiskLevelId)0 => "Info",
+        (ScanActivityRiskLevelId)1 => "Low",
+        (ScanActivityRiskLevelId)2 => "Medium",
+        (ScanActivityRiskLevelId)3 => "High",
+        (ScanActivityRiskLevelId)4 => "Critical",
+        (ScanActivityRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -544,6 +732,24 @@ public enum ScanActivitySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ScanActivitySeverityId"/>.</summary>
+public static class ScanActivitySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ScanActivitySeverityId value) => value switch
+    {
+        (ScanActivitySeverityId)0 => "Unknown",
+        (ScanActivitySeverityId)1 => "Informational",
+        (ScanActivitySeverityId)2 => "Low",
+        (ScanActivitySeverityId)3 => "Medium",
+        (ScanActivitySeverityId)4 => "High",
+        (ScanActivitySeverityId)5 => "Critical",
+        (ScanActivitySeverityId)6 => "Fatal",
+        (ScanActivitySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -566,4 +772,18 @@ public enum ScanActivityStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ScanActivityStatusId"/>.</summary>
+public static class ScanActivityStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ScanActivityStatusId value) => value switch
+    {
+        (ScanActivityStatusId)0 => "Unknown",
+        (ScanActivityStatusId)1 => "Success",
+        (ScanActivityStatusId)2 => "Failure",
+        (ScanActivityStatusId)99 => "Other",
+        _ => null,
+    };
 }

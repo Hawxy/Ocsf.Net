@@ -1,3 +1,5 @@
+using System.Collections.Frozen;
+
 namespace Ocsf.Validation;
 
 /// <summary>The JSON shape expected for an attribute.</summary>
@@ -26,7 +28,30 @@ public sealed record AttributeSpec(
     string? Sibling,
     IReadOnlyDictionary<long, string>? EnumMembers,
     IReadOnlyCollection<long>? DeprecatedEnumValues,
-    string? DeprecatedSince);
+    string? DeprecatedSince)
+{
+    private TypeConstraint? _constraint;
+    private bool _constraintResolved;
+
+    /// <summary>The constraint of this attribute's scalar type, or null when the type is
+    /// unconstrained. Resolved once so value validation skips the type table lookup.</summary>
+    public TypeConstraint? Constraint
+    {
+        get
+        {
+            if (!_constraintResolved)
+            {
+                _constraint = ScalarType is not null
+                    && OcsfSchemaRegistry.Types.TryGetValue(ScalarType, out var constraint)
+                    && constraint.HasAnyConstraint
+                    ? constraint
+                    : null;
+                _constraintResolved = true;
+            }
+            return _constraint;
+        }
+    }
+}
 
 /// <summary>Constraints attached to an OCSF scalar type.</summary>
 public sealed record TypeConstraint(
@@ -35,7 +60,13 @@ public sealed record TypeConstraint(
     string? Regex,
     long? RangeMin,
     long? RangeMax,
-    IReadOnlyCollection<string>? StringValues);
+    IReadOnlyCollection<string>? StringValues)
+{
+    /// <summary>True when at least one constraint is defined.</summary>
+    public bool HasAnyConstraint =>
+        MaxLen is not null || Regex is not null || RangeMin is not null || RangeMax is not null
+        || StringValues is { Count: > 0 };
+}
 
 public enum ConstraintKind
 {
@@ -54,14 +85,28 @@ public sealed record ClassSpec(
     int CategoryUid,
     IReadOnlyList<AttributeSpec> Attributes,
     IReadOnlyList<SchemaConstraint> Constraints,
-    string? DeprecatedSince);
+    string? DeprecatedSince)
+{
+    private FrozenDictionary<string, AttributeSpec>? _attributesByName;
+
+    /// <summary>Attribute specs keyed by schema name; built once on first use.</summary>
+    public FrozenDictionary<string, AttributeSpec> AttributesByName =>
+        _attributesByName ??= Attributes.ToFrozenDictionary(a => a.Name, StringComparer.Ordinal);
+}
 
 /// <summary>Schema metadata for an object.</summary>
 public sealed record ObjectSpec(
     string Name,
     IReadOnlyList<AttributeSpec> Attributes,
     IReadOnlyList<SchemaConstraint> Constraints,
-    string? DeprecatedSince);
+    string? DeprecatedSince)
+{
+    private FrozenDictionary<string, AttributeSpec>? _attributesByName;
+
+    /// <summary>Attribute specs keyed by schema name; built once on first use.</summary>
+    public FrozenDictionary<string, AttributeSpec> AttributesByName =>
+        _attributesByName ??= Attributes.ToFrozenDictionary(a => a.Name, StringComparer.Ordinal);
+}
 
 public enum FindingSeverity
 {
@@ -124,7 +169,17 @@ public sealed class ValidationOptions
 /// <summary>The outcome of validating one event.</summary>
 public sealed class ValidationResult
 {
-    public ValidationResult(IReadOnlyList<Finding> findings) => Findings = findings;
+    public ValidationResult(IReadOnlyList<Finding> findings)
+    {
+        Findings = findings;
+        foreach (var finding in findings)
+        {
+            if (finding.Severity == FindingSeverity.Error)
+                ErrorCount++;
+            else
+                WarningCount++;
+        }
+    }
 
     public IReadOnlyList<Finding> Findings { get; }
 
@@ -132,9 +187,9 @@ public sealed class ValidationResult
 
     public IEnumerable<Finding> Warnings => Findings.Where(f => f.Severity == FindingSeverity.Warning);
 
-    public int ErrorCount => Errors.Count();
+    public int ErrorCount { get; }
 
-    public int WarningCount => Warnings.Count();
+    public int WarningCount { get; }
 
     /// <summary>True when no error-severity findings exist. Warnings do not affect validity.</summary>
     public bool IsValid => ErrorCount == 0;

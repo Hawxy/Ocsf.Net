@@ -138,11 +138,91 @@ public class FileRemediationActivity : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public FileRemediationActivityStatusId? StatusId { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(FileRemediationActivityActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(FileRemediationActivityActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(FileRemediationActivityActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(FileRemediationActivityConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(FileRemediationActivityDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(FileRemediationActivityRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(FileRemediationActivitySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(FileRemediationActivityStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -176,6 +256,22 @@ public enum FileRemediationActivityActionId
     /// The action is not mapped. See the <c>action</c> attribute which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="FileRemediationActivityActionId"/>.</summary>
+public static class FileRemediationActivityActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FileRemediationActivityActionId value) => value switch
+    {
+        (FileRemediationActivityActionId)0 => "Unknown",
+        (FileRemediationActivityActionId)1 => "Allowed",
+        (FileRemediationActivityActionId)2 => "Denied",
+        (FileRemediationActivityActionId)3 => "Observed",
+        (FileRemediationActivityActionId)4 => "Modified",
+        (FileRemediationActivityActionId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -218,6 +314,24 @@ public enum FileRemediationActivityActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="FileRemediationActivityActivityId"/>.</summary>
+public static class FileRemediationActivityActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FileRemediationActivityActivityId value) => value switch
+    {
+        (FileRemediationActivityActivityId)0 => "Unknown",
+        (FileRemediationActivityActivityId)1 => "Isolate",
+        (FileRemediationActivityActivityId)2 => "Evict",
+        (FileRemediationActivityActivityId)3 => "Restore",
+        (FileRemediationActivityActivityId)4 => "Harden",
+        (FileRemediationActivityActivityId)5 => "Detect",
+        (FileRemediationActivityActivityId)6 => "Deceive",
+        (FileRemediationActivityActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -235,6 +349,21 @@ public enum FileRemediationActivityConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="FileRemediationActivityConfidenceId"/>.</summary>
+public static class FileRemediationActivityConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FileRemediationActivityConfidenceId value) => value switch
+    {
+        (FileRemediationActivityConfidenceId)0 => "Unknown",
+        (FileRemediationActivityConfidenceId)1 => "Low",
+        (FileRemediationActivityConfidenceId)2 => "Medium",
+        (FileRemediationActivityConfidenceId)3 => "High",
+        (FileRemediationActivityConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -361,6 +490,45 @@ public enum FileRemediationActivityDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="FileRemediationActivityDispositionId"/>.</summary>
+public static class FileRemediationActivityDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FileRemediationActivityDispositionId value) => value switch
+    {
+        (FileRemediationActivityDispositionId)0 => "Unknown",
+        (FileRemediationActivityDispositionId)1 => "Allowed",
+        (FileRemediationActivityDispositionId)2 => "Blocked",
+        (FileRemediationActivityDispositionId)3 => "Quarantined",
+        (FileRemediationActivityDispositionId)4 => "Isolated",
+        (FileRemediationActivityDispositionId)5 => "Deleted",
+        (FileRemediationActivityDispositionId)6 => "Dropped",
+        (FileRemediationActivityDispositionId)7 => "Custom Action",
+        (FileRemediationActivityDispositionId)8 => "Approved",
+        (FileRemediationActivityDispositionId)9 => "Restored",
+        (FileRemediationActivityDispositionId)10 => "Exonerated",
+        (FileRemediationActivityDispositionId)11 => "Corrected",
+        (FileRemediationActivityDispositionId)12 => "Partially Corrected",
+        (FileRemediationActivityDispositionId)13 => "Uncorrected",
+        (FileRemediationActivityDispositionId)14 => "Delayed",
+        (FileRemediationActivityDispositionId)15 => "Detected",
+        (FileRemediationActivityDispositionId)16 => "No Action",
+        (FileRemediationActivityDispositionId)17 => "Logged",
+        (FileRemediationActivityDispositionId)18 => "Tagged",
+        (FileRemediationActivityDispositionId)19 => "Alert",
+        (FileRemediationActivityDispositionId)20 => "Count",
+        (FileRemediationActivityDispositionId)21 => "Reset",
+        (FileRemediationActivityDispositionId)22 => "Captcha",
+        (FileRemediationActivityDispositionId)23 => "Challenge",
+        (FileRemediationActivityDispositionId)24 => "Access Revoked",
+        (FileRemediationActivityDispositionId)25 => "Rejected",
+        (FileRemediationActivityDispositionId)26 => "Unauthorized",
+        (FileRemediationActivityDispositionId)27 => "Error",
+        (FileRemediationActivityDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -376,6 +544,22 @@ public enum FileRemediationActivityRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="FileRemediationActivityRiskLevelId"/>.</summary>
+public static class FileRemediationActivityRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FileRemediationActivityRiskLevelId value) => value switch
+    {
+        (FileRemediationActivityRiskLevelId)0 => "Info",
+        (FileRemediationActivityRiskLevelId)1 => "Low",
+        (FileRemediationActivityRiskLevelId)2 => "Medium",
+        (FileRemediationActivityRiskLevelId)3 => "High",
+        (FileRemediationActivityRiskLevelId)4 => "Critical",
+        (FileRemediationActivityRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -418,6 +602,24 @@ public enum FileRemediationActivitySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="FileRemediationActivitySeverityId"/>.</summary>
+public static class FileRemediationActivitySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FileRemediationActivitySeverityId value) => value switch
+    {
+        (FileRemediationActivitySeverityId)0 => "Unknown",
+        (FileRemediationActivitySeverityId)1 => "Informational",
+        (FileRemediationActivitySeverityId)2 => "Low",
+        (FileRemediationActivitySeverityId)3 => "Medium",
+        (FileRemediationActivitySeverityId)4 => "High",
+        (FileRemediationActivitySeverityId)5 => "Critical",
+        (FileRemediationActivitySeverityId)6 => "Fatal",
+        (FileRemediationActivitySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -456,4 +658,22 @@ public enum FileRemediationActivityStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="FileRemediationActivityStatusId"/>.</summary>
+public static class FileRemediationActivityStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this FileRemediationActivityStatusId value) => value switch
+    {
+        (FileRemediationActivityStatusId)0 => "Unknown",
+        (FileRemediationActivityStatusId)1 => "Success",
+        (FileRemediationActivityStatusId)2 => "Failure",
+        (FileRemediationActivityStatusId)3 => "Does Not Exist",
+        (FileRemediationActivityStatusId)4 => "Partial",
+        (FileRemediationActivityStatusId)5 => "Unsupported",
+        (FileRemediationActivityStatusId)6 => "Error",
+        (FileRemediationActivityStatusId)99 => "Other",
+        _ => null,
+    };
 }

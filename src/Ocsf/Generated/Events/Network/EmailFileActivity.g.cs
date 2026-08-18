@@ -115,11 +115,91 @@ public class EmailFileActivity : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public EmailFileActivityStatusId? StatusId { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(EmailFileActivityActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(EmailFileActivityActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(EmailFileActivityActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(EmailFileActivityConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(EmailFileActivityDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(EmailFileActivityRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(EmailFileActivitySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(EmailFileActivityStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -155,6 +235,22 @@ public enum EmailFileActivityActionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="EmailFileActivityActionId"/>.</summary>
+public static class EmailFileActivityActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EmailFileActivityActionId value) => value switch
+    {
+        (EmailFileActivityActionId)0 => "Unknown",
+        (EmailFileActivityActionId)1 => "Allowed",
+        (EmailFileActivityActionId)2 => "Denied",
+        (EmailFileActivityActionId)3 => "Observed",
+        (EmailFileActivityActionId)4 => "Modified",
+        (EmailFileActivityActionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>activity_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>activity_name</c> attribute contains the source-specific label.
@@ -177,6 +273,21 @@ public enum EmailFileActivityActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="EmailFileActivityActivityId"/>.</summary>
+public static class EmailFileActivityActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EmailFileActivityActivityId value) => value switch
+    {
+        (EmailFileActivityActivityId)0 => "Unknown",
+        (EmailFileActivityActivityId)1 => "Send",
+        (EmailFileActivityActivityId)2 => "Receive",
+        (EmailFileActivityActivityId)3 => "Scan",
+        (EmailFileActivityActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -194,6 +305,21 @@ public enum EmailFileActivityConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="EmailFileActivityConfidenceId"/>.</summary>
+public static class EmailFileActivityConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EmailFileActivityConfidenceId value) => value switch
+    {
+        (EmailFileActivityConfidenceId)0 => "Unknown",
+        (EmailFileActivityConfidenceId)1 => "Low",
+        (EmailFileActivityConfidenceId)2 => "Medium",
+        (EmailFileActivityConfidenceId)3 => "High",
+        (EmailFileActivityConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -320,6 +446,45 @@ public enum EmailFileActivityDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="EmailFileActivityDispositionId"/>.</summary>
+public static class EmailFileActivityDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EmailFileActivityDispositionId value) => value switch
+    {
+        (EmailFileActivityDispositionId)0 => "Unknown",
+        (EmailFileActivityDispositionId)1 => "Allowed",
+        (EmailFileActivityDispositionId)2 => "Blocked",
+        (EmailFileActivityDispositionId)3 => "Quarantined",
+        (EmailFileActivityDispositionId)4 => "Isolated",
+        (EmailFileActivityDispositionId)5 => "Deleted",
+        (EmailFileActivityDispositionId)6 => "Dropped",
+        (EmailFileActivityDispositionId)7 => "Custom Action",
+        (EmailFileActivityDispositionId)8 => "Approved",
+        (EmailFileActivityDispositionId)9 => "Restored",
+        (EmailFileActivityDispositionId)10 => "Exonerated",
+        (EmailFileActivityDispositionId)11 => "Corrected",
+        (EmailFileActivityDispositionId)12 => "Partially Corrected",
+        (EmailFileActivityDispositionId)13 => "Uncorrected",
+        (EmailFileActivityDispositionId)14 => "Delayed",
+        (EmailFileActivityDispositionId)15 => "Detected",
+        (EmailFileActivityDispositionId)16 => "No Action",
+        (EmailFileActivityDispositionId)17 => "Logged",
+        (EmailFileActivityDispositionId)18 => "Tagged",
+        (EmailFileActivityDispositionId)19 => "Alert",
+        (EmailFileActivityDispositionId)20 => "Count",
+        (EmailFileActivityDispositionId)21 => "Reset",
+        (EmailFileActivityDispositionId)22 => "Captcha",
+        (EmailFileActivityDispositionId)23 => "Challenge",
+        (EmailFileActivityDispositionId)24 => "Access Revoked",
+        (EmailFileActivityDispositionId)25 => "Rejected",
+        (EmailFileActivityDispositionId)26 => "Unauthorized",
+        (EmailFileActivityDispositionId)27 => "Error",
+        (EmailFileActivityDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -335,6 +500,22 @@ public enum EmailFileActivityRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="EmailFileActivityRiskLevelId"/>.</summary>
+public static class EmailFileActivityRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EmailFileActivityRiskLevelId value) => value switch
+    {
+        (EmailFileActivityRiskLevelId)0 => "Info",
+        (EmailFileActivityRiskLevelId)1 => "Low",
+        (EmailFileActivityRiskLevelId)2 => "Medium",
+        (EmailFileActivityRiskLevelId)3 => "High",
+        (EmailFileActivityRiskLevelId)4 => "Critical",
+        (EmailFileActivityRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -377,6 +558,24 @@ public enum EmailFileActivitySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="EmailFileActivitySeverityId"/>.</summary>
+public static class EmailFileActivitySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EmailFileActivitySeverityId value) => value switch
+    {
+        (EmailFileActivitySeverityId)0 => "Unknown",
+        (EmailFileActivitySeverityId)1 => "Informational",
+        (EmailFileActivitySeverityId)2 => "Low",
+        (EmailFileActivitySeverityId)3 => "Medium",
+        (EmailFileActivitySeverityId)4 => "High",
+        (EmailFileActivitySeverityId)5 => "Critical",
+        (EmailFileActivitySeverityId)6 => "Fatal",
+        (EmailFileActivitySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -399,4 +598,18 @@ public enum EmailFileActivityStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="EmailFileActivityStatusId"/>.</summary>
+public static class EmailFileActivityStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EmailFileActivityStatusId value) => value switch
+    {
+        (EmailFileActivityStatusId)0 => "Unknown",
+        (EmailFileActivityStatusId)1 => "Success",
+        (EmailFileActivityStatusId)2 => "Failure",
+        (EmailFileActivityStatusId)99 => "Other",
+        _ => null,
+    };
 }

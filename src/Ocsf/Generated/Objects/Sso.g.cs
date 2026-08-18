@@ -156,6 +156,18 @@ public class Sso : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public string? VendorName { get; set; }
+
+    /// <summary>
+    /// Sets <c>auth_protocol_id</c> and the <c>auth_protocol</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="authProtocol"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAuthProtocol(SsoAuthProtocolId authProtocolId, string? authProtocol = null)
+    {
+        AuthProtocolId = authProtocolId;
+        if ((authProtocol ?? authProtocolId.Caption()) is { } label)
+            AuthProtocol = label;
+    }
 }
 
 /// <summary>
@@ -184,4 +196,28 @@ public enum SsoAuthProtocolId
     /// The authentication protocol is not mapped. See the <c>auth_protocol</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="SsoAuthProtocolId"/>.</summary>
+public static class SsoAuthProtocolIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this SsoAuthProtocolId value) => value switch
+    {
+        (SsoAuthProtocolId)0 => "Unknown",
+        (SsoAuthProtocolId)1 => "NTLM",
+        (SsoAuthProtocolId)2 => "Kerberos",
+        (SsoAuthProtocolId)3 => "Digest",
+        (SsoAuthProtocolId)4 => "OpenID",
+        (SsoAuthProtocolId)5 => "SAML",
+        (SsoAuthProtocolId)6 => "OAUTH 2.0",
+        (SsoAuthProtocolId)7 => "PAP",
+        (SsoAuthProtocolId)8 => "CHAP",
+        (SsoAuthProtocolId)9 => "EAP",
+        (SsoAuthProtocolId)10 => "RADIUS",
+        (SsoAuthProtocolId)11 => "Basic Authentication",
+        (SsoAuthProtocolId)12 => "LDAP",
+        (SsoAuthProtocolId)99 => "Other",
+        _ => null,
+    };
 }

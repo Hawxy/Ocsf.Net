@@ -248,11 +248,91 @@ public class GroupManagement : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public List<Objects.User>? Users { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(GroupManagementActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(GroupManagementActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(GroupManagementActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(GroupManagementConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(GroupManagementDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(GroupManagementRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(GroupManagementSeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(GroupManagementStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -286,6 +366,22 @@ public enum GroupManagementActionId
     /// The action is not mapped. See the <c>action</c> attribute which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="GroupManagementActionId"/>.</summary>
+public static class GroupManagementActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this GroupManagementActionId value) => value switch
+    {
+        (GroupManagementActionId)0 => "Unknown",
+        (GroupManagementActionId)1 => "Allowed",
+        (GroupManagementActionId)2 => "Denied",
+        (GroupManagementActionId)3 => "Observed",
+        (GroupManagementActionId)4 => "Modified",
+        (GroupManagementActionId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -356,6 +452,31 @@ public enum GroupManagementActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="GroupManagementActivityId"/>.</summary>
+public static class GroupManagementActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this GroupManagementActivityId value) => value switch
+    {
+        (GroupManagementActivityId)0 => "Unknown",
+        (GroupManagementActivityId)1 => "Assign Privileges",
+        (GroupManagementActivityId)2 => "Revoke Privileges",
+        (GroupManagementActivityId)3 => "Add User",
+        (GroupManagementActivityId)4 => "Remove User",
+        (GroupManagementActivityId)5 => "Delete",
+        (GroupManagementActivityId)6 => "Create",
+        (GroupManagementActivityId)7 => "Add Subgroup",
+        (GroupManagementActivityId)8 => "Remove Subgroup",
+        (GroupManagementActivityId)9 => "Update",
+        (GroupManagementActivityId)10 => "Attach Policies",
+        (GroupManagementActivityId)11 => "Detach Policies",
+        (GroupManagementActivityId)12 => "Assign Roles",
+        (GroupManagementActivityId)13 => "Remove Roles",
+        (GroupManagementActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -373,6 +494,21 @@ public enum GroupManagementConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="GroupManagementConfidenceId"/>.</summary>
+public static class GroupManagementConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this GroupManagementConfidenceId value) => value switch
+    {
+        (GroupManagementConfidenceId)0 => "Unknown",
+        (GroupManagementConfidenceId)1 => "Low",
+        (GroupManagementConfidenceId)2 => "Medium",
+        (GroupManagementConfidenceId)3 => "High",
+        (GroupManagementConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -499,6 +635,45 @@ public enum GroupManagementDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="GroupManagementDispositionId"/>.</summary>
+public static class GroupManagementDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this GroupManagementDispositionId value) => value switch
+    {
+        (GroupManagementDispositionId)0 => "Unknown",
+        (GroupManagementDispositionId)1 => "Allowed",
+        (GroupManagementDispositionId)2 => "Blocked",
+        (GroupManagementDispositionId)3 => "Quarantined",
+        (GroupManagementDispositionId)4 => "Isolated",
+        (GroupManagementDispositionId)5 => "Deleted",
+        (GroupManagementDispositionId)6 => "Dropped",
+        (GroupManagementDispositionId)7 => "Custom Action",
+        (GroupManagementDispositionId)8 => "Approved",
+        (GroupManagementDispositionId)9 => "Restored",
+        (GroupManagementDispositionId)10 => "Exonerated",
+        (GroupManagementDispositionId)11 => "Corrected",
+        (GroupManagementDispositionId)12 => "Partially Corrected",
+        (GroupManagementDispositionId)13 => "Uncorrected",
+        (GroupManagementDispositionId)14 => "Delayed",
+        (GroupManagementDispositionId)15 => "Detected",
+        (GroupManagementDispositionId)16 => "No Action",
+        (GroupManagementDispositionId)17 => "Logged",
+        (GroupManagementDispositionId)18 => "Tagged",
+        (GroupManagementDispositionId)19 => "Alert",
+        (GroupManagementDispositionId)20 => "Count",
+        (GroupManagementDispositionId)21 => "Reset",
+        (GroupManagementDispositionId)22 => "Captcha",
+        (GroupManagementDispositionId)23 => "Challenge",
+        (GroupManagementDispositionId)24 => "Access Revoked",
+        (GroupManagementDispositionId)25 => "Rejected",
+        (GroupManagementDispositionId)26 => "Unauthorized",
+        (GroupManagementDispositionId)27 => "Error",
+        (GroupManagementDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -514,6 +689,22 @@ public enum GroupManagementRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="GroupManagementRiskLevelId"/>.</summary>
+public static class GroupManagementRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this GroupManagementRiskLevelId value) => value switch
+    {
+        (GroupManagementRiskLevelId)0 => "Info",
+        (GroupManagementRiskLevelId)1 => "Low",
+        (GroupManagementRiskLevelId)2 => "Medium",
+        (GroupManagementRiskLevelId)3 => "High",
+        (GroupManagementRiskLevelId)4 => "Critical",
+        (GroupManagementRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -556,6 +747,24 @@ public enum GroupManagementSeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="GroupManagementSeverityId"/>.</summary>
+public static class GroupManagementSeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this GroupManagementSeverityId value) => value switch
+    {
+        (GroupManagementSeverityId)0 => "Unknown",
+        (GroupManagementSeverityId)1 => "Informational",
+        (GroupManagementSeverityId)2 => "Low",
+        (GroupManagementSeverityId)3 => "Medium",
+        (GroupManagementSeverityId)4 => "High",
+        (GroupManagementSeverityId)5 => "Critical",
+        (GroupManagementSeverityId)6 => "Fatal",
+        (GroupManagementSeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -578,4 +787,18 @@ public enum GroupManagementStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="GroupManagementStatusId"/>.</summary>
+public static class GroupManagementStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this GroupManagementStatusId value) => value switch
+    {
+        (GroupManagementStatusId)0 => "Unknown",
+        (GroupManagementStatusId)1 => "Success",
+        (GroupManagementStatusId)2 => "Failure",
+        (GroupManagementStatusId)99 => "Other",
+        _ => null,
+    };
 }

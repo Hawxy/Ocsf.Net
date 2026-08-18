@@ -365,11 +365,115 @@ public class TunnelActivity : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public Objects.User? User { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(TunnelActivityActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(TunnelActivityActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(TunnelActivityActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(TunnelActivityConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(TunnelActivityDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>observation_point_id</c> and the <c>observation_point</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="observationPoint"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetObservationPoint(TunnelActivityObservationPointId observationPointId, string? observationPoint = null)
+    {
+        ObservationPointId = observationPointId;
+        if ((observationPoint ?? observationPointId.Caption()) is { } label)
+            ObservationPoint = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(TunnelActivityRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(TunnelActivitySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(TunnelActivityStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
+    }
+
+    /// <summary>
+    /// Sets <c>tunnel_type_id</c> and the <c>tunnel_type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="tunnelType"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetTunnelType(TunnelActivityTunnelTypeId tunnelTypeId, string? tunnelType = null)
+    {
+        TunnelTypeId = tunnelTypeId;
+        if ((tunnelType ?? tunnelTypeId.Caption()) is { } label)
+            TunnelType = label;
     }
 }
 
@@ -405,6 +509,22 @@ public enum TunnelActivityActionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="TunnelActivityActionId"/>.</summary>
+public static class TunnelActivityActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this TunnelActivityActionId value) => value switch
+    {
+        (TunnelActivityActionId)0 => "Unknown",
+        (TunnelActivityActionId)1 => "Allowed",
+        (TunnelActivityActionId)2 => "Denied",
+        (TunnelActivityActionId)3 => "Observed",
+        (TunnelActivityActionId)4 => "Modified",
+        (TunnelActivityActionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>activity_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>activity_name</c> attribute contains the source-specific label.
@@ -433,6 +553,21 @@ public enum TunnelActivityActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="TunnelActivityActivityId"/>.</summary>
+public static class TunnelActivityActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this TunnelActivityActivityId value) => value switch
+    {
+        (TunnelActivityActivityId)0 => "Unknown",
+        (TunnelActivityActivityId)1 => "Open",
+        (TunnelActivityActivityId)2 => "Close",
+        (TunnelActivityActivityId)3 => "Renew",
+        (TunnelActivityActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -450,6 +585,21 @@ public enum TunnelActivityConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="TunnelActivityConfidenceId"/>.</summary>
+public static class TunnelActivityConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this TunnelActivityConfidenceId value) => value switch
+    {
+        (TunnelActivityConfidenceId)0 => "Unknown",
+        (TunnelActivityConfidenceId)1 => "Low",
+        (TunnelActivityConfidenceId)2 => "Medium",
+        (TunnelActivityConfidenceId)3 => "High",
+        (TunnelActivityConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -576,6 +726,45 @@ public enum TunnelActivityDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="TunnelActivityDispositionId"/>.</summary>
+public static class TunnelActivityDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this TunnelActivityDispositionId value) => value switch
+    {
+        (TunnelActivityDispositionId)0 => "Unknown",
+        (TunnelActivityDispositionId)1 => "Allowed",
+        (TunnelActivityDispositionId)2 => "Blocked",
+        (TunnelActivityDispositionId)3 => "Quarantined",
+        (TunnelActivityDispositionId)4 => "Isolated",
+        (TunnelActivityDispositionId)5 => "Deleted",
+        (TunnelActivityDispositionId)6 => "Dropped",
+        (TunnelActivityDispositionId)7 => "Custom Action",
+        (TunnelActivityDispositionId)8 => "Approved",
+        (TunnelActivityDispositionId)9 => "Restored",
+        (TunnelActivityDispositionId)10 => "Exonerated",
+        (TunnelActivityDispositionId)11 => "Corrected",
+        (TunnelActivityDispositionId)12 => "Partially Corrected",
+        (TunnelActivityDispositionId)13 => "Uncorrected",
+        (TunnelActivityDispositionId)14 => "Delayed",
+        (TunnelActivityDispositionId)15 => "Detected",
+        (TunnelActivityDispositionId)16 => "No Action",
+        (TunnelActivityDispositionId)17 => "Logged",
+        (TunnelActivityDispositionId)18 => "Tagged",
+        (TunnelActivityDispositionId)19 => "Alert",
+        (TunnelActivityDispositionId)20 => "Count",
+        (TunnelActivityDispositionId)21 => "Reset",
+        (TunnelActivityDispositionId)22 => "Captcha",
+        (TunnelActivityDispositionId)23 => "Challenge",
+        (TunnelActivityDispositionId)24 => "Access Revoked",
+        (TunnelActivityDispositionId)25 => "Rejected",
+        (TunnelActivityDispositionId)26 => "Unauthorized",
+        (TunnelActivityDispositionId)27 => "Error",
+        (TunnelActivityDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>observation_point_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>observation_point</c> attribute contains the source-specific label.
@@ -608,6 +797,22 @@ public enum TunnelActivityObservationPointId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="TunnelActivityObservationPointId"/>.</summary>
+public static class TunnelActivityObservationPointIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this TunnelActivityObservationPointId value) => value switch
+    {
+        (TunnelActivityObservationPointId)0 => "Unknown",
+        (TunnelActivityObservationPointId)1 => "Source",
+        (TunnelActivityObservationPointId)2 => "Destination",
+        (TunnelActivityObservationPointId)3 => "Neither",
+        (TunnelActivityObservationPointId)4 => "Both",
+        (TunnelActivityObservationPointId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -623,6 +828,22 @@ public enum TunnelActivityRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="TunnelActivityRiskLevelId"/>.</summary>
+public static class TunnelActivityRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this TunnelActivityRiskLevelId value) => value switch
+    {
+        (TunnelActivityRiskLevelId)0 => "Info",
+        (TunnelActivityRiskLevelId)1 => "Low",
+        (TunnelActivityRiskLevelId)2 => "Medium",
+        (TunnelActivityRiskLevelId)3 => "High",
+        (TunnelActivityRiskLevelId)4 => "Critical",
+        (TunnelActivityRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -665,6 +886,24 @@ public enum TunnelActivitySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="TunnelActivitySeverityId"/>.</summary>
+public static class TunnelActivitySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this TunnelActivitySeverityId value) => value switch
+    {
+        (TunnelActivitySeverityId)0 => "Unknown",
+        (TunnelActivitySeverityId)1 => "Informational",
+        (TunnelActivitySeverityId)2 => "Low",
+        (TunnelActivitySeverityId)3 => "Medium",
+        (TunnelActivitySeverityId)4 => "High",
+        (TunnelActivitySeverityId)5 => "Critical",
+        (TunnelActivitySeverityId)6 => "Fatal",
+        (TunnelActivitySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -689,6 +928,20 @@ public enum TunnelActivityStatusId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="TunnelActivityStatusId"/>.</summary>
+public static class TunnelActivityStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this TunnelActivityStatusId value) => value switch
+    {
+        (TunnelActivityStatusId)0 => "Unknown",
+        (TunnelActivityStatusId)1 => "Success",
+        (TunnelActivityStatusId)2 => "Failure",
+        (TunnelActivityStatusId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>tunnel_type_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>tunnel_type</c> attribute contains the source-specific label.
@@ -711,4 +964,18 @@ public enum TunnelActivityTunnelTypeId
     /// The type of tunnel configuration is not defined by the event source.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="TunnelActivityTunnelTypeId"/>.</summary>
+public static class TunnelActivityTunnelTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this TunnelActivityTunnelTypeId value) => value switch
+    {
+        (TunnelActivityTunnelTypeId)0 => "Unknown",
+        (TunnelActivityTunnelTypeId)1 => "Split Tunnel",
+        (TunnelActivityTunnelTypeId)2 => "Full Tunnel",
+        (TunnelActivityTunnelTypeId)99 => "Other",
+        _ => null,
+    };
 }

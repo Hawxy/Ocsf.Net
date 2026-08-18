@@ -124,6 +124,30 @@ public class Analytic : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public string? Version { get; set; }
+
+    /// <summary>
+    /// Sets <c>state_id</c> and the <c>state</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="state"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetState(AnalyticStateId stateId, string? state = null)
+    {
+        StateId = stateId;
+        if ((state ?? stateId.Caption()) is { } label)
+            State = label;
+    }
+
+    /// <summary>
+    /// Sets <c>type_id</c> and the <c>type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="type"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetType(AnalyticTypeId typeId, string? type = null)
+    {
+        TypeId = typeId;
+        if ((type ?? typeId.Caption()) is { } label)
+            Type = label;
+    }
 }
 
 /// <summary>
@@ -152,6 +176,21 @@ public enum AnalyticStateId
     /// The state is not mapped. See the <c>state</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="AnalyticStateId"/>.</summary>
+public static class AnalyticStateIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AnalyticStateId value) => value switch
+    {
+        (AnalyticStateId)0 => "Unknown",
+        (AnalyticStateId)1 => "Active",
+        (AnalyticStateId)2 => "Suppressed",
+        (AnalyticStateId)3 => "Experimental",
+        (AnalyticStateId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -212,4 +251,27 @@ public enum AnalyticTypeId
     /// The type is not mapped. See the <c>type</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="AnalyticTypeId"/>.</summary>
+public static class AnalyticTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this AnalyticTypeId value) => value switch
+    {
+        (AnalyticTypeId)0 => "Unknown",
+        (AnalyticTypeId)1 => "Rule",
+        (AnalyticTypeId)2 => "Behavioral",
+        (AnalyticTypeId)3 => "Statistical",
+        (AnalyticTypeId)4 => "Learning (ML/DL)",
+        (AnalyticTypeId)5 => "Fingerprinting",
+        (AnalyticTypeId)6 => "Tagging",
+        (AnalyticTypeId)7 => "Keyword Match",
+        (AnalyticTypeId)8 => "Regular Expressions",
+        (AnalyticTypeId)9 => "Exact Data Match",
+        (AnalyticTypeId)10 => "Partial Data Match",
+        (AnalyticTypeId)11 => "Indexed Data Match",
+        (AnalyticTypeId)99 => "Other",
+        _ => null,
+    };
 }

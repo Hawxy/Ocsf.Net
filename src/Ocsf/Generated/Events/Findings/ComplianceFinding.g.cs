@@ -294,11 +294,127 @@ public class ComplianceFinding : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public ComplianceFindingVerdictId? VerdictId { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(ComplianceFindingActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(ComplianceFindingActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(ComplianceFindingActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(ComplianceFindingConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(ComplianceFindingDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>impact_id</c> and the <c>impact</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="impact"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetImpact(ComplianceFindingImpactId impactId, string? impact = null)
+    {
+        ImpactId = impactId;
+        if ((impact ?? impactId.Caption()) is { } label)
+            Impact = label;
+    }
+
+    /// <summary>
+    /// Sets <c>priority_id</c> and the <c>priority</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="priority"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetPriority(ComplianceFindingPriorityId priorityId, string? priority = null)
+    {
+        PriorityId = priorityId;
+        if ((priority ?? priorityId.Caption()) is { } label)
+            Priority = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(ComplianceFindingRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(ComplianceFindingSeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(ComplianceFindingStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
+    }
+
+    /// <summary>
+    /// Sets <c>verdict_id</c> and the <c>verdict</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="verdict"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetVerdict(ComplianceFindingVerdictId verdictId, string? verdict = null)
+    {
+        VerdictId = verdictId;
+        if ((verdict ?? verdictId.Caption()) is { } label)
+            Verdict = label;
     }
 }
 
@@ -334,6 +450,22 @@ public enum ComplianceFindingActionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ComplianceFindingActionId"/>.</summary>
+public static class ComplianceFindingActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ComplianceFindingActionId value) => value switch
+    {
+        (ComplianceFindingActionId)0 => "Unknown",
+        (ComplianceFindingActionId)1 => "Allowed",
+        (ComplianceFindingActionId)2 => "Denied",
+        (ComplianceFindingActionId)3 => "Observed",
+        (ComplianceFindingActionId)4 => "Modified",
+        (ComplianceFindingActionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>activity_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>activity_name</c> attribute contains the source-specific label.
@@ -362,6 +494,21 @@ public enum ComplianceFindingActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ComplianceFindingActivityId"/>.</summary>
+public static class ComplianceFindingActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ComplianceFindingActivityId value) => value switch
+    {
+        (ComplianceFindingActivityId)0 => "Unknown",
+        (ComplianceFindingActivityId)1 => "Create",
+        (ComplianceFindingActivityId)2 => "Update",
+        (ComplianceFindingActivityId)3 => "Close",
+        (ComplianceFindingActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -379,6 +526,21 @@ public enum ComplianceFindingConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ComplianceFindingConfidenceId"/>.</summary>
+public static class ComplianceFindingConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ComplianceFindingConfidenceId value) => value switch
+    {
+        (ComplianceFindingConfidenceId)0 => "Unknown",
+        (ComplianceFindingConfidenceId)1 => "Low",
+        (ComplianceFindingConfidenceId)2 => "Medium",
+        (ComplianceFindingConfidenceId)3 => "High",
+        (ComplianceFindingConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -505,6 +667,45 @@ public enum ComplianceFindingDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ComplianceFindingDispositionId"/>.</summary>
+public static class ComplianceFindingDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ComplianceFindingDispositionId value) => value switch
+    {
+        (ComplianceFindingDispositionId)0 => "Unknown",
+        (ComplianceFindingDispositionId)1 => "Allowed",
+        (ComplianceFindingDispositionId)2 => "Blocked",
+        (ComplianceFindingDispositionId)3 => "Quarantined",
+        (ComplianceFindingDispositionId)4 => "Isolated",
+        (ComplianceFindingDispositionId)5 => "Deleted",
+        (ComplianceFindingDispositionId)6 => "Dropped",
+        (ComplianceFindingDispositionId)7 => "Custom Action",
+        (ComplianceFindingDispositionId)8 => "Approved",
+        (ComplianceFindingDispositionId)9 => "Restored",
+        (ComplianceFindingDispositionId)10 => "Exonerated",
+        (ComplianceFindingDispositionId)11 => "Corrected",
+        (ComplianceFindingDispositionId)12 => "Partially Corrected",
+        (ComplianceFindingDispositionId)13 => "Uncorrected",
+        (ComplianceFindingDispositionId)14 => "Delayed",
+        (ComplianceFindingDispositionId)15 => "Detected",
+        (ComplianceFindingDispositionId)16 => "No Action",
+        (ComplianceFindingDispositionId)17 => "Logged",
+        (ComplianceFindingDispositionId)18 => "Tagged",
+        (ComplianceFindingDispositionId)19 => "Alert",
+        (ComplianceFindingDispositionId)20 => "Count",
+        (ComplianceFindingDispositionId)21 => "Reset",
+        (ComplianceFindingDispositionId)22 => "Captcha",
+        (ComplianceFindingDispositionId)23 => "Challenge",
+        (ComplianceFindingDispositionId)24 => "Access Revoked",
+        (ComplianceFindingDispositionId)25 => "Rejected",
+        (ComplianceFindingDispositionId)26 => "Unauthorized",
+        (ComplianceFindingDispositionId)27 => "Error",
+        (ComplianceFindingDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>impact_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>impact</c> attribute contains the source-specific label.
@@ -535,6 +736,22 @@ public enum ComplianceFindingImpactId
     /// The impact is not mapped. See the <c>impact</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ComplianceFindingImpactId"/>.</summary>
+public static class ComplianceFindingImpactIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ComplianceFindingImpactId value) => value switch
+    {
+        (ComplianceFindingImpactId)0 => "Unknown",
+        (ComplianceFindingImpactId)1 => "Low",
+        (ComplianceFindingImpactId)2 => "Medium",
+        (ComplianceFindingImpactId)3 => "High",
+        (ComplianceFindingImpactId)4 => "Critical",
+        (ComplianceFindingImpactId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -569,6 +786,22 @@ public enum ComplianceFindingPriorityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ComplianceFindingPriorityId"/>.</summary>
+public static class ComplianceFindingPriorityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ComplianceFindingPriorityId value) => value switch
+    {
+        (ComplianceFindingPriorityId)0 => "Unknown",
+        (ComplianceFindingPriorityId)1 => "Low",
+        (ComplianceFindingPriorityId)2 => "Medium",
+        (ComplianceFindingPriorityId)3 => "High",
+        (ComplianceFindingPriorityId)4 => "Critical",
+        (ComplianceFindingPriorityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -584,6 +817,22 @@ public enum ComplianceFindingRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ComplianceFindingRiskLevelId"/>.</summary>
+public static class ComplianceFindingRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ComplianceFindingRiskLevelId value) => value switch
+    {
+        (ComplianceFindingRiskLevelId)0 => "Info",
+        (ComplianceFindingRiskLevelId)1 => "Low",
+        (ComplianceFindingRiskLevelId)2 => "Medium",
+        (ComplianceFindingRiskLevelId)3 => "High",
+        (ComplianceFindingRiskLevelId)4 => "Critical",
+        (ComplianceFindingRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -626,6 +875,24 @@ public enum ComplianceFindingSeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="ComplianceFindingSeverityId"/>.</summary>
+public static class ComplianceFindingSeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ComplianceFindingSeverityId value) => value switch
+    {
+        (ComplianceFindingSeverityId)0 => "Unknown",
+        (ComplianceFindingSeverityId)1 => "Informational",
+        (ComplianceFindingSeverityId)2 => "Low",
+        (ComplianceFindingSeverityId)3 => "Medium",
+        (ComplianceFindingSeverityId)4 => "High",
+        (ComplianceFindingSeverityId)5 => "Critical",
+        (ComplianceFindingSeverityId)6 => "Fatal",
+        (ComplianceFindingSeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -664,6 +931,24 @@ public enum ComplianceFindingStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ComplianceFindingStatusId"/>.</summary>
+public static class ComplianceFindingStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ComplianceFindingStatusId value) => value switch
+    {
+        (ComplianceFindingStatusId)0 => "Unknown",
+        (ComplianceFindingStatusId)1 => "New",
+        (ComplianceFindingStatusId)2 => "In Progress",
+        (ComplianceFindingStatusId)3 => "Suppressed",
+        (ComplianceFindingStatusId)4 => "Resolved",
+        (ComplianceFindingStatusId)5 => "Archived",
+        (ComplianceFindingStatusId)6 => "Deleted",
+        (ComplianceFindingStatusId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -720,4 +1005,26 @@ public enum ComplianceFindingVerdictId
     /// The type is not mapped. See the <c>type</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ComplianceFindingVerdictId"/>.</summary>
+public static class ComplianceFindingVerdictIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ComplianceFindingVerdictId value) => value switch
+    {
+        (ComplianceFindingVerdictId)0 => "Unknown",
+        (ComplianceFindingVerdictId)1 => "False Positive",
+        (ComplianceFindingVerdictId)2 => "True Positive",
+        (ComplianceFindingVerdictId)3 => "Disregard",
+        (ComplianceFindingVerdictId)4 => "Suspicious",
+        (ComplianceFindingVerdictId)5 => "Benign",
+        (ComplianceFindingVerdictId)6 => "Test",
+        (ComplianceFindingVerdictId)7 => "Insufficient Data",
+        (ComplianceFindingVerdictId)8 => "Security Risk",
+        (ComplianceFindingVerdictId)9 => "Managed Externally",
+        (ComplianceFindingVerdictId)10 => "Duplicate",
+        (ComplianceFindingVerdictId)99 => "Other",
+        _ => null,
+    };
 }

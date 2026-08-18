@@ -368,11 +368,103 @@ public class HttpActivity : OcsfEvent
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public Objects.NetworkTraffic? Traffic { get; set; }
 
-    /// <summary>Sets <c>activity_id</c> and recomputes <c>type_uid</c> accordingly.</summary>
-    public void SetActivity(HttpActivityActivityId activity)
+    /// <summary>
+    /// Sets <c>action_id</c> and the <c>action</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="action"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAction(HttpActivityActionId actionId, string? action = null)
     {
-        ActivityId = activity;
-        TypeUid = EventClassUid * 100L + (long)activity;
+        ActionId = actionId;
+        if ((action ?? actionId.Caption()) is { } label)
+            Action = label;
+    }
+
+    /// <summary>
+    /// Sets <c>activity_id</c> and the <c>activity_name</c> sibling label, and recomputes <c>type_uid</c> and <c>type_name</c>.
+    /// The label defaults to the schema caption of the value; pass <paramref name="activityName"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetActivity(HttpActivityActivityId activityId, string? activityName = null)
+    {
+        ActivityId = activityId;
+        TypeUid = EventClassUid * 100L + (long)activityId;
+        if ((activityName ?? activityId.Caption()) is { } label)
+            ActivityName = label;
+        if (ClassName is not null && activityId.Caption() is { } typeCaption)
+            TypeName = $"{ClassName}: {typeCaption}";
+    }
+
+    /// <summary>
+    /// Sets <c>confidence_id</c> and the <c>confidence</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidence"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidence(HttpActivityConfidenceId confidenceId, string? confidence = null)
+    {
+        ConfidenceId = confidenceId;
+        if ((confidence ?? confidenceId.Caption()) is { } label)
+            Confidence = label;
+    }
+
+    /// <summary>
+    /// Sets <c>disposition_id</c> and the <c>disposition</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="disposition"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDisposition(HttpActivityDispositionId dispositionId, string? disposition = null)
+    {
+        DispositionId = dispositionId;
+        if ((disposition ?? dispositionId.Caption()) is { } label)
+            Disposition = label;
+    }
+
+    /// <summary>
+    /// Sets <c>observation_point_id</c> and the <c>observation_point</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="observationPoint"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetObservationPoint(HttpActivityObservationPointId observationPointId, string? observationPoint = null)
+    {
+        ObservationPointId = observationPointId;
+        if ((observationPoint ?? observationPointId.Caption()) is { } label)
+            ObservationPoint = label;
+    }
+
+    /// <summary>
+    /// Sets <c>risk_level_id</c> and the <c>risk_level</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="riskLevel"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetRiskLevel(HttpActivityRiskLevelId riskLevelId, string? riskLevel = null)
+    {
+        RiskLevelId = riskLevelId;
+        if ((riskLevel ?? riskLevelId.Caption()) is { } label)
+            RiskLevel = label;
+    }
+
+    /// <summary>
+    /// Sets <c>severity_id</c> and the <c>severity</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="severity"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetSeverity(HttpActivitySeverityId severityId, string? severity = null)
+    {
+        SeverityId = severityId;
+        if ((severity ?? severityId.Caption()) is { } label)
+            Severity = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(HttpActivityStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
     }
 }
 
@@ -406,6 +498,22 @@ public enum HttpActivityActionId
     /// The action is not mapped. See the <c>action</c> attribute which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="HttpActivityActionId"/>.</summary>
+public static class HttpActivityActionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this HttpActivityActionId value) => value switch
+    {
+        (HttpActivityActionId)0 => "Unknown",
+        (HttpActivityActionId)1 => "Allowed",
+        (HttpActivityActionId)2 => "Denied",
+        (HttpActivityActionId)3 => "Observed",
+        (HttpActivityActionId)4 => "Modified",
+        (HttpActivityActionId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -584,6 +692,58 @@ public enum HttpActivityActivityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="HttpActivityActivityId"/>.</summary>
+public static class HttpActivityActivityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this HttpActivityActivityId value) => value switch
+    {
+        (HttpActivityActivityId)0 => "Unknown",
+        (HttpActivityActivityId)1 => "Connect",
+        (HttpActivityActivityId)2 => "Delete",
+        (HttpActivityActivityId)3 => "Get",
+        (HttpActivityActivityId)4 => "Head",
+        (HttpActivityActivityId)5 => "Options",
+        (HttpActivityActivityId)6 => "Post",
+        (HttpActivityActivityId)7 => "Put",
+        (HttpActivityActivityId)8 => "Trace",
+        (HttpActivityActivityId)9 => "Patch",
+        (HttpActivityActivityId)10 => "ACL",
+        (HttpActivityActivityId)11 => "Baseline Control",
+        (HttpActivityActivityId)12 => "Bind",
+        (HttpActivityActivityId)13 => "Check In",
+        (HttpActivityActivityId)14 => "Check Out",
+        (HttpActivityActivityId)15 => "Copy",
+        (HttpActivityActivityId)16 => "Label",
+        (HttpActivityActivityId)17 => "Link",
+        (HttpActivityActivityId)18 => "Lock",
+        (HttpActivityActivityId)19 => "Merge",
+        (HttpActivityActivityId)20 => "Make Activity",
+        (HttpActivityActivityId)21 => "Make Calendar",
+        (HttpActivityActivityId)22 => "Make Collection",
+        (HttpActivityActivityId)23 => "Make Redirect Reference",
+        (HttpActivityActivityId)24 => "Make Workspace",
+        (HttpActivityActivityId)25 => "Move",
+        (HttpActivityActivityId)26 => "Order Patch",
+        (HttpActivityActivityId)27 => "PRI",
+        (HttpActivityActivityId)28 => "Property Find",
+        (HttpActivityActivityId)29 => "Property Patch",
+        (HttpActivityActivityId)30 => "Query",
+        (HttpActivityActivityId)31 => "Rebind",
+        (HttpActivityActivityId)32 => "Report",
+        (HttpActivityActivityId)33 => "Search",
+        (HttpActivityActivityId)34 => "Unbind",
+        (HttpActivityActivityId)35 => "Un-Check Out",
+        (HttpActivityActivityId)36 => "Unlink",
+        (HttpActivityActivityId)37 => "Unlock",
+        (HttpActivityActivityId)38 => "Update",
+        (HttpActivityActivityId)39 => "Update Redirect Reference",
+        (HttpActivityActivityId)40 => "Version Control",
+        (HttpActivityActivityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidence_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidence</c> attribute contains the source-specific label.
@@ -601,6 +761,21 @@ public enum HttpActivityConfidenceId
     /// The confidence is not mapped to the defined enum values. See the <c>confidence</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="HttpActivityConfidenceId"/>.</summary>
+public static class HttpActivityConfidenceIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this HttpActivityConfidenceId value) => value switch
+    {
+        (HttpActivityConfidenceId)0 => "Unknown",
+        (HttpActivityConfidenceId)1 => "Low",
+        (HttpActivityConfidenceId)2 => "Medium",
+        (HttpActivityConfidenceId)3 => "High",
+        (HttpActivityConfidenceId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -727,6 +902,45 @@ public enum HttpActivityDispositionId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="HttpActivityDispositionId"/>.</summary>
+public static class HttpActivityDispositionIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this HttpActivityDispositionId value) => value switch
+    {
+        (HttpActivityDispositionId)0 => "Unknown",
+        (HttpActivityDispositionId)1 => "Allowed",
+        (HttpActivityDispositionId)2 => "Blocked",
+        (HttpActivityDispositionId)3 => "Quarantined",
+        (HttpActivityDispositionId)4 => "Isolated",
+        (HttpActivityDispositionId)5 => "Deleted",
+        (HttpActivityDispositionId)6 => "Dropped",
+        (HttpActivityDispositionId)7 => "Custom Action",
+        (HttpActivityDispositionId)8 => "Approved",
+        (HttpActivityDispositionId)9 => "Restored",
+        (HttpActivityDispositionId)10 => "Exonerated",
+        (HttpActivityDispositionId)11 => "Corrected",
+        (HttpActivityDispositionId)12 => "Partially Corrected",
+        (HttpActivityDispositionId)13 => "Uncorrected",
+        (HttpActivityDispositionId)14 => "Delayed",
+        (HttpActivityDispositionId)15 => "Detected",
+        (HttpActivityDispositionId)16 => "No Action",
+        (HttpActivityDispositionId)17 => "Logged",
+        (HttpActivityDispositionId)18 => "Tagged",
+        (HttpActivityDispositionId)19 => "Alert",
+        (HttpActivityDispositionId)20 => "Count",
+        (HttpActivityDispositionId)21 => "Reset",
+        (HttpActivityDispositionId)22 => "Captcha",
+        (HttpActivityDispositionId)23 => "Challenge",
+        (HttpActivityDispositionId)24 => "Access Revoked",
+        (HttpActivityDispositionId)25 => "Rejected",
+        (HttpActivityDispositionId)26 => "Unauthorized",
+        (HttpActivityDispositionId)27 => "Error",
+        (HttpActivityDispositionId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>observation_point_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>observation_point</c> attribute contains the source-specific label.
@@ -759,6 +973,22 @@ public enum HttpActivityObservationPointId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="HttpActivityObservationPointId"/>.</summary>
+public static class HttpActivityObservationPointIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this HttpActivityObservationPointId value) => value switch
+    {
+        (HttpActivityObservationPointId)0 => "Unknown",
+        (HttpActivityObservationPointId)1 => "Source",
+        (HttpActivityObservationPointId)2 => "Destination",
+        (HttpActivityObservationPointId)3 => "Neither",
+        (HttpActivityObservationPointId)4 => "Both",
+        (HttpActivityObservationPointId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>risk_level_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>risk_level</c> attribute contains the source-specific label.
@@ -774,6 +1004,22 @@ public enum HttpActivityRiskLevelId
     /// The risk level is not mapped. See the <c>risk_level</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="HttpActivityRiskLevelId"/>.</summary>
+public static class HttpActivityRiskLevelIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this HttpActivityRiskLevelId value) => value switch
+    {
+        (HttpActivityRiskLevelId)0 => "Info",
+        (HttpActivityRiskLevelId)1 => "Low",
+        (HttpActivityRiskLevelId)2 => "Medium",
+        (HttpActivityRiskLevelId)3 => "High",
+        (HttpActivityRiskLevelId)4 => "Critical",
+        (HttpActivityRiskLevelId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -816,6 +1062,24 @@ public enum HttpActivitySeverityId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="HttpActivitySeverityId"/>.</summary>
+public static class HttpActivitySeverityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this HttpActivitySeverityId value) => value switch
+    {
+        (HttpActivitySeverityId)0 => "Unknown",
+        (HttpActivitySeverityId)1 => "Informational",
+        (HttpActivitySeverityId)2 => "Low",
+        (HttpActivitySeverityId)3 => "Medium",
+        (HttpActivitySeverityId)4 => "High",
+        (HttpActivitySeverityId)5 => "Critical",
+        (HttpActivitySeverityId)6 => "Fatal",
+        (HttpActivitySeverityId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -838,4 +1102,18 @@ public enum HttpActivityStatusId
     /// The status is not mapped. See the <c>status</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="HttpActivityStatusId"/>.</summary>
+public static class HttpActivityStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this HttpActivityStatusId value) => value switch
+    {
+        (HttpActivityStatusId)0 => "Unknown",
+        (HttpActivityStatusId)1 => "Success",
+        (HttpActivityStatusId)2 => "Failure",
+        (HttpActivityStatusId)99 => "Other",
+        _ => null,
+    };
 }

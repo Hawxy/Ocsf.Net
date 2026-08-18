@@ -81,6 +81,18 @@ public class Script : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public string? Uid { get; set; }
+
+    /// <summary>
+    /// Sets <c>type_id</c> and the <c>type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="type"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetType(ScriptTypeId typeId, string? type = null)
+    {
+        TypeId = typeId;
+        if ((type ?? typeId.Caption()) is { } label)
+            Type = label;
+    }
 }
 
 /// <summary>
@@ -104,4 +116,23 @@ public enum ScriptTypeId
     /// The script type is not mapped. See the <c>type</c> attribute which contains an event source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="ScriptTypeId"/>.</summary>
+public static class ScriptTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this ScriptTypeId value) => value switch
+    {
+        (ScriptTypeId)0 => "Unknown",
+        (ScriptTypeId)1 => "Windows Command Prompt",
+        (ScriptTypeId)2 => "PowerShell",
+        (ScriptTypeId)3 => "Python",
+        (ScriptTypeId)4 => "JavaScript",
+        (ScriptTypeId)5 => "VBScript",
+        (ScriptTypeId)6 => "Unix Shell",
+        (ScriptTypeId)7 => "VBA",
+        (ScriptTypeId)99 => "Other",
+        _ => null,
+    };
 }

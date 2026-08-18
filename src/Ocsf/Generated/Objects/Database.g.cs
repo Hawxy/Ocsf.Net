@@ -144,6 +144,18 @@ public class Database : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public long? UidNumeric { get; set; }
+
+    /// <summary>
+    /// Sets <c>type_id</c> and the <c>type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="type"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetType(DatabaseTypeId typeId, string? type = null)
+    {
+        TypeId = typeId;
+        if ((type ?? typeId.Caption()) is { } label)
+            Type = label;
+    }
 }
 
 /// <summary>
@@ -168,4 +180,24 @@ public enum DatabaseTypeId
     /// The type is not mapped. See the <c>type</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="DatabaseTypeId"/>.</summary>
+public static class DatabaseTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DatabaseTypeId value) => value switch
+    {
+        (DatabaseTypeId)0 => "Unknown",
+        (DatabaseTypeId)1 => "Relational",
+        (DatabaseTypeId)2 => "Network",
+        (DatabaseTypeId)3 => "Object Oriented",
+        (DatabaseTypeId)4 => "Centralized",
+        (DatabaseTypeId)5 => "Operational",
+        (DatabaseTypeId)6 => "NoSQL",
+        (DatabaseTypeId)7 => "Vector",
+        (DatabaseTypeId)8 => "Knowledge Graph",
+        (DatabaseTypeId)99 => "Other",
+        _ => null,
+    };
 }

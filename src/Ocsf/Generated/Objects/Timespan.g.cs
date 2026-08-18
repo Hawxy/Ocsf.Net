@@ -140,6 +140,18 @@ public class Timespan : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public TimespanTypeId? TypeId { get; set; }
+
+    /// <summary>
+    /// Sets <c>type_id</c> and the <c>type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="type"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetType(TimespanTypeId typeId, string? type = null)
+    {
+        TypeId = typeId;
+        if ((type ?? typeId.Caption()) is { } label)
+            Type = label;
+    }
 }
 
 /// <summary>
@@ -168,4 +180,25 @@ public enum TimespanTypeId
     /// The type is not mapped. See the <c>type</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="TimespanTypeId"/>.</summary>
+public static class TimespanTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this TimespanTypeId value) => value switch
+    {
+        (TimespanTypeId)0 => "Unknown",
+        (TimespanTypeId)1 => "Milliseconds",
+        (TimespanTypeId)2 => "Seconds",
+        (TimespanTypeId)3 => "Minutes",
+        (TimespanTypeId)4 => "Hours",
+        (TimespanTypeId)5 => "Days",
+        (TimespanTypeId)6 => "Weeks",
+        (TimespanTypeId)7 => "Months",
+        (TimespanTypeId)8 => "Years",
+        (TimespanTypeId)9 => "Time Interval",
+        (TimespanTypeId)99 => "Other",
+        _ => null,
+    };
 }

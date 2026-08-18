@@ -102,6 +102,18 @@ public class PeripheralDevice : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public string? VendorName { get; set; }
+
+    /// <summary>
+    /// Sets <c>type_id</c> and the <c>type</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="type"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetType(PeripheralDeviceTypeId typeId, string? type = null)
+    {
+        TypeId = typeId;
+        if ((type ?? typeId.Caption()) is { } label)
+            Type = label;
+    }
 }
 
 /// <summary>
@@ -146,4 +158,23 @@ public enum PeripheralDeviceTypeId
     /// The peripheral device type is not mapped. See the <c>type</c> attribute which contains an event source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="PeripheralDeviceTypeId"/>.</summary>
+public static class PeripheralDeviceTypeIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this PeripheralDeviceTypeId value) => value switch
+    {
+        (PeripheralDeviceTypeId)0 => "Unknown",
+        (PeripheralDeviceTypeId)1 => "External Storage",
+        (PeripheralDeviceTypeId)2 => "Keyboard",
+        (PeripheralDeviceTypeId)3 => "Mouse",
+        (PeripheralDeviceTypeId)4 => "Printer",
+        (PeripheralDeviceTypeId)5 => "Monitor",
+        (PeripheralDeviceTypeId)6 => "Microphone",
+        (PeripheralDeviceTypeId)7 => "Webcam",
+        (PeripheralDeviceTypeId)99 => "Other",
+        _ => null,
+    };
 }

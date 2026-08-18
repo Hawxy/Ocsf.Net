@@ -183,6 +183,66 @@ public class DataSecurity : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Optional)]
     public string? Uid { get; set; }
+
+    /// <summary>
+    /// Sets <c>category_id</c> and the <c>category</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="category"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetCategory(DataSecurityCategoryId categoryId, string? category = null)
+    {
+        CategoryId = categoryId;
+        if ((category ?? categoryId.Caption()) is { } label)
+            Category = label;
+    }
+
+    /// <summary>
+    /// Sets <c>confidentiality_id</c> and the <c>confidentiality</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="confidentiality"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetConfidentiality(DataSecurityConfidentialityId confidentialityId, string? confidentiality = null)
+    {
+        ConfidentialityId = confidentialityId;
+        if ((confidentiality ?? confidentialityId.Caption()) is { } label)
+            Confidentiality = label;
+    }
+
+    /// <summary>
+    /// Sets <c>data_lifecycle_state_id</c> and the <c>data_lifecycle_state</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="dataLifecycleState"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDataLifecycleState(DataSecurityDataLifecycleStateId dataLifecycleStateId, string? dataLifecycleState = null)
+    {
+        DataLifecycleStateId = dataLifecycleStateId;
+        if ((dataLifecycleState ?? dataLifecycleStateId.Caption()) is { } label)
+            DataLifecycleState = label;
+    }
+
+    /// <summary>
+    /// Sets <c>detection_system_id</c> and the <c>detection_system</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="detectionSystem"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetDetectionSystem(DataSecurityDetectionSystemId detectionSystemId, string? detectionSystem = null)
+    {
+        DetectionSystemId = detectionSystemId;
+        if ((detectionSystem ?? detectionSystemId.Caption()) is { } label)
+            DetectionSystem = label;
+    }
+
+    /// <summary>
+    /// Sets <c>status_id</c> and the <c>status</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="status"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetStatus(DataSecurityStatusId statusId, string? status = null)
+    {
+        StatusId = statusId;
+        if ((status ?? statusId.Caption()) is { } label)
+            Status = label;
+    }
 }
 
 /// <summary>
@@ -225,6 +285,24 @@ public enum DataSecurityCategoryId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="DataSecurityCategoryId"/>.</summary>
+public static class DataSecurityCategoryIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DataSecurityCategoryId value) => value switch
+    {
+        (DataSecurityCategoryId)0 => "Unknown",
+        (DataSecurityCategoryId)1 => "Personal",
+        (DataSecurityCategoryId)2 => "Governmental",
+        (DataSecurityCategoryId)3 => "Financial",
+        (DataSecurityCategoryId)4 => "Business",
+        (DataSecurityCategoryId)5 => "Military and Law Enforcement",
+        (DataSecurityCategoryId)6 => "Security",
+        (DataSecurityCategoryId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>confidentiality_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>confidentiality</c> attribute contains the source-specific label.
@@ -245,6 +323,24 @@ public enum DataSecurityConfidentialityId
     /// The confidentiality is not mapped. See the <c>confidentiality</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="DataSecurityConfidentialityId"/>.</summary>
+public static class DataSecurityConfidentialityIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DataSecurityConfidentialityId value) => value switch
+    {
+        (DataSecurityConfidentialityId)0 => "Unknown",
+        (DataSecurityConfidentialityId)1 => "Not Confidential",
+        (DataSecurityConfidentialityId)2 => "Confidential",
+        (DataSecurityConfidentialityId)3 => "Secret",
+        (DataSecurityConfidentialityId)4 => "Top Secret",
+        (DataSecurityConfidentialityId)5 => "Private",
+        (DataSecurityConfidentialityId)6 => "Restricted",
+        (DataSecurityConfidentialityId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -273,6 +369,21 @@ public enum DataSecurityDataLifecycleStateId
     /// The data lifecycle state is not mapped. See the <c>data_lifecycle_state</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="DataSecurityDataLifecycleStateId"/>.</summary>
+public static class DataSecurityDataLifecycleStateIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DataSecurityDataLifecycleStateId value) => value switch
+    {
+        (DataSecurityDataLifecycleStateId)0 => "Unknown",
+        (DataSecurityDataLifecycleStateId)1 => "Data at-Rest",
+        (DataSecurityDataLifecycleStateId)2 => "Data in-Transit",
+        (DataSecurityDataLifecycleStateId)3 => "Data in-Use",
+        (DataSecurityDataLifecycleStateId)99 => "Other",
+        _ => null,
+    };
 }
 
 /// <summary>
@@ -339,6 +450,30 @@ public enum DataSecurityDetectionSystemId
     Other = 99,
 }
 
+/// <summary>Schema caption lookup for <see cref="DataSecurityDetectionSystemId"/>.</summary>
+public static class DataSecurityDetectionSystemIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DataSecurityDetectionSystemId value) => value switch
+    {
+        (DataSecurityDetectionSystemId)0 => "Unknown",
+        (DataSecurityDetectionSystemId)1 => "Endpoint",
+        (DataSecurityDetectionSystemId)2 => "DLP Gateway",
+        (DataSecurityDetectionSystemId)3 => "Mobile Device Management",
+        (DataSecurityDetectionSystemId)4 => "Data Discovery & Classification",
+        (DataSecurityDetectionSystemId)5 => "Secure Web Gateway",
+        (DataSecurityDetectionSystemId)6 => "Secure Email Gateway",
+        (DataSecurityDetectionSystemId)7 => "Digital Rights Management",
+        (DataSecurityDetectionSystemId)8 => "Cloud Access Security Broker",
+        (DataSecurityDetectionSystemId)9 => "Database Activity Monitoring",
+        (DataSecurityDetectionSystemId)10 => "Application-Level DLP",
+        (DataSecurityDetectionSystemId)11 => "Developer Security",
+        (DataSecurityDetectionSystemId)12 => "Data Security Posture Management",
+        (DataSecurityDetectionSystemId)99 => "Other",
+        _ => null,
+    };
+}
+
 /// <summary>
 /// Values for the <c>status_id</c> attribute.
 /// When the value is <c>Other</c> (99), the <c>status</c> attribute contains the source-specific label.
@@ -365,4 +500,19 @@ public enum DataSecurityStatusId
     /// The classification job type id is not mapped.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="DataSecurityStatusId"/>.</summary>
+public static class DataSecurityStatusIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this DataSecurityStatusId value) => value switch
+    {
+        (DataSecurityStatusId)0 => "Unknown",
+        (DataSecurityStatusId)1 => "Complete",
+        (DataSecurityStatusId)2 => "Partial",
+        (DataSecurityStatusId)3 => "Fail",
+        (DataSecurityStatusId)99 => "Other",
+        _ => null,
+    };
 }

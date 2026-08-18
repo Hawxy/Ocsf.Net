@@ -56,6 +56,18 @@ public class EncryptionDetails : OcsfObject
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [OcsfRequirement(OcsfRequirement.Recommended)]
     public string? Type { get; set; }
+
+    /// <summary>
+    /// Sets <c>algorithm_id</c> and the <c>algorithm</c> sibling label.
+    /// The label defaults to the schema caption of the value; pass <paramref name="algorithm"/>
+    /// for source-specific labels, which the OCSF spec requires when the value is <c>Other</c> (99).
+    /// </summary>
+    public void SetAlgorithm(EncryptionDetailsAlgorithmId algorithmId, string? algorithm = null)
+    {
+        AlgorithmId = algorithmId;
+        if ((algorithm ?? algorithmId.Caption()) is { } label)
+            Algorithm = label;
+    }
 }
 
 /// <summary>
@@ -96,4 +108,22 @@ public enum EncryptionDetailsAlgorithmId
     /// The algorithm is not mapped. See the <c>algorithm</c> attribute, which contains a data source specific value.
     /// </summary>
     Other = 99,
+}
+
+/// <summary>Schema caption lookup for <see cref="EncryptionDetailsAlgorithmId"/>.</summary>
+public static class EncryptionDetailsAlgorithmIdExtensions
+{
+    /// <summary>The schema caption of the value, or null for values not defined by the schema.</summary>
+    public static string? Caption(this EncryptionDetailsAlgorithmId value) => value switch
+    {
+        (EncryptionDetailsAlgorithmId)0 => "Unknown",
+        (EncryptionDetailsAlgorithmId)1 => "DES",
+        (EncryptionDetailsAlgorithmId)2 => "TripleDES",
+        (EncryptionDetailsAlgorithmId)3 => "AES",
+        (EncryptionDetailsAlgorithmId)4 => "RSA",
+        (EncryptionDetailsAlgorithmId)5 => "ECC",
+        (EncryptionDetailsAlgorithmId)6 => "SM2",
+        (EncryptionDetailsAlgorithmId)99 => "Other",
+        _ => null,
+    };
 }
