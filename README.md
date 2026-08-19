@@ -105,32 +105,30 @@ be populated elsewhere and are not flagged. Suppress any rule via `.editorconfig
 
 ## Design notes
 
-- **Timestamps**: (`timestamp_t`) are epoch milliseconds on the wire; the `OcsfTimestamp`
+- **Timestamps** (`timestamp_t`) are epoch milliseconds. The `OcsfTimestamp`
   struct converts implicitly to/from `long` and `DateTimeOffset`.
-- **Enums**: integer-coded schema enums become C# enums per class/object
+- **Enums** integer-coded schema enums become C# enums per class/object
   (`AuthenticationActivityId`, `UserTypeId`, ...) since OCSF classes extend enum value sets
   individually. String-coded enums stay `string`.
-- **Sibling-aware setters**: every non-array enum attribute with a sibling label gets a
+- **Sibling-aware setters** every non-array enum attribute with a sibling label gets a
   generated `Set*` helper (`SetStatus(id)`, `user.SetType(id)`, ...) that assigns the enum and
-  defaults the sibling label to the schema caption, per the spec's "both should be populated"
-  guidance; pass an explicit label for source-specific values, which the spec requires for
+  defaults the sibling label to the schema caption, as "both should be populated" per the spec.
+  Pass an explicit label for source-specific values, which the spec requires for
   `Other (99)`. `SetActivity` additionally recomputes `type_uid` and `type_name`
   (`"Class Caption: Activity Caption"`). Every enum also gets a `Caption()` extension.
-- **Producer responsibilities not automated**:
-  `metadata.version`, `Unknown (0)` defaults for unpopulatable required enums, and populating
-  the `observables` array..
-- **Profiles**: are pre-merged into classes by the schema export. Profile-sourced properties
+- **Producer responsibilities are not automated** `metadata.version` and populating the `observables` array are left to the producer.
+- **Profiles** are pre-merged into classes by the schema export. Profile-sourced properties
   are ordinary optional properties. This includes the
   `linux/linux_users` and `macos/macos_users` extension profiles, which add `Auid`, `Egid`,
   `Euid`, and `Group` to `Process` when `metadata.profiles` declares one of those profiles.
-- **Deprecated**: classes and attributes are generated with `[Obsolete]` so consumers can
+- **Deprecated** classes and attributes are generated with `[Obsolete]` so consumers can
   still read events from older producers.
 
 ## Extensions
 
 OCSF platform extensions are generated as first-class types into the same namespaces as core.
 The `win` extension is the only one that defines entities, with type names being prefixed with 
-the extension name unless the schema namealready starts with it:
+the extension name unless the schema name already starts with it:
 
 | Schema key | CLR type | class_uid |
 |---|---|---|
@@ -163,13 +161,6 @@ The repo builds with [Nuke](https://nuke.build/); the GitHub workflows are gener
 ./build.cmd NugetPush          # pack + push to nuget.org (requires NugetApiKey)
 ```
 
-CI runs `Test VerifyGenerated AotSmoke` on pushes and PRs to `main`; publishing is a manual
-`workflow_dispatch` (`Manual Nuget Push`) that authenticates to nuget.org via
-[trusted publishing](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing):
-the `NuGet/login` action exchanges the workflow's OIDC token for a short-lived API key, so no
-long-lived key is stored — only the `NUGET_USER` secret (the nuget.org profile that owns the
-trusted publishing policy). The package version is set in `Package.Build.props`.
-
 ## Regenerating from the schema
 
 Generated code lives under `src/Ocsf/Generated` and `src/Ocsf.Validation/Generated` and is
@@ -188,4 +179,4 @@ reviewable diffs; `verify` fails if the checked-in code drifts from the snapshot
 
 ## License
 
-Apache-2.0, matching the OCSF schema.
+This project is Apache-2.0, in line with upstream. This is a community project and is not endorsed or related to the core OSCF project.
