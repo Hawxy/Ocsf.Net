@@ -6,8 +6,8 @@ Current Schema Version: **1.9.0**
 
 | Package | Description |
 |---|---|
-| `Ocsf` | Generated C# classes for all 87 OCSF event classes and 194 objects (schema extensions included), with System.Text.Json serialization and full NativeAOT/trimming support. |
-| `Ocsf.Validation` | Validates JSON events against the OCSF schema, mirroring the rules and severities of the schema server's `POST /api/v2/validate` endpoint. |
+| [![Ocsf](https://img.shields.io/nuget/v/Ocsf?label=Ocsf)](https://www.nuget.org/packages/Ocsf) | Generated C# classes for all 87 OCSF event classes and 194 objects (schema extensions included), with System.Text.Json serialization and full NativeAOT/trimming support. |
+| [![Ocsf.Validation](https://img.shields.io/nuget/v/Ocsf.Validation?label=Ocsf.Validation)](https://www.nuget.org/packages/Ocsf.Validation) | Validates JSON events against the OCSF schema, mirroring the rules and severities of the schema server's `POST /api/v2/validate` endpoint. |
 
 Targets `net8.0` and `net10.0`. Fully AOT Compatible.
 
